@@ -134,24 +134,21 @@ function excluirTudoManut(){
   setTimeout(carregarManutencao,1200);
 }
 
+
 function lancarManutencaoGalaxy(){
   const btn=document.getElementById('btnLancar'); const msg=document.getElementById('msgManut');
-  let cod=document.getElementById('mCod').value.trim()||String(MANUT_CACHE.length+1).padStart(3,'0');
+  let cod=document.getElementById('mCod').value.trim().replace(/\D/g,'').padStart(5,'0') || String(MANUT_CACHE.length+1).padStart(5,'0');
   let tipo=document.getElementById('mTipo').value;
   let ini=document.getElementById('mInicio').value; let fim=document.getElementById('mFinal').value;
   if(ini) ini=ini.split('-').reverse().join('/'); if(fim) fim=fim.split('-').reverse().join('/');
   let hora=document.getElementById('mHora').value; let status=document.getElementById('mStatus').value;
   
-  let existe = MANUT_CACHE.find(x => String(x.cod||x.Cod).trim() === String(cod).trim());
-  if(existe){
-    msg.innerHTML=`✏️ Alterando Cod ${cod}...`;
-    msg.style.color="#22c55e";
-    new Image().src=`${API_URL_LOG}?action=excluirmanutencao&cod=${encodeURIComponent(cod)}&t=${Date.now()}`;
-    setTimeout(()=>{ salvarNovo(cod,tipo,ini,fim,hora,status); },700);
-  }else{
-    salvarNovo(cod,tipo,ini,fim,hora,status);
-  }
+  // AGORA ALTERA DIRETO - SEM EXCLUIR ANTES
+  msg.innerHTML=`✏️ Salvando Cod ${cod}...`;
+  msg.style.color="#22c55e";
+  salvarNovo(cod,tipo,ini,fim,hora,status);
 }
+
 
 function salvarNovo(cod,tipo,ini,fim,hora,status){
   const btn=document.getElementById('btnLancar'); const msg=document.getElementById('msgManut');
