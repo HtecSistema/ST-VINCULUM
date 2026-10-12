@@ -205,5 +205,15 @@
 })();
 </script>
 
+
+<!-- MODAL PERSONALIZADO - SUBSTITUI O ALERT -->
+<div id="meuModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+  <div style="background:white; padding:25px; border-radius:12px; max-width:380px; width:90%; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+    <h3 id="modalTitulo" style="color:#0b5ed7; margin-bottom:10px; font-size:18px;">SistemaTD - Htec</h3>
+    <p id="modalTexto" style="color:#333; font-size:15px; margin-bottom:20px;"></p>
+    <button onclick="fecharModal()" style="background:#0b5ed7; color:white; border:none; padding:10px 25px; border-radius:20px; font-weight:bold; cursor:pointer;">OK</button>
+  </div>
+</div>
+
 </body>
 </html>
