@@ -57,6 +57,17 @@ function mostrarModalManutencao(info){
   div.onclick=(e)=>{ if(e.target.id==='modalManutencao') div.remove(); };
 }
 // ===== FIM NOVO MANUTENCAO =====
+// ===== NOVO - SUBSTITUI O ALERT "Essa página diz" - ADICIONADO AGORA =====
+function mostrarAlerta(msg, titulo = "SistemaTD - Htec"){
+  let old=document.getElementById('modalAlertaTD'); if(old) old.remove();
+  let div=document.createElement('div');
+  div.id='modalAlertaTD';
+  div.style='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100002;display:flex;align-items:center;justify-content:center;padding:20px';
+  div.innerHTML=`<div style="background:#fff;border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3);font-family:sans-serif"><div style="font-size:14px;font-weight:900;color:#0b5ed7;margin-bottom:12px">${titulo}</div><div style="font-size:13px;color:#222;line-height:1.4;white-space:pre-line">${msg}</div><button onclick="document.getElementById('modalAlertaTD').remove()" style="margin-top:20px;background:#0b5ed7;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:900;width:100%;font-size:13px">OK</button></div>`;
+  document.body.appendChild(div);
+  div.onclick=(e)=>{ if(e.target.id==='modalAlertaTD') div.remove(); };
+}
+// ===== FIM NOVO ALERTA =====
 
 async function apiGet(a,p={}){p.t=Date.now();const u=API_URL+'?action='+a+'&'+new URLSearchParams(p);const r=await fetch(u,{cache:'no-store'});const t=await r.text();try{return JSON.parse(t)}catch{return{result:'ok',data:[]}}}
 async function apiPost(pl){const r=await fetch(API_URL,{method:'POST',body:JSON.stringify(pl)});const t=await r.text();try{return JSON.parse(t)}catch{return{result:'ok',message:t}}}
@@ -285,7 +296,7 @@ async function buscarMatriculaBD1(){
   if(!ehAdmin && matLogin && matLogin!=='00000' && matLogin!=='00425'){
     if(mat!==matLogin){
       toast('⛔ VOCÊ SÓ PODE PESQUISAR: '+matLogin,'err');
-      alert('⛔ BLOQUEADO\nLogado: '+matLogin+'\nVocê só pode pesquisar '+matLogin+'\nSó 00425 pesquisa tudo.');
+      mostrarAlerta('⛔ BLOQUEADO\nLogado: '+matLogin+'\nVocê só pode pesquisar '+matLogin+'\nSó 00425 pesquisa tudo.', 'Acesso Bloqueado');
       document.getElementById('Matricula').value=matLogin;
       return;
     }
@@ -466,7 +477,7 @@ function renderTestes(lista){
     let bgCard = manut? '#fff7ed' : (emReedicao?'#fef3c7':(ja?'#ecfdf5':'white'));
     let borderColor = manut? '#f59e0b' : (emReedicao?'#f59e0b':cor);
     card.style = `background:${bgCard};border-left:6px solid ${borderColor};border-radius:12px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;opacity:${emReedicao?'0.9':''}`;
-    card.innerHTML = `<div style="flex:1"><span style="background:${manut?'#f59e0b':(emReedicao?'#f59e0b':cor)};color:white;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900">${ciclo}</span><span style="font-weight:900;font-size:13px"> TESTE ${nf} ${manut?'🚧 Em manutenção':(emReedicao?'⏸️ REEDIÇÃO':(ja?'✅ Feito':''))}</span><div style="font-size:11px">${manut? 'Ciclo em manutenção até '+manut.dataFinal+' às '+manut.horario : (emReedicao?'Teste aberto a reedição. Por gentileza, aguarde':tema)}</div></div>`;
+    card.innerHTML = `<div style="flex:1"><span style="background:${manut?'#f59e0b':(emReedicao?'#f59e0b':cor)};color:white;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900">${ciclo}</span><span style="font-weight:900;font-size:13px"> TESTE ${nf} ${manut?'🚧 Em manutenção':(emReedicao?'⏸️ REEDIÇÃO':(ja?'✅ Feito':''))}</span><div style="font-size:11px">${manut? 'Ciclo em manutenção até '+manut.dataFinal+' às '+manut.horario : (emReedicao?'Teste LIBERADO para Recuperação. Por gentileza, aguarde':tema)}</div></div>`;
     let btn = document.createElement('button');
     if(manut){
       btn.innerText = '🚧 Em manutenção';
@@ -475,7 +486,7 @@ function renderTestes(lista){
     }else if(emReedicao){
       btn.innerText = '⏸️ REEDIÇÃO';
       btn.style = `background:#9ca3af;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:not-allowed`;
-      btn.onclick = () => { alert('Teste aberto a reedição. Por gentileza, aguarde'); toast('Teste aberto a reedição. Por gentileza, aguarde','err'); };
+      btn.onclick = () => { mostrarAlerta('Teste LIBERADO para Recuperação. Por gentileza, aguarde', '⏸️ RECUPERAÇÃO'); toast('Teste LIBERADO para Recuperação. Por gentileza, aguarde','err'); };
     }else{
       if(ja){
         btn.innerText = '✅ Feito';
@@ -557,7 +568,7 @@ async function abrirTeste(linkOriginal, codUnico, rowId){
     if(!valor) faltando.push(item.label);
   });
   if(faltando.length){
-    alert('Por gentileza, preencha os campos pendentes:\n\n• ' + faltando.join('\n• '));
+    mostrarAlerta('Por gentileza, preencha os campos pendentes:\n\n• ' + faltando.join('\n• '), '⚠️ Campos Obrigatórios');
     try{ toast('Preencha: '+faltando.join(', '), 'err'); }catch(e){}
     return;
   }
@@ -585,8 +596,8 @@ async function abrirTeste(linkOriginal, codUnico, rowId){
         return cNum===cicloNumBotao && tNum===testeNumBotao;
       });
       if(bloqueado){
-        alert('Teste aberto a reedição. Por gentileza, aguarde');
-        try{ toast('Teste aberto a reedição. Por gentileza, aguarde','err'); }catch(e){}
+        mostrarAlerta('Teste LIBERADO para Recuperação. Por gentileza, aguarde', '⏸️ REEDIÇÃO');
+        try{ toast('Teste LIBERADO para Recuperação. Por gentileza, aguarde','err'); }catch(e){}
         return;
       }
     }
@@ -650,9 +661,6 @@ window.addEventListener('load', function(){
     if(mat||sen){ aplicarRegraTrava(); }
   }, 700);
 });
-
-
-// E NO recuperar() TROCA O map PARA MOSTRAR FEITO:
 async function recuperar(){
   let m = document.getElementById('modalRecuperar'); if(m){ m.remove(); return; }
   let matAtual = getMatriculaLogin();
@@ -663,7 +671,7 @@ async function recuperar(){
   let modal = document.createElement('div');
   modal.id = 'modalRecuperar';
   modal.style = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99990;display:flex;justify-content:center;align-items:flex-start;padding-top:20px';
-  modal.innerHTML = `<div style="background:#f8f9fa;width:96%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.3)"><div id="handleRecup" style="background:#111;color:white;padding:12px;display:flex;align-items:center;gap:12px"><button onclick="document.getElementById('modalRecuperar').remove()" style="background:white;color:#111;border:0;padding:8px 14px;border-radius:8px;font-weight:900">✕ FECHAR</button><h3 id="tituloRecup" style="margin:0;font-size:13px;font-weight:900;flex:1;cursor:move">📝 RECUPERAÇÃO - ${matAtual}</h3></div><div id="listaRecup" style="overflow-y:auto;padding:10px;background:#f8f9fa">Buscando ${matAtual}...</div></div>`;
+  modal.innerHTML = `<div style="background:#f8f9fa;width:96%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.3)"><div id="handleRecup" style="background:#111;color:white;padding:12px;display:flex;align-items:center;gap:12px"><button onclick="document.getElementById('modalRecuperar').remove()" style="background:white;color:#111;border:0;padding:8px 14px;border-radius:8px;font-weight:900">✕ FECHAR</button><h3 id="tituloRecup" style="margin:0;font-size:13px;font-weight:900;flex:1;cursor:move">📝 REEDIÇÃO - ${matAtual}</h3></div><div id="listaRecup" style="overflow-y:auto;padding:10px;background:#f8f9fa">Buscando ${matAtual}...</div></div>`;
   document.body.appendChild(modal);
   tornarMovel('modalRecuperar','handleRecup');
   try{
@@ -677,11 +685,11 @@ async function recuperar(){
     let div = document.getElementById('listaRecup');
     let tit = document.getElementById('tituloRecup');
     if(filtrados.length===0){
-      tit.innerText = `📝 RECUPERAÇÃO - ${matAtual} - 0`;
+      tit.innerText = `📝 REEDIÇÃO - ${matAtual} - 0`;
       div.innerHTML = `<div style="text-align:center;padding:20px">Nenhuma recuperação liberada para<br><b>${matAtual} - ${nomeAtual}</b><br><br>Só para alunos com nota inferior a 70.</div>`;
       return;
     }
-    tit.innerText = `📝 RECUPERAÇÃO - ${matAtual} - ${filtrados.length}`;
+    tit.innerText = `📝 REEDIÇÃO - ${matAtual} - ${filtrados.length}`;
     let abertosRecup={}; try{abertosRecup=JSON.parse(localStorage.getItem('recuperacoes_abertas')||'{}')}catch(e){}
     div.innerHTML = filtrados.map((it)=>{
       let ciclo = String(it.CICLO||it.E||'').toUpperCase();
@@ -699,8 +707,6 @@ async function recuperar(){
     document.getElementById('listaRecup').innerHTML = 'ERRO: '+e.message;
   }
 }
-
-// SUBSTITUI O SEU abrirLinkRecuperacao POR ESSE:
 function abrirLinkRecuperacao(linkOriginal, codUnico){
   if(!linkOriginal){ toast('Link vazio','err'); return; }
   const d = coletarDados();
@@ -714,21 +720,16 @@ function abrirLinkRecuperacao(linkOriginal, codUnico){
       if(entries.length>0) entries.forEach((e,i)=>{ if(vals[i]!==undefined) base+='&'+e+'='+encodeURIComponent(vals[i]); });
     }
   }catch(e){ base = linkOriginal; }
-
-  // MARCA COMO FEITO IGUAL O TESTE FAZ
   try{
     let abertos=JSON.parse(localStorage.getItem('recuperacoes_abertas')||'{}');
     abertos[codUnico]=true;
     localStorage.setItem('recuperacoes_abertas', JSON.stringify(abertos));
-    // atualiza o botão na hora
     let btn = document.querySelector(`button[onclick*="${codUnico}"]`);
     if(btn){ btn.innerText='✅ FEITO'; btn.style.background='#16a34a'; }
   }catch(e){}
-
   apiGet('salvarNaResposta',{dados:JSON.stringify({...d, tipo:'RECUPERACAO', CodigoTeste: codUnico}), cod:codUnico||('RECUP-'+Date.now()), ciclo:'RECUP'}).catch(()=>{});
   mostrarAvisoAntesAbrir(base);
 }
-
 (function(){
   function norm(v){ return (v||'').toString().trim().toUpperCase(); }
   function travarCampos(){
