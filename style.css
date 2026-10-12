@@ -25,3 +25,8 @@ input,.combo-input{width:100%;padding:7px 8px;border:1px solid #e2e8f0;border-ra
 #listViewTable tbody tr.selected{background:#bbf7d0!important}
 #listViewFooter{background:#f1f5f9;border-top:2px solid #0f766e;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;}
 @media(max-width:768px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr!important}.actions{grid-template-columns:1fr 1fr}}
+
+/* UNICA MUDANCA - FRASE DADOS COMPLETOS/INCOMPLETOS */
+#statusDados{text-align:center;padding:10px;margin:0 auto 8px;max-width:880px;width:calc(100% - 8px);border-radius:8px;font-weight:900;font-size:12px;border:1px dashed #cbd5e1}
+.status-completo{background:#dcfce7;color:#166534;border-color:#22c55e}
+.status-incompleto{background:#fef9c3;color:#854d0e;border-color:#f59e0b}
