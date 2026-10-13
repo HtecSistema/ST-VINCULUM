@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<script>
-// VERIFICA VERSÃO NO GITHUB E FORÇA ATUALIZAR
-fetch('version.json?v='+Date.now(), {cache:'no-store'})
-.then(r=>r.json())
-.then(j=>{
-  let atual = localStorage.getItem('v_sistema');
-  if(atual !== j.versao){
-    localStorage.setItem('v_sistema', j.versao);
-    if('caches' in window){
-      caches.keys().then(k=>k.forEach(n=>caches.delete(n)));
-    }
-    location.reload(true);
-  }
-}).catch(()=>{});
-</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+// VERIFICA VERSÃO NO GITHUB E FORÇA ATUALIZAR - SEGURO
+(async ()=>{
+  try{
+    const r = await fetch('version.json?v='+Date.now(), {cache:'no-store'});
+    const j = await r.json();
+    let atual = localStorage.getItem('v_sistema');
+    if(atual!== j.versao){
+      localStorage.setItem('v_sistema', j.versao);
+      if('caches' in window){
+        const ks = await caches.keys();
+        ks.forEach(n=>caches.delete(n));
+      }
+      location.reload();
+    }
+  }catch(e){}
+})();
+</script>
 <title>Htec | SistemaTD</title>
 <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
 <link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
@@ -31,8 +34,6 @@ fetch('version.json?v='+Date.now(), {cache:'no-store'})
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://htecsistema.github.io/SistemaTD/">
 <style>
-
-
   *{box-sizing:border-box;}
   body{margin:0; font-family:'Segoe UI', Inter, Arial, sans-serif; height:100vh; background:#f5f3ff; overflow:hidden;}
   #tela-login{height:100vh; display:flex; align-items:center; justify-content:center; background: radial-gradient(circle at top, #ede9fe, #f8f7ff);}
@@ -90,11 +91,11 @@ fetch('version.json?v='+Date.now(), {cache:'no-store'})
 .botoes-manut{ display:grid; grid-template-columns:1fr 1fr 1.5fr; gap:8px; margin-top:14px; }
   #wrapTabelaManut{ overflow:auto; max-height:70vh; -webkit-overflow-scrolling:touch; }
   @media(max-width:900px){
- .grid-manut{ grid-template-columns:1fr; padding:12px; }
+.grid-manut{ grid-template-columns:1fr; padding:12px; }
     #wrapTabelaManut{ max-height:50vh; }
     #frame-Manutencao\.html table{ min-width:620px; }
- .botoes-manut{ grid-template-columns:1fr 1fr; }
- .botoes-manut #btnLancarManut{ grid-column: span 2; padding:16px!important; font-size:14px!important }
+.botoes-manut{ grid-template-columns:1fr 1fr; }
+.botoes-manut #btnLancarManut{ grid-column: span 2; padding:16px!important; font-size:14px!important }
   }
 </style>
 </head>
@@ -177,7 +178,7 @@ fetch('version.json?v='+Date.now(), {cache:'no-store'})
       <div class="menu-topo"><div class="logo-sistema"><div class="logo-icon" onclick="toggleMenuLateral()" style="background:#fff; border:1px solid #e9e8f0; padding:4px;"><img src="logo-branco.png" style="width:100%; height:100%; object-fit:contain;"></div> SistemaTD</div><div class="user-info"><small>Usuário logado</small><b id="user-display">-</b></div></div>
       <div class="menu-nav"><div class="label">Principal</div><button class="menu-btn" onclick="abrir('CadastroAdm.html', this, 'Administradores')"><span class="icon">👑</span> ADMINISTRADOR</button><button class="menu-btn ativo" onclick="abrir('Cadastro.html', this, 'Cadastro e Acesso Testes')"><span class="icon">📝</span> CADASTRO</button><button class="menu-btn" onclick="abrir('Relatorio.html', this, 'Relatórios')"><span class="icon">📊</span> CERTIFICADOS</button><button class="menu-btn" onclick="abrir('Liberacao.html', this, 'Liberação')"><span class="icon">🔓</span> LIBERAÇÃO</button><button class="menu-btn" onclick="abrir('Baixar.html', this, 'Lições')"><span class="icon">📖</span> LIÇÕES</button><button id="btn-movimento-adm" class="menu-btn" style="display:none" onclick="abrir('MovimentoAdm.html', this, 'Movimento Adm')"><span class="icon">📊</span> RELATÓRIO ADM</button><button id="btn-acesso-usuario" class="menu-btn" style="display:none" onclick="abrir('AcessoUsuario.html', this, 'Acesso Usuário')"><span class="icon">👤</span> RELATÓRIO USUÁRIO</button><button id="btn-manutencao" class="menu-btn" style="display:none" onclick="abrir('Manutencao.html', this, 'Manutenção')"><span class="icon">🛠️</span> MANUTENÇÃO</button><button id="btn-sair" class="menu-btn" onclick="sair()"><span class="icon">🚪</span> SAIR DO SISTEMA</button></div>
   </div>
-  <div id="conteudo-direita"><div class="barra-topo-conteudo"><div style="display:flex; align-items:center; gap:10px;"><button id="btn-menu-mobile" onclick="abrirMenuLateral()">☰</button><span>📍 <b id="pagina-atual">Cadastro e Acesso Testes</b></span></div><span id="hora-atual">-</span></div><div id="frame-Cadastro.html" class="tela-frame ativa"><iframe id="tela-Cadastro.html" src="Cadastro.html"></iframe></div><div id="frame-CadastroAdm.html" class="tela-frame"><iframe id="tela-CadastroAdm.html" src="CadastroAdm.html"></iframe></div><div id="frame-Relatorio.html" class="tela-frame"><iframe id="tela-Relatorio.html" src="Relatorio.html"></iframe></div><div id="frame-Liberacao.html" class="tela-frame"><iframe id="tela-Liberacao.html" src="Liberacao.html"></iframe></div><div id="frame-Baixar.html" class="tela-frame"><iframe id="tela-Baixar.html" src="Baixar.html"></iframe></div><div id="frame-AcessoUsuario.html" class="tela-frame"><iframe id="tela-AcessoUsuario.html" src="AcessoUsuario.html"></iframe></div><div id="frame-MovimentoAdm.html" class="tela-frame"><iframe id="tela-MovimentoAdm.html" src="MovimentoAdm.html"></iframe></div>
+  <div id="conteudo-direita"><div class="barra-topo-conteudo"><div style="display:flex; align-items:center; gap:10px;"><button id="btn-menu-mobile" onclick="abrirMenuLateral()">☰</button><span>📍 <b id="pagina-atual">Cadastro e Acesso Testes</b></span></div><span id="hora-atual">-</span></div><div id="frame-Cadastro.html" class="tela-frame ativa"><iframe id="tela-Cadastro.html" src="Cadastro.html?v=20261012.1.02"></iframe></div><div id="frame-CadastroAdm.html" class="tela-frame"><iframe id="tela-CadastroAdm.html" src="CadastroAdm.html?v=20261012.1.02"></iframe></div><div id="frame-Relatorio.html" class="tela-frame"><iframe id="tela-Relatorio.html" src="Relatorio.html?v=20261012.1.02"></iframe></div><div id="frame-Liberacao.html" class="tela-frame"><iframe id="tela-Liberacao.html" src="Liberacao.html?v=20261012.1.02"></iframe></div><div id="frame-Baixar.html" class="tela-frame"><iframe id="tela-Baixar.html" src="Baixar.html?v=20261012.1.02"></iframe></div><div id="frame-AcessoUsuario.html" class="tela-frame"><iframe id="tela-AcessoUsuario.html" src="AcessoUsuario.html?v=20261012.1.02"></iframe></div><div id="frame-MovimentoAdm.html" class="tela-frame"><iframe id="tela-MovimentoAdm.html" src="MovimentoAdm.html?v=20261012.1.02"></iframe></div>
 <div id="frame-Manutencao.html" class="tela-frame" style="background:#08080c;">
   <div style="padding:16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; border-bottom:1px solid #1f1f28">
     <div style="display:flex; align-items:center; gap:12px">
@@ -287,11 +288,38 @@ async function buscarNome(){
     document.getElementById('erro-login').style.display='block';
   }
 }
-async function logar(){ const mat = (document.getElementById('matricula').value||'').trim().toUpperCase().padStart(5,'0'); const sen = (document.getElementById('senha').value||'').trim().toUpperCase(); if(!mat){ mostrarErro('DIGITE A MATRICULA'); return; } if(!sen){ mostrarErro('DIGITE A SENHA'); return; } try{ if(cacheDados.length===0){ let res = await apiGet('todos'); cacheDados = res.data||[]; } let achado = cacheDados.find(x=>{ let m = String(x.Matricula||x.MATRICULA||x.G||x.B||'').toUpperCase().trim().padStart(5,'0'); let s = String(x.Senha||x.senha||x.SENHA||x.AL||x.al||'').toUpperCase().trim(); return m===mat && s===sen; }); if(achado){ usuarioLogado = achado; sessionStorage.setItem("logado", "true"); localStorage.setItem('mat_logada', mat); localStorage.setItem('senha_logada', sen); let nome = achado.Nome||achado.NOME||achado.D||''; localStorage.setItem('nome_logado', String(nome).toUpperCase()); let cod = achado.Codigo||achado.CODIGO||achado.A||''; apiLog('logAcesso',{matricula:mat, nome:String(nome).toUpperCase(), codigo:cod}); mostrarSistema(); } else { mostrarErro('SENHA NÃO CONFERE'); } }catch(e){ mostrarErro('ERRO AO BUSCAR: '+e.message); } }
+async function logar(){
+  const mat = (document.getElementById('matricula').value||'').trim().toUpperCase().padStart(5,'0');
+  const sen = (document.getElementById('senha').value||'').trim().toUpperCase();
+  if(!mat){ mostrarErro('DIGITE A MATRICULA'); return; }
+  if(!sen){ mostrarErro('DIGITE A SENHA'); return; }
+  try{
+    if(cacheDados.length===0){ let res = await apiGet('todos'); cacheDados = res.data||[]; }
+    let achado = cacheDados.find(x=>{
+      let m = String(x.Matricula||x.MATRICULA||x.G||x.B||'').toUpperCase().trim().padStart(5,'0');
+      let s = String(x.Senha||x.senha||x.SENHA||x.AL||x.al||'').toUpperCase().trim();
+      return m===mat && s===sen;
+    });
+    if(achado){
+      usuarioLogado = achado;
+      sessionStorage.setItem("logado", "true");
+      localStorage.setItem('mat_logada', mat);
+      let nome = achado.Nome||achado.NOME||achado.D||'';
+      localStorage.setItem('nome_logado', String(nome).toUpperCase());
+      let cod = achado.Codigo||achado.CODIGO||achado.A||'';
+      apiLog('logAcesso',{matricula:mat, nome:String(nome).toUpperCase(), codigo:cod});
+      mostrarSistema();
+    } else {
+      mostrarErro('SENHA NÃO CONFERE');
+    }
+  }catch(e){
+    mostrarErro('ERRO AO BUSCAR: '+e.message);
+  }
+}
 function mostrarErro(msg){ let el=document.getElementById('erro-login'); el.innerHTML=msg; el.style.display='block'; }
 function limparCampos_ORIG(){ document.getElementById('matricula').value=''; document.getElementById('nome').value=''; document.getElementById('senha').value=''; document.getElementById('senha').type='password'; document.getElementById('senha').style.background='#f9fafb'; document.getElementById('senha').style.fontWeight='400'; document.getElementById('senha').style.fontSize='14px'; document.getElementById('erro-login').style.display='none'; document.getElementById('box-primeiro-acesso').style.display='none'; document.getElementById('box-cadastro-novo').style.display='none'; document.getElementById('box-novo-aluno').style.display='none'; document.getElementById('link-primeiro').style.display='flex'; document.getElementById('link-cadastro-novo').style.display='flex'; document.getElementById('link-novo-aluno').style.display='flex'; document.getElementById('nome').readOnly = true; document.getElementById('nome').style.background = "#f3f4f6"; modoPreCadastro = false; modoNovoAluno = false; document.getElementById('matricula').placeholder = "MATRÍCULA"; document.getElementById('matricula').focus(); }
 function limparCampos(){ limparCampos_ORIG(); document.getElementById('box-master').style.display='none'; document.getElementById('box-masterlista').style.display='none'; document.getElementById('link-master').style.display='none'; document.getElementById('link-masterlista').style.display='none'; document.getElementById('sep-master').style.display='none'; document.getElementById('sep-masterlista').style.display='none'; document.getElementById('senhamaster').value=''; document.getElementById('senhaMasterLista').value=''; document.getElementById('matriculanova').value=''; document.getElementById('novonomenovo').value=''; document.getElementById('senhanova').value=''; document.getElementById('contato').value=''; document.getElementById('statusMaster5').innerHTML=''; document.getElementById('statusMasterLista').innerHTML=''; let v = document.getElementById('matricula').value.replace(/\D/g,'').padStart(5,'0'); if(["00425","00001","05722"].includes(v)){ document.getElementById('link-master').style.display='flex'; document.getElementById('sep-master').style.display='block'; } if(["00425","00001","05722","05891"].includes(v)){ document.getElementById('link-masterlista').style.display='flex'; document.getElementById('sep-masterlista').style.display='block'; } }
-function enviarParaForm(){ if(jaEnviou) return; let mat = localStorage.getItem('mat_logada')||''; let sen = localStorage.getItem('senha_logada')||''; let nome = localStorage.getItem('nome_logado')||''; let iframe = document.getElementById('tela-Cadastro.html'); if(iframe && iframe.contentWindow && mat){ iframe.contentWindow.postMessage({tipo:'LOGIN_DADOS', matricula:mat, senha:sen, nome:nome}, '*'); } let iframeRel = document.getElementById('tela-Relatorio.html'); if(iframeRel && iframeRel.contentWindow && mat){ iframeRel.contentWindow.postMessage({tipo:'LOGIN_DADOS', matricula:mat, senha:sen, nome:nome}, '*'); } jaEnviou = true; }
+function enviarParaForm(){ if(jaEnviou) return; let mat = localStorage.getItem('mat_logada')||''; let nome = localStorage.getItem('nome_logado')||''; let iframe = document.getElementById('tela-Cadastro.html'); if(iframe && iframe.contentWindow && mat){ iframe.contentWindow.postMessage({tipo:'LOGIN_DADOS', matricula:mat, nome:nome}, '*'); } let iframeRel = document.getElementById('tela-Relatorio.html'); if(iframeRel && iframeRel.contentWindow && mat){ iframeRel.contentWindow.postMessage({tipo:'LOGIN_DADOS', matricula:mat, nome:nome}, '*'); } jaEnviou = true; }
 function abrirAvisoEntradaRoxo(){ document.getElementById('aviso-entrada-roxo').style.display='flex'; }
 function fecharAvisoEntradaRoxo(){ document.getElementById('aviso-entrada-roxo').style.display='none'; jaEnviou=false; setTimeout(enviarParaForm, 300); }
 function abrirAvisoEntradaLaranja(){ document.getElementById('aviso-entrada-laranja').style.display='flex'; }
@@ -344,7 +372,7 @@ async function validarSenhaMasterLista(){
   let masterReal=cacheDados.find(x=> String(x.Matricula||'').padStart(5,'0')===quem);
   if(!masterReal){ status.innerHTML='<span style="color:#ff8a8a">❌ Sua matrícula não existe</span>'; return false; }
   let senhaReal=String(masterReal.Senha||'').trim();
-  if(senha.toUpperCase()!==senhaReal.toUpperCase() && senha!=='he282'){ status.innerHTML='<span style="color:#ff8a8a">❌ Senha master incorreta</span>'; document.getElementById('senhaMasterLista').value=''; return false; }
+  if(senha.toUpperCase()!==senhaReal.toUpperCase()){ status.innerHTML='<span style="color:#ff8a8a">❌ Senha master incorreta</span>'; document.getElementById('senhaMasterLista').value=''; return false; }
   if(!["00425","00001","05722","05891"].includes(quem)){ status.innerHTML='<span style="color:#ff8a8a">⛔ Sem permissão</span>'; return false; }
   status.innerHTML='✅ Senha validada - carregando...';
   document.getElementById('areaFiltroLista').style.display='block';
@@ -416,7 +444,7 @@ async function buscarDadosMatriculaNova(el){
     return;
   }
   let senhaReal = String(masterReal.Senha||'').trim();
-  if(senhaMaster.toUpperCase()!== senhaReal.toUpperCase() && senhaMaster!== 'he282'){
+  if(senhaMaster.toUpperCase()!== senhaReal.toUpperCase()){
     status.innerHTML='<span style="color:#ff8a8a">❌ Senha master incorreta para '+quem+'</span>';
     document.getElementById('senhamaster').value='';
     document.getElementById('senhamaster').focus();
