@@ -508,10 +508,10 @@ function mostrarAvisoAntesAbrir(linkFinal){
   f.style='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100000;display:flex;justify-content:center;align-items:center;padding:16px;overflow-y:auto';
   f.innerHTML=`<div style="background:white;max-width:410px;width:100%;border-radius:18px;padding:26px 20px 18px;text-align:center;font-family:Arial,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,0.3)">
     <div style="font-size:36px">📄</div>
-    <h3 style="margin:6px 0 16px;font-weight:900;font-size:18px;color:#111">ATENÇÃO</h3>
-    <div style="text-align:justify;font-size:14px;line-height:1.45;color:#111">
+    <h3 style="margin:6px 0 14px;font-weight:900;font-size:18px;color:#111">ATENÇÃO</h3>
+    <div style="text-align:justify;font-size:12px;line-height:1.45;color:#111">
       Você não precisa mais <b>PREENCHER</b> os seus Dados no <b>Formulário de Teste</b>. Já estão sendo transferidos pelo <b>SisemaTD</b>. Por favor, não <b>ALTERE</b> seus Dados no <b>TESTE</b>. Clique em <b>SEGUINTE</b> ou <b>AVANÇAR</b> para acessar as perguntas.
-      <div style="margin:14px 0 8px;text-align:justify">E, se de repente surgir essa mensagem ao abrir o teste:</div>
+      <div style="margin:10px 0 8px;text-align:justify">E, se de repente surgir essa mensagem ao abrir o teste:</div>
       <div style="border-top:1px dashed #999;margin:8px 0 14px"></div>
       <div style="background:#fff;border:1px solid #dadce0;border-radius:12px;padding:14px 14px 10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);text-align:left">
         <div style="font-weight:700;font-size:14px;line-height:1.25">Quer continuar o rascunho atual?</div>
@@ -775,3 +775,87 @@ function abrirLinkRecuperacao(linkOriginal, codUnico){
   setInterval(travarCampos, 700);
   window.addEventListener('load', ()=>setTimeout(travarCampos, 1200));
 })();
+
+
+// ===== STATUS DADOS COMPLETOS / INCOMPLETOS - 00425 =====
+function verificarDadosCompletos(){
+  var obrig = ['Matricula','CPF','Nome','Sexo','WhatsApp','Nascimento','Congregacao','SitConjugal','Cteologico','BatizadoAgua','EspSanto','TFunEclesiastica'];
+  for(var i=0;i<obrig.length;i++){
+    var el = document.getElementById(obrig[i]);
+    if(!el) continue;
+    var v = (el.value||'').toString().trim();
+    if(!v) return false;
+  }
+  return true;
+}
+
+function atualizarStatusDados(){
+  var box = document.getElementById('statusDados');
+  if(!box) return false;
+  var ok = verificarDadosCompletos();
+  if(ok){
+    box.textContent = '✅ Dados completos';
+    box.className = 'status-completo';
+  }else{
+    box.textContent = '⚠️ Dados incompletos';
+    box.className = 'status-incompleto';
+  }
+  return ok;
+}
+
+// Atualiza em tempo real
+document.addEventListener('input', function(e){
+  if(e.target && e.target.closest && e.target.closest('.form-section')){
+    setTimeout(atualizarStatusDados,150);
+  }
+});
+setInterval(atualizarStatusDados, 1000);
+window.addEventListener('load', function(){ setTimeout(atualizarStatusDados,1300); });
+
+// Salvar também atualiza
+if(window.salvar &&!window.salvar._comStatus){
+  var _origSalvarStatus = window.salvar;
+  window.salvar = function(){
+    var r = _origSalvarStatus.apply(this, arguments);
+    setTimeout(atualizarStatusDados, 900);
+    return r;
+  };
+  window.salvar._comStatus = true;
+}
+
+// TRAVA O TESTE - SE INCOMPLETO NAO ABRE
+(function(){
+  var t=0;
+  var iv=setInterval(function(){
+    t++;
+    if(typeof window.abrirTeste52==='function' &&!window.abrirTeste52._travadoStatus){
+      var orig52 = window.abrirTeste52;
+      window.abrirTeste52 = function(){
+        var ok = atualizarStatusDados();
+        if(!ok){
+          mostrarAlerta('Os dados estão incompletos','⚠️ Dados incompletos');
+          return false;
+        }
+        return orig52.apply(this, arguments);
+      };
+      window.abrirTeste52._travadoStatus = true;
+      clearInterval(iv);
+    }
+    if(t>200) clearInterval(iv);
+  },300);
+})();
+
+// TRAVA abrirTeste também
+if(window.abrirTeste &&!window.abrirTeste._travadoStatus){
+  var _origAbrirTeste = window.abrirTeste;
+  window.abrirTeste = function(link,cod,row){
+    var ok = verificarDadosCompletos();
+    atualizarStatusDados();
+    if(!ok){
+      mostrarAlerta('Os dados estão incompletos','⚠️ Dados incompletos');
+      return false;
+    }
+    return _origAbrirTeste.apply(this, arguments);
+  };
+  window.abrirTeste._travadoStatus = true;
+}
