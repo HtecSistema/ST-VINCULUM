@@ -3,9 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="auth.js"></script>
+<script>
+// VERIFICA VERSÃO NO GITHUB E FORÇA ATUALIZAR
+fetch('version.json?v='+Date.now(), {cache:'no-store'})
+.then(r=>r.json())
+.then(j=>{
+  let atual = localStorage.getItem('v_sistema');
+  if(atual !== j.versao){
+    localStorage.setItem('v_sistema', j.versao);
+    if('caches' in window){
+      caches.keys().then(k=>k.forEach(n=>caches.delete(n)));
+    }
+    location.reload(true);
+  }
+}).catch(()=>{});
+</script>
+<script src="auth.js?v=20261012.1.01"></script>
 <title>TDCadastro</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=20261012.1.01">
 </head>
 <body>
 
