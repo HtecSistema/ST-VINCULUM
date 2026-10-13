@@ -477,7 +477,7 @@ function renderTestes(lista){
     let bgCard = manut? '#fff7ed' : (emReedicao?'#fef3c7':(ja?'#ecfdf5':'white'));
     let borderColor = manut? '#f59e0b' : (emReedicao?'#f59e0b':cor);
     card.style = `background:${bgCard};border-left:6px solid ${borderColor};border-radius:12px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;opacity:${emReedicao?'0.9':''}`;
-    card.innerHTML = `<div style="flex:1"><span style="background:${manut?'#f59e0b':(emReedicao?'#f59e0b':cor)};color:white;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900">${ciclo}</span><span style="font-weight:900;font-size:13px"> TESTE ${nf} ${manut?'🚧 Em manutenção':(emReedicao?'⏸️ REEDIÇÃO':(ja?'✅ Feito':''))}</span><div style="font-size:11px">${manut? 'Ciclo em manutenção até '+manut.dataFinal+' às '+manut.horario : (emReedicao?'Teste LIBERADO para Recuperação. Por gentileza, aguarde':tema)}</div></div>`;
+    card.innerHTML = `<div style="flex:1"><span style="background:${manut?'#f59e0b':(emReedicao?'#f59e0b':cor)};color:white;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900">${ciclo}</span><span style="font-weight:900;font-size:13px"> TESTE ${nf} ${manut?'🚧 Em manutenção':(emReedicao?'⏸️ REEDIÇÃO':(ja?'✅ Visto':''))}</span><div style="font-size:11px">${manut? 'Ciclo em manutenção até '+manut.dataFinal+' às '+manut.horario : (emReedicao?'Teste LIBERADO para Recuperação. Por gentileza, aguarde':tema)}</div></div>`;
     let btn = document.createElement('button');
     if(manut){
       btn.innerText = '🚧 Em manutenção';
@@ -489,7 +489,7 @@ function renderTestes(lista){
       btn.onclick = () => { mostrarAlerta('Teste LIBERADO para Recuperação. Por gentileza, aguarde', '⏸️ RECUPERAÇÃO'); toast('Teste LIBERADO para Recuperação. Por gentileza, aguarde','err'); };
     }else{
       if(ja){
-        btn.innerText = '✅ Feito';
+        btn.innerText = '✅ Visto';
         btn.style = `background:#16a34a;color:white;border:0;padding:10px 20px;border-radius:10px;font-weight:900;cursor:pointer`;
         btn.onclick = () => abrirTeste(t.LinkAcesso, cod);
       }else{
@@ -701,7 +701,7 @@ async function recuperar(){
       let jaFeito =!!abertosRecup[codRecup];
       return `<div style="background:${jaFeito?'#ecfdf5':(nota<70?'#f59e0b':'white')};border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
         <div style="flex:1"><div style="font-weight:900;font-size:12px;color:#111">${ciclo} | ${teste} | NOTA ${nota} ${jaFeito?'✅':''}</div><div style="font-size:10px;color:#333">${it.MATRICULA||''} - ${nome}</div><div style="font-size:9px;color:#666">${it.CONGREGACAO||it.D||''}</div></div>
-        <button onclick="abrirLinkRecuperacao('${link.replace(/'/g,"%27")}','${codRecup}')" style="background:${jaFeito?'#16a34a':'#0f766e'};color:white;border:0;padding:8px 14px;border-radius:8px;font-weight:900;font-size:11px">${jaFeito?'✅ FEITO':'ABRIR'}</button></div>`;
+        <button onclick="abrirLinkRecuperacao('${link.replace(/'/g,"%27")}','${codRecup}')" style="background:${jaFeito?'#16a34a':'#0f766e'};color:white;border:0;padding:8px 14px;border-radius:8px;font-weight:900;font-size:11px">${jaFeito?'✅ VISTO':'ABRIR'}</button></div>`;
     }).join('');
   }catch(e){
     document.getElementById('listaRecup').innerHTML = 'ERRO: '+e.message;
