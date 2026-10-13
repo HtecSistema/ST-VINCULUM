@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+<script>
+// VERIFICA VERSÃO NO GITHUB E FORÇA ATUALIZAR
+fetch('version.json?v='+Date.now(), {cache:'no-store'})
+.then(r=>r.json())
+.then(j=>{
+  let atual = localStorage.getItem('v_sistema');
+  if(atual !== j.versao){
+    localStorage.setItem('v_sistema', j.versao);
+    if('caches' in window){
+      caches.keys().then(k=>k.forEach(n=>caches.delete(n)));
+    }
+    location.reload(true);
+  }
+}).catch(()=>{});
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Htec | SistemaTD</title>
@@ -16,6 +31,8 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://htecsistema.github.io/SistemaTD/">
 <style>
+
+
   *{box-sizing:border-box;}
   body{margin:0; font-family:'Segoe UI', Inter, Arial, sans-serif; height:100vh; background:#f5f3ff; overflow:hidden;}
   #tela-login{height:100vh; display:flex; align-items:center; justify-content:center; background: radial-gradient(circle at top, #ede9fe, #f8f7ff);}
