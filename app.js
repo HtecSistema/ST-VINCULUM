@@ -536,20 +536,20 @@ card.style = `background:${bgCard};border-left:6px solid ${borderColor};border-r
 card.innerHTML = `<div style="flex:1"><span style="background:${isFeito ? '#16a34a' : ((manut||emReedicao)?'#f59e0b':cor)};color:white;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900">${ciclo}</span><span style="font-weight:900;font-size:13px"> TESTE ${nf}</span><div style="font-size:11px;margin-top:2px;color:#333">${tema}</div></div>`;
    let btn = document.createElement('button');
     if(isFeito){
-      btn.innerText = '✅ REALIZADO';
-      btn.style = `background:#16a34a;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:150px;width:150px;text-align:center`;
+      btn.innerText = '✅ Realizado';
+      btn.style = `background:#16a34a;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:120px;width:120px;text-align:center`;
       btn.onclick = () => abrirTeste(t.LinkAcesso, cod);
     }else if(manut){
-      btn.innerText = '🚧 Em manutenção';
-      btn.style = `background:#f59e0b;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:150px;width:150px;text-align:center`;
+      btn.innerText = '🚧 Manutenção';
+      btn.style = `background:#f59e0b;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:120px;width:120px;text-align:center`;
       btn.onclick = () => { mostrarModalManutencao(manut); };
     }else if(emReedicao){
-      btn.innerText = '⏸️ REEDIÇÃO';
-      btn.style = `background:#9ca3af;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:not-allowed;min-width:150px;width:150px;text-align:center`;
+      btn.innerText = '⏸️ Recuperação';
+      btn.style = `background:#9ca3af;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:not-allowed;min-width:120px;width:120px;text-align:center`;
       btn.onclick = () => { mostrarAlerta('Teste LIBERADO para Recuperação. Por gentileza, aguarde', '⏸️ RECUPERAÇÃO'); toast('Teste LIBERADO para Recuperação. Por gentileza, aguarde','err'); };
     }else{
-      btn.innerText = '📋 PENDENTE';
-      btn.style = `background:${cor};color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:150px;width:150px;text-align:center`;
+      btn.innerText = '📋 Pendente';
+      btn.style = `background:${cor};color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:120px;width:120px;text-align:center`;
       btn.onclick = () => abrirTeste(t.LinkAcesso, cod);
     }
     card.appendChild(btn);
