@@ -537,19 +537,19 @@ card.innerHTML = `<div style="flex:1"><span style="background:${isFeito ? '#16a3
    let btn = document.createElement('button');
     if(isFeito){
       btn.innerText = '✅ Realizado';
-      btn.style = `background:#16a34a;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:120px;width:120px;text-align:center`;
+      btn.style = `background:#16a34a;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:130px;width:130px;text-align:center`;
       btn.onclick = () => abrirTeste(t.LinkAcesso, cod);
     }else if(manut){
       btn.innerText = '🚧 Manutenção';
-      btn.style = `background:#f59e0b;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:120px;width:120px;text-align:center`;
+      btn.style = `background:#f59e0b;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:130px;width:130px;text-align:center`;
       btn.onclick = () => { mostrarModalManutencao(manut); };
     }else if(emReedicao){
       btn.innerText = '⏸️ Recuperação';
-      btn.style = `background:#9ca3af;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:not-allowed;min-width:120px;width:120px;text-align:center`;
+      btn.style = `background:#9ca3af;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:not-allowed;min-width:130px;width:130px;text-align:center`;
       btn.onclick = () => { mostrarAlerta('Teste LIBERADO para Recuperação. Por gentileza, aguarde', '⏸️ RECUPERAÇÃO'); toast('Teste LIBERADO para Recuperação. Por gentileza, aguarde','err'); };
     }else{
       btn.innerText = '📋 Pendente';
-      btn.style = `background:${cor};color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:120px;width:120px;text-align:center`;
+      btn.style = `background:${cor};color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:130px;width:130px;text-align:center`;
       btn.onclick = () => abrirTeste(t.LinkAcesso, cod);
     }
     card.appendChild(btn);
