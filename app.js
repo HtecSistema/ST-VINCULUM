@@ -530,14 +530,14 @@ function renderTestes(lista){
     let cor = cores[ciclo] || '#111827';
     let card = document.createElement('div');
     let isFeito = !!feitoBD;
-let bgCard = isFeito ? '#eff6ff' : (manut ? '#fff7ed' : (emReedicao ? '#fef3c7' : 'white'));
-    let borderColor = isFeito ? '#3b82f6' : ((manut || emReedicao) ? '#f59e0b' : cor);
+let bgCard = isFeito ? '#ecfdf5' : (manut ? '#fff7ed' : (emReedicao ? '#fef3c7' : 'white'));
+    let borderColor = isFeito ? '#16a34a' : ((manut || emReedicao) ? '#f59e0b' : cor);
 card.style = `background:${bgCard};border-left:6px solid ${borderColor};border-radius:12px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;opacity:${emReedicao?'0.9':''}`;
-card.innerHTML = `<div style="flex:1"><span style="background:${isFeito ? '#3b82f6' : ((manut||emReedicao)?'#f59e0b':cor)};color:white;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900">${ciclo}</span><span style="font-weight:900;font-size:13px"> TESTE ${nf}</span><div style="font-size:11px;margin-top:2px;color:#333">${tema}</div></div>`;
+card.innerHTML = `<div style="flex:1"><span style="background:${isFeito ? '#16a34a' : ((manut||emReedicao)?'#f59e0b':cor)};color:white;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900">${ciclo}</span><span style="font-weight:900;font-size:13px"> TESTE ${nf}</span><div style="font-size:11px;margin-top:2px;color:#333">${tema}</div></div>`;
    let btn = document.createElement('button');
     if(isFeito){
       btn.innerText = '✅ REALIZADO';
-      btn.style = `background:#3b82f6;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:170px;width:170px;text-align:center`;
+      btn.style = `background:#16a34a;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:170px;width:170px;text-align:center`;
       btn.onclick = () => abrirTeste(t.LinkAcesso, cod);
     }else if(manut){
       btn.innerText = '🚧 Em manutenção';
@@ -556,6 +556,7 @@ card.innerHTML = `<div style="flex:1"><span style="background:${isFeito ? '#3b82
     div.appendChild(card);
   });
 }
+
 
 function mostrarAvisoAntesAbrir(linkFinal){
   let old=document.getElementById('modalAvisoCabecalho'); if(old) old.remove();
