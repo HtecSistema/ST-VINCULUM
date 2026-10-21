@@ -125,6 +125,7 @@ function initCombos(){Object.keys(LISTAS).forEach(id=>{const input=document.getE
 function calcularIdadeFaixa(){const nasc=document.getElementById('Nascimento').value;if(!nasc){document.getElementById('FaixaEtaria').value='';document.getElementById('idadeDisplay').innerText='';return}const hoje=new Date();const n=new Date(nasc);let idade=hoje.getFullYear()-n.getFullYear();const m=hoje.getMonth()-n.getMonth();if(m<0||(m===0&&hoje.getDate()<n.getDate()))idade--;document.getElementById('idadeDisplay').innerText=idade+' anos';let faixa='';if(idade<3)faixa='LACTANTE (BEBE DE COLO)';else if(idade<12)faixa='CRIANCA (03 A 11 ANOS)';else if(idade<18)faixa='ADOLESCENTE (12 A 17 ANOS)';else if(idade<40)faixa='ADULTO JOVEM (18 A 39 ANOS)';else if(idade<60)faixa='ADULTO DE MEIA-IDADE (40 A 59 ANOS)';else if(idade<80)faixa='TERCEIRA IDADE (60 ANOS ACIMA)';else faixa='LONGEVO (80 ANOS OU MAIS)';document.getElementById('FaixaEtaria').value=faixa}
 function renderLista(dados,titulo){let vistos=new Set();let unicos=[];dados.forEach(r=>{let mat=getMat(r);let nome=getNome(r);if(!mat&&!nome)return;let chave=(mat||'')+'|'+(nome||'');if(!vistos.has(chave)){vistos.add(chave);unicos.push(r);}});dados=unicos;dadosListView=dados;dadosFiltrados=dados;indiceSelecionado=-1;document.getElementById('listTitulo').innerText=titulo+' - '+dados.length+' registros';const tbody=document.getElementById('listViewBody');tbody.innerHTML='';dados.forEach((r,i)=>{let mat=getMat(r);let nome=getNome(r);let cong=getCong(r);const tr=document.createElement('tr');tr.innerHTML=`<td>${mat}</td><td title="${nome}">${nome}</td><td title="${cong}">${cong}</td>`;tr.onclick=()=>{document.querySelectorAll('#listViewBody tr').forEach(x=>x.classList.remove('selected'));tr.classList.add('selected');indiceSelecionado=i;};tr.ondblclick=()=>{indiceSelecionado=i;carregarSelecionado();};tbody.appendChild(tr);});document.getElementById('listViewInfo').innerText='Localizados '+dados.length+' registros';if(dados.length>0){indiceSelecionado=0;tbody.children[0]?.classList.add('selected');}}
 function organizarLayout(){['DataCasamento','Conjuge','DataTermino'].forEach(id=>{const el=document.getElementById(id);if(!el) return;el.value='';el.disabled=true;el.style.background='rgba(255,255,255,0.3)';el.style.border='1px dashed #aaa';el.style.color='#666';el.style.opacity='0.5';el.style.pointerEvents='none';});}
+
 async function buscar(){tipoListaAtual='ALTERAR';modoEdicao=true;document.getElementById('listViewContainer').style.display='flex';document.getElementById('listViewBody').innerHTML='<tr><td colspan=3 style="text-align:center;padding:20px">Buscando...</td></tr>';try{const res=await apiGet('todos');cacheTodos=res.data||[];renderLista(cacheTodos,'BUSCA - ALTERAR');}catch(e){document.getElementById('listViewBody').innerHTML='<tr><td colspan=3>Erro: '+e.message+'</td></tr>'}}
 async function listar(){tipoListaAtual='NOVO';modoEdicao=false;document.getElementById('listViewContainer').style.display='flex';document.getElementById('listViewBody').innerHTML='<tr><td colspan=3 style="text-align:center;padding:20px">Buscando Pré...</td></tr>';try{const res=await apiGet('ciclo');renderLista(res.data||[],'PRÉ-CADASTRO - NOVO');const todos=await apiGet('todos');cacheTodos=todos.data||[];}catch(e){document.getElementById('listViewBody').innerHTML='<tr><td colspan=3>Erro: '+e.message+'</td></tr>'}}
 function coletarDados(){
@@ -284,6 +285,7 @@ window.addEventListener('load',async()=>{
 });
 document.addEventListener('keydown',function(e){let c=document.getElementById('listViewContainer');if(!c||c.style.display==='none')return;const rows=document.querySelectorAll('#listViewBody tr');if(rows.length===0)return;if(e.key==='ArrowDown'){e.preventDefault();if(indiceSelecionado<dadosFiltrados.length-1)indiceSelecionado++;else indiceSelecionado=0;rows.forEach((r,i)=>r.classList.toggle('selected',i===indiceSelecionado));rows[indiceSelecionado]?.scrollIntoView({block:'nearest'})}else if(e.key==='ArrowUp'){e.preventDefault();if(indiceSelecionado>0)indiceSelecionado--;else indiceSelecionado=dadosFiltrados.length-1;rows.forEach((r,i)=>r.classList.toggle('selected',i===indiceSelecionado));rows[indiceSelecionado]?.scrollIntoView({block:'nearest'})}else if(e.key==='Enter'&&indiceSelecionado>=0){e.preventDefault();carregarSelecionado()}else if(e.key==='Escape'){fecharListView()}});
 async function buscarCEP(cep){cep=(cep||'').replace(/\D/g,'');if(cep.length!==8)return;try{const r=await fetch('https://viacep.com.br/ws/'+cep+'/json/');const d=await r.json();if(d.logradouro)document.getElementById('end').value=d.logradouro.toUpperCase();if(d.bairro)document.getElementById('Bairro').value=d.bairro.toUpperCase();if(d.localidade)document.getElementById('CidadeEndereco').value=d.localidade.toUpperCase();if(d.uf){const mapa={'AC':'ACRE','AL':'ALAGOAS','AP':'AMAPA','AM':'AMAZONAS','BA':'BAHIA','CE':'CEARA','DF':'DISTRITO FEDERAL','ES':'ESPIRITO SANTO','GO':'GOIAS','MA':'MARANHAO','MT':'MATO GROSSO','MS':'MATO GROSSO DO SUL','MG':'MINAS GERAIS','PA':'PARA','PB':'PARAIBA','PR':'PARANA','PE':'PERNAMBUCO','PI':'PIAUI','RJ':'RIO DE JANEIRO','RN':'RIO GRANDE DO NORTE','RS':'RIO GRANDE DO SUL','RO':'RONDONIA','RR':'RORAIMA','SC':'SANTA CATARINA','SP':'SAO PAULO','SE':'SERGIPE','TO':'TOCANTINS'};document.getElementById('UfEndereco').value=mapa[d.uf]||d.uf}toast('Endereço preenchido','ok')}catch{}}
+
 async function buscarMatriculaBD1(){
   let matRaw = (document.getElementById('Matricula').value||'').trim().toUpperCase();
   let sen = (document.getElementById('Senha').value||'').trim().toUpperCase();
@@ -318,6 +320,11 @@ async function buscarMatriculaBD1(){
     try{ salvarEstadoCadastro(); }catch(e){}
   }catch(e){ toast('Erro: '+e.message,'err'); }
 }
+
+    
+
+
+
 function tornarMovel(modalId, handleId){
   let modal = document.getElementById(modalId);
   let handle = document.getElementById(handleId);
@@ -429,11 +436,37 @@ function tornarMovel(modalId, handleId){
   }
   if(document.readyState==='complete') ativarArrasteLista(); else window.addEventListener('load', ativarArrasteLista);
 })();
+
+
+let listaFeitos = [];
+
+function getMatriculaAtual(){
+  // Pega do campo MATRICULA * PESQUISE da sua tela
+  let el = document.getElementById('matricula') || document.getElementById('MATRICULA') || document.getElementById('inpMatricula') || document.querySelector('input[name=matricula]');
+  if(el && el.value) return String(el.value).replace(/\D/g,'').padStart(5,'0');
+  
+  // Varre todos os inputs e pega o que tem 4 ou 5 dígitos (01816)
+  let inputs = document.querySelectorAll('input');
+  for(let inp of inputs){
+    let label = (inp.previousElementSibling?.innerText || inp.parentElement?.innerText || '').toUpperCase();
+    if(label.includes('MATRICULA')){
+      let v = String(inp.value||'').replace(/\D/g,'');
+      if(v) return v.padStart(5,'0');
+    }
+  }
+  // Fallback: pega o primeiro input com 5 digitos
+  for(let inp of inputs){
+    let v = String(inp.value||'').replace(/\D/g,'');
+    if(v.length>=4 && v.length<=5) return v.padStart(5,'0');
+  }
+  return '';
+}
+
 async function abrirTeste52(){
   let m = document.getElementById('modalTestes'); if(m){ m.remove(); return; }
   await carregarManutencao();
   let modal = document.createElement('div'); modal.id = 'modalTestes'; modal.style = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99990;display:flex;justify-content:center;align-items:flex-start;padding-top:20px';
-  modal.innerHTML = `<div style="background:#f8f9fa;width:96%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.3)"><div id="handleTestes" style="background:#111;color:white;padding:12px;display:flex;align-items:center;gap:12px"><button onclick="document.getElementById('modalTestes').remove()" style="background:white;color:#111;border:0;padding:8px 14px;border-radius:8px;font-weight:900">✕ FECHAR</button><h3 id="tituloTeste" style="margin:0;font-size:14px;font-weight:900;flex:1;cursor:move">📝 BEM VINDO AOS TESTES</h3></div><div id="listaTestes" style="overflow-y:auto;padding:10px;background:#f8f9fa">Carregando, Aguarde...</div></div>`;
+  modal.innerHTML = `<div style="background:#f8f9fa;width:96%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.3)"><div id="handleTestes" style="background:#111;color:white;padding:12px;display:flex;align-items:center;gap:12px"><button onclick="document.getElementById('modalTestes').remove()" style="background:white;color:#111;border:0;padding:8px 14px;border-radius:8px;font-weight:900">✕ FECHAR</button><h3 id="tituloTeste" style="margin:0;font-size:14px;font-weight:900;flex:1;cursor:move">📝 BEM VINDO AOS TESTES</h3></div><div id="listaTestes" style="overflow-y:auto;padding:10px;background:#f8f9fa">Carregando... Por gentileza, Aguarde!</div></div>`;
   document.body.appendChild(modal);
   try{ tornarMovel('modalTestes','handleTestes'); }catch(e){}
   try{
@@ -443,10 +476,23 @@ async function abrirTeste52(){
       let rLib = await apiGet('getliberacao',{});
       listaLiberacao = rLib.data || rLib || [];
     }catch(e){ listaLiberacao = []; }
-    document.getElementById('tituloTeste').innerText = '📝 TESTES - '+listaTestes.length;
+
+    let matriculaBusca = getMatriculaAtual();
+    console.log('MATRICULA DA TELA:', matriculaBusca);
+    
+    if(!matriculaBusca || matriculaBusca=='00000'){
+      document.getElementById('tituloTeste').innerText = '📝 TESTES - '+listaTestes.length+' | SEM MATRICULA';
+      listaFeitos = [];
+    }else{
+      let rFeitos = await apiGet('tfeitos',{matricula: matriculaBusca});
+      listaFeitos = rFeitos.data || rFeitos || [];
+      document.getElementById('tituloTeste').innerText = '📝 TESTES - '+listaTestes.length+' | FEITOS: '+listaFeitos.length+' | MAT: '+matriculaBusca;
+    }
+    
     renderTestes(listaTestes);
   }catch(e){ document.getElementById('listaTestes').innerHTML='ERRO: '+e.message; }
 }
+
 function renderTestes(lista){
   listaTestes = lista;
   let div = document.getElementById('listaTestes'); if(!div) return;
@@ -461,6 +507,15 @@ function renderTestes(lista){
     let cod=t.Cod||(ciclo+'-'+nf);
     let tema=t.Tema||'Conhecendo Jesus e o Seu Reino';
     let ja=!!abertos[cod];
+    
+    // VERIFICA SE FEZ NO BD (COLUNA F)
+    let feitoBD = listaFeitos.find(f=>{
+      let c = String(f.ciclo||'').toUpperCase();
+      let tt = String(f.numeroTeste||'').toUpperCase();
+      let n = (tt.match(/\d+/)||[''])[0].padStart(2,'0');
+      return c===ciclo && n===nf;
+    });
+
     let cicloNumBotao = (ciclo.match(/\d+/)||[''])[0].replace(/^0+/,'') || '0';
     let testeNumBotao = nf.replace(/^0+/,'') || '0';
     let manut = checkCicloEmManutencao(ciclo);
@@ -474,34 +529,34 @@ function renderTestes(lista){
     });
     let cor = cores[ciclo] || '#111827';
     let card = document.createElement('div');
-    let bgCard = manut? '#fff7ed' : (emReedicao?'#fef3c7':(ja?'#ecfdf5':'white'));
-    let borderColor = manut? '#f59e0b' : (emReedicao?'#f59e0b':cor);
-    card.style = `background:${bgCard};border-left:6px solid ${borderColor};border-radius:12px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;opacity:${emReedicao?'0.9':''}`;
-    card.innerHTML = `<div style="flex:1"><span style="background:${manut?'#f59e0b':(emReedicao?'#f59e0b':cor)};color:white;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900">${ciclo}</span><span style="font-weight:900;font-size:13px"> TESTE ${nf} ${manut?'🚧 Em manutenção':(emReedicao?'⏸️ REEDIÇÃO':(ja?'✅ Visto':''))}</span><div style="font-size:11px">${manut? 'Ciclo em manutenção até '+manut.dataFinal+' às '+manut.horario : (emReedicao?'Teste LIBERADO para Recuperação. Por gentileza, aguarde':tema)}</div></div>`;
-    let btn = document.createElement('button');
-    if(manut){
+    let isFeito = !!feitoBD;
+let bgCard = isFeito ? '#eff6ff' : (manut ? '#fff7ed' : (emReedicao ? '#fef3c7' : 'white'));
+    let borderColor = isFeito ? '#3b82f6' : ((manut || emReedicao) ? '#f59e0b' : cor);
+card.style = `background:${bgCard};border-left:6px solid ${borderColor};border-radius:12px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;opacity:${emReedicao?'0.9':''}`;
+card.innerHTML = `<div style="flex:1"><span style="background:${isFeito ? '#3b82f6' : ((manut||emReedicao)?'#f59e0b':cor)};color:white;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900">${ciclo}</span><span style="font-weight:900;font-size:13px"> TESTE ${nf}</span><div style="font-size:11px;margin-top:2px;color:#333">${tema}</div></div>`;
+   let btn = document.createElement('button');
+    if(isFeito){
+      btn.innerText = '✅ REALIZADO';
+      btn.style = `background:#3b82f6;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:170px;width:170px;text-align:center`;
+      btn.onclick = () => abrirTeste(t.LinkAcesso, cod);
+    }else if(manut){
       btn.innerText = '🚧 Em manutenção';
-      btn.style = `background:#f59e0b;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer`;
+      btn.style = `background:#f59e0b;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:170px;width:170px;text-align:center`;
       btn.onclick = () => { mostrarModalManutencao(manut); };
     }else if(emReedicao){
       btn.innerText = '⏸️ REEDIÇÃO';
-      btn.style = `background:#9ca3af;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:not-allowed`;
+      btn.style = `background:#9ca3af;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:not-allowed;min-width:170px;width:170px;text-align:center`;
       btn.onclick = () => { mostrarAlerta('Teste LIBERADO para Recuperação. Por gentileza, aguarde', '⏸️ RECUPERAÇÃO'); toast('Teste LIBERADO para Recuperação. Por gentileza, aguarde','err'); };
     }else{
-      if(ja){
-        btn.innerText = '✅ Visto';
-        btn.style = `background:#16a34a;color:white;border:0;padding:10px 20px;border-radius:10px;font-weight:900;cursor:pointer`;
-        btn.onclick = () => abrirTeste(t.LinkAcesso, cod);
-      }else{
-        btn.innerText = '🚀 ABRIR';
-        btn.style = `background:${cor};color:white;border:0;padding:10px 20px;border-radius:10px;font-weight:900;cursor:pointer`;
-        btn.onclick = () => abrirTeste(t.LinkAcesso, cod);
-      }
+      btn.innerText = '📋 PENDENTE';
+      btn.style = `background:${cor};color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:170px;width:170px;text-align:center`;
+      btn.onclick = () => abrirTeste(t.LinkAcesso, cod);
     }
     card.appendChild(btn);
     div.appendChild(card);
   });
 }
+
 function mostrarAvisoAntesAbrir(linkFinal){
   let old=document.getElementById('modalAvisoCabecalho'); if(old) old.remove();
   let f=document.createElement('div'); f.id='modalAvisoCabecalho';
@@ -510,7 +565,7 @@ function mostrarAvisoAntesAbrir(linkFinal){
     <div style="font-size:36px">📄</div>
     <h3 style="margin:6px 0 14px;font-weight:900;font-size:18px;color:#111">ATENÇÃO</h3>
     <div style="text-align:justify;font-size:12px;line-height:1.45;color:#111">
-      Você não precisa mais <b>PREENCHER</b> os seus Dados no <b>Formulário de Teste</b>. Já estão sendo transferidos pelo <b>SisemaTD</b>. Por favor, não <b>ALTERE</b> seus Dados no <b>TESTE</b>. Clique em <b>SEGUINTE</b> ou <b>AVANÇAR</b> para acessar as perguntas.
+      Você não precisa mais <b>PREENCHER</b> os seus Dados no <b>Formulário de Teste</b>. Já estão sendo transferidos pelo <b>SisemaTD</b>. Por favor, não <b>ALTERE</b> seus Dados</b>. Clique em <b>SEGUINTE</b> ou <b>AVANÇAR</b> para acessar as perguntas.
       <div style="margin:10px 0 8px;text-align:justify">E, se de repente surgir essa mensagem ao abrir o teste:</div>
       <div style="border-top:1px dashed #999;margin:8px 0 14px"></div>
       <div style="background:#fff;border:1px solid #dadce0;border-radius:12px;padding:14px 14px 10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);text-align:left">
@@ -521,16 +576,27 @@ function mostrarAvisoAntesAbrir(linkFinal){
       <div style="font-size:14px;margin-top:14px;text-align:justify;line-height:1.45">Se você "NÃO CONCLUIU O TESTE" por uma ou outra razão, clique em <b>Usar rascunho anterior</b> caso contrario click em <b>Continuar</b></div>
       <div style="font-weight:900;margin-top:16px;text-align:left;font-size:14px">Boa prova!</div>
     </div>
-    <button id="btnOkAviso" style="margin-top:20px;background:#0f766e;color:white;border:0;padding:14px;width:100%;border-radius:10px;font-weight:900;cursor:pointer;font-size:15px">ABRIR TESTE</button>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button id="btnFecharAviso" style="flex:1;background:#6c757d;color:white;border:0;padding:14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:14px">FECHAR</button>
+      <button id="btnOkAviso" style="flex:1;background:#0f766e;color:white;border:0;padding:14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:14px">ABRIR TESTE</button>
+    </div>
   </div>`;
   document.body.appendChild(f);
+  
+  document.getElementById('btnFecharAviso').onclick=()=>{
+    f.remove();
+  };
+  
   document.getElementById('btnOkAviso').onclick=()=>{
     f.remove();
     let a=document.createElement('a'); a.href=linkFinal; a.target='_blank'; a.rel='noopener noreferrer';
     document.body.appendChild(a); a.click(); setTimeout(()=>{ try{a.remove()}catch(e){} }, 800);
   };
+  
   f.onclick=(e)=>{ if(e.target.id==='modalAvisoCabecalho') f.remove(); };
 }
+
+
 async function abrirTeste(linkOriginal, codUnico, rowId){
   try{
     let cicloTmp = (listaTestes.find(t=>String(t.Cod)===String(codUnico))?.Ciclo||'').toUpperCase();
@@ -725,7 +791,7 @@ function abrirLinkRecuperacao(linkOriginal, codUnico){
     abertos[codUnico]=true;
     localStorage.setItem('recuperacoes_abertas', JSON.stringify(abertos));
     let btn = document.querySelector(`button[onclick*="${codUnico}"]`);
-    if(btn){ btn.innerText='✅ FEITO'; btn.style.background='#16a34a'; }
+    if(btn){ btn.innerText='✅ VISTO'; btn.style.background='#16a34a'; }
   }catch(e){}
   apiGet('salvarNaResposta',{dados:JSON.stringify({...d, tipo:'RECUPERACAO', CodigoTeste: codUnico}), cod:codUnico||('RECUP-'+Date.now()), ciclo:'RECUP'}).catch(()=>{});
   mostrarAvisoAntesAbrir(base);
@@ -822,6 +888,23 @@ if(window.salvar &&!window.salvar._comStatus){
   };
   window.salvar._comStatus = true;
 }
+
+
+// === LEVA INFO PRO CERTIFICADO SEM MUDAR NADA ACIMA ===
+(function(){
+  var _originalStatus = atualizarStatusDados;
+  window.atualizarStatusDados = function(){
+    var ok = _originalStatus.apply(this, arguments);
+    try{
+      var mat = (document.getElementById('Matricula')?.value||'').toString().trim().toUpperCase().replace(/\D/g,'').padStart(5,'0').slice(-5);
+      if(mat && mat!=='00000'){
+        localStorage.setItem('IEADMI_BLOQUEIO_'+mat, ok? 'COMPLETO' : 'INCOMPLETO');
+        localStorage.setItem('IEADMI_ULTIMO_BLOQUEIO', mat+'|'+(ok? 'COMPLETO' : 'INCOMPLETO'));
+      }
+    }catch(e){}
+    return ok;
+  };
+})();
 
 // TRAVA O TESTE - SE INCOMPLETO NAO ABRE
 (function(){
