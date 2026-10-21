@@ -15,8 +15,30 @@ body{margin:0; font-family:'Segoe UI', Inter, sans-serif; background:#f5f7ff; pa
 .filtros-data input[type="date"]{padding:6px 8px; border-radius:6px; border:1px solid #d1d5db; font-size:11px; flex:1;}
 .filtros-data button{padding:6px 10px; border-radius:6px; border:none; font-weight:700; font-size:10px; cursor:pointer;}
 
-.tabela{width:100%; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; display:flex; flex-direction:column; overflow-x:hidden;}
-#lista{max-height:70vh; height:420px; overflow-y:auto; overflow-x:hidden;}
+
+/* === SÓ A LISTA ABRINDO PRA DIREITA === */
+.tabela{
+  width:100%;
+  min-width:100%;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+  overflow-x:auto; /* abre pra direita */
+  overflow-y:hidden;
+  display:block;
+}
+#lista{
+  max-height:70vh;
+  height:420px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  min-width:720px; /* força abrir pra direita sem embolar */
+}
+.tabela-header{
+  min-width:720px;
+}
+.linha{
+  min-width:720px;
+}
 
 .tabela{width:100%; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; display:flex; flex-direction:column;}
 .tabela-header{display:flex; background:#111827; color:#fff; padding:6px 8px; font-size:10px; font-weight:700; text-transform:uppercase;}
