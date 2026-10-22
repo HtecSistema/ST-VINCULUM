@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Acessos</title>
+
+
+
 <style>
 *{box-sizing:border-box;}
 body{margin:0; font-family:'Segoe UI', Inter, sans-serif; background:#f5f7ff; padding:0; display:flex; justify-content:flex-start; align-items:flex-start; min-height:100vh;}
@@ -15,44 +18,6 @@ body{margin:0; font-family:'Segoe UI', Inter, sans-serif; background:#f5f7ff; pa
 .filtros-data input[type="date"]{padding:6px 8px; border-radius:6px; border:1px solid #d1d5db; font-size:11px; flex:1;}
 .filtros-data button{padding:6px 10px; border-radius:6px; border:none; font-weight:700; font-size:10px; cursor:pointer;}
 
-
-/* === SÓ A LISTA ABRINDO PRA DIREITA === */
-.tabela{
-  width:100%;
-  min-width:100%;
-  border:1px solid #e5e7eb;
-  border-radius:8px;
-  overflow-x:auto; /* abre pra direita */
-  overflow-y:hidden;
-  display:block;
-}
-#lista{
-  max-height:70vh;
-  height:420px;
-  overflow-y:auto;
-  overflow-x:hidden;
-  min-width:720px; /* força abrir pra direita sem embolar */
-}
-.tabela-header{
-  min-width:720px;
-}
-.linha{
-  min-width:720px;
-}
-
-.tabela{width:100%; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; display:flex; flex-direction:column;}
-.tabela-header{display:flex; background:#111827; color:#fff; padding:6px 8px; font-size:10px; font-weight:700; text-transform:uppercase;}
-#lista{max-height:70vh; height:420px; overflow-y:auto;}
-.linha{display:flex; align-items:center; padding:7px 8px; border-bottom:1px solid #f3f4f6; font-size:11px; background:#fff; cursor:pointer; transition:0.15s;}
-.linha:nth-child(even){background:#fafbff;}
-.linha:hover{background:#e0e7ff!important; transform:translateX(2px);}
-.col-cod{width:8%; text-align:center;}
-.col-mat{width:10%; text-align:center;}
-.col-nome{width:43%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-.col-data{width:14%; text-align:center;}
-.col-hora{width:10%; text-align:center;}
-.col-senha{width:10%; text-align:center;}
-/* === ALTERADO SÓ AQUI - BOTÕES MESMO TAMANHO LADO A LADO === */
 .top-actions{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:10px;}
 .top-actions button{width:100%; padding:10px 4px; border-radius:10px; border:none; font-weight:800; font-size:10px; cursor:pointer; white-space:nowrap; display:flex; justify-content:center; align-items:center; line-height:1;}
 .btn-black{background:#111; color:#fff;}
@@ -62,22 +27,67 @@ body{margin:0; font-family:'Segoe UI', Inter, sans-serif; background:#f5f7ff; pa
 .btn-aba-active{background:#111!important; color:#fff!important; border:1px solid #111!important;}
 .btn-excluir{background:#fee2e2; color:#dc2626; border:1px solid #fecaca; padding:3px 8px; border-radius:6px; font-size:10px; font-weight:800; cursor:pointer; margin-left:auto;}
 .btn-excluir:hover{background:#fecaca;}
-.col-pend-mat{width:12%; text-align:center; font-weight:800;}
-.col-pend-cong{width:22%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-.col-pend-nome{width:30%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600;}
-.col-pend-extra{width:26%; font-size:10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#6b7280;}
 .total-line{font-size:11px; background:#f3f4f6; padding:6px 10px; border-radius:20px; display:inline-block; margin-bottom:8px;}
-.tabela{overflow-x:hidden;}
-#lista{overflow-x:hidden;}
 
+/* === UNICA ALTERAÇÃO - LIBERA AS DUAS LISTAS PRA DIREITA NO MOBILE === */
+.tabela{
+  width:100%;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+  overflow-x:auto !important;
+  overflow-y:hidden;
+  display:block !important;
+  -webkit-overflow-scrolling:touch;
+}
+.tabela-header{
+  display:flex;
+  background:#111827;
+  color:#fff;
+  padding:6px 8px;
+  font-size:10px;
+  font-weight:700;
+  text-transform:uppercase;
+  min-width:750px;
+}
+#lista{
+  max-height:70vh;
+  height:420px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  min-width:750px;
+}
+.linha{
+  display:flex;
+  align-items:center;
+  padding:7px 8px;
+  border-bottom:1px solid #f3f4f6;
+  font-size:11px;
+  background:#fff;
+  cursor:pointer;
+  transition:0.15s;
+  min-width:750px;
+}
+.linha:nth-child(even){background:#fafbff;}
+.linha:hover{background:#e0e7ff!important; transform:translateX(2px);}
+.col-cod{width:8%; min-width:60px; text-align:center;}
+.col-mat{width:10%; min-width:70px; text-align:center;}
+.col-nome{width:43%; min-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.col-data{width:14%; min-width:80px; text-align:center;}
+.col-hora{width:10%; min-width:60px; text-align:center;}
+.col-senha{width:15%; min-width:80px; text-align:center;}
+.col-pend-mat{width:12%; min-width:70px; text-align:center; font-weight:800;}
+.col-pend-cong{width:22%; min-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.col-pend-nome{width:30%; min-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600;}
+.col-pend-extra{width:26%; min-width:160px; font-size:10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#6b7280;}
 </style>
+
 </head>
 <body>
 <div class="card">
   <h2>Acesso de Usuários</h2>
   <div class="top-actions">
     <button id="btnAbaAcesso" class="btn-black btn-aba-active" onclick="mostrarAcessos()">👥 ACESSOS</button>
-    <button id="btnAbaPend" class="btn-white" onclick="mostrarPendentes()">📋 PENDENTES B-H</button>
+    <button id="btnAbaPend" class="btn-white" onclick="mostrarPendentes()">📋 PENDENTES</button>
     <button class="btn-black" onclick="carregarAtual()">🔄 ATUALIZAR</button>
     <button class="btn-white" onclick="exportarCSV()">📥 CSV</button>
   </div>
@@ -129,7 +139,7 @@ function mostrarPendentes(){
   document.getElementById('btnAbaAcesso').classList.add('btn-white');
   document.getElementById('btnAbaAcesso').classList.remove('btn-black');
   document.getElementById('headerTabela').innerHTML='<div class="col-pend-mat">MAT</div><div class="col-pend-cong">CONGREGACAO</div><div class="col-pend-nome">NOME</div><div class="col-pend-extra">SEXO | RG | CPF | WHATS</div><div style="width:10%"></div>';
-  document.getElementById('buscar').placeholder='BUSCAR EM PENDENTES B-H...';
+  document.getElementById('buscar').placeholder='BUSCAR EM PENDENTES...';
   carregarPendentes();
 }
 function carregarAtual(){ if(abaAtual==='pendentes') carregarPendentes(); else carregar(); }
@@ -160,7 +170,7 @@ function render(lista){
 
 // === NOVO - PENDENTES B-H ===
 async function carregarPendentes(){
-  document.getElementById('lista').innerHTML='<div style="padding:20px;text-align:center">⏳ Carregando Pendentes B-H...</div>';
+  document.getElementById('lista').innerHTML='<div style="padding:20px;text-align:center">⏳ Carregando Pendentes...</div>';
   try{
     let r = await fetch(API_DADOS+'?action=todospendentes&t='+Date.now());
     let j = await r.json();
@@ -171,7 +181,7 @@ async function carregarPendentes(){
 function renderPendentes(lista){
   dadosPendentesFiltrados=lista;
   document.getElementById('total').innerText=lista.length;
-  if(!lista.length){ document.getElementById('lista').innerHTML='<div style="padding:20px;text-align:center">Nenhum pendente (B-H)</div>'; return; }
+  if(!lista.length){ document.getElementById('lista').innerHTML='<div style="padding:20px;text-align:center">Nenhum pendente</div>'; return; }
   let matLogada = (localStorage.getItem('mat_logada')||localStorage.getItem('matricula')||'').replace(/\D/g,'').padStart(5,'0');
   let podeExcluir = (matLogada==='00425');
   if(!localStorage.getItem('mat_logada') &&!localStorage.getItem('matricula')) podeExcluir = true;
@@ -195,7 +205,7 @@ function renderPendentes(lista){
   }).join('');
 }
 async function excluirPendente(mat){
-  if(!confirm('Excluir matrícula '+mat+' dos PENDENTES B-H?')) return;
+  if(!confirm('Excluir matrícula '+mat+' dos PENDENTES?')) return;
   let btn = document.querySelector(`#pend-${mat}.btn-excluir`);
   if(btn){ btn.innerText='...'; btn.disabled=true; }
   try{
