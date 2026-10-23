@@ -123,7 +123,49 @@ function getNome(r){return (r.Nome || r.NOME || r.nome || r.E || '').toString().
 function debounceFiltrar(){clearTimeout(debounceTimer);debounceTimer=setTimeout(()=>{let n=(document.getElementById('filtroNome').value||'').toUpperCase();let m=(document.getElementById('filtroMatricula').value||'').toUpperCase();let cpf=(document.getElementById('filtroCPF').value||'').toUpperCase();let cong=(document.getElementById('filtroCongregacao').value||'').toUpperCase();let f=dadosListView.filter(it=>{let cn=getCong(it);return (!n||String(it.Nome||it.NOME||it.E||'').toUpperCase().includes(n))&&(!m||getMat(it).includes(m))&&(!cpf||String(it.CPF||'').toUpperCase().includes(cpf))&&(!cong||cn.includes(cong));});renderLista(f,'FILTRADO');},300)}
 function initCombos(){Object.keys(LISTAS).forEach(id=>{const input=document.getElementById(id);const list=document.getElementById('list_'+id);const wrap=document.getElementById('wrap_'+id);if(!input||!list)return;const arrow=wrap?wrap.querySelector('.combo-arrow'):null;let pos=-1;function pintar(){const itens=[...list.querySelectorAll('.combo-item')];itens.forEach(el=>{el.style.background='';el.style.color='';});if(itens[pos]){itens[pos].style.background='#0f766e';itens[pos].style.color='white';itens[pos].scrollIntoView({block:'nearest'});}}function render(f=''){list.innerHTML='';pos=-1;const items=(LISTAS[id]||[]).filter(v=>String(v).toUpperCase().includes(f.toUpperCase()));items.forEach(v=>{const d=document.createElement('div');d.className='combo-item';d.innerText=v;d.style.padding='8px 12px';d.style.cursor='pointer';d.onclick=()=>{input.value=v;list.style.display='none';pos=-1;};d.onmouseenter=()=>{const itens=[...list.querySelectorAll('.combo-item')];pos=itens.indexOf(d);pintar();};list.appendChild(d)});if(items.length>0){pos=0;pintar();}}input.addEventListener('focus',()=>{render(input.value);list.style.display='block'});input.addEventListener('input',()=>{render(input.value);list.style.display='block'});input.addEventListener('keydown',(e)=>{const itens=[...list.querySelectorAll('.combo-item')];if(list.style.display==='none' ||!itens.length) return;if(e.key==='ArrowDown'){e.preventDefault();pos++;if(pos>=itens.length)pos=0;pintar();}else if(e.key==='ArrowUp'){e.preventDefault();pos--;if(pos<0)pos=itens.length-1;pintar();}else if(e.key==='Enter'){if(pos>=0 && itens[pos]){e.preventDefault();itens[pos].click();}}else if(e.key==='Escape'){list.style.display='none';pos=-1;}});if(arrow)arrow.onclick=()=>{list.style.display=list.style.display==='block'?'none':'block';if(list.style.display==='block'){render(input.value);input.focus()}}});document.addEventListener('click',e=>{document.querySelectorAll('.combo-list').forEach(l=>{const w=l.parentElement;if(w&&!w.contains(e.target))l.style.display='none'})})}
 function calcularIdadeFaixa(){const nasc=document.getElementById('Nascimento').value;if(!nasc){document.getElementById('FaixaEtaria').value='';document.getElementById('idadeDisplay').innerText='';return}const hoje=new Date();const n=new Date(nasc);let idade=hoje.getFullYear()-n.getFullYear();const m=hoje.getMonth()-n.getMonth();if(m<0||(m===0&&hoje.getDate()<n.getDate()))idade--;document.getElementById('idadeDisplay').innerText=idade+' anos';let faixa='';if(idade<3)faixa='LACTANTE (BEBE DE COLO)';else if(idade<12)faixa='CRIANCA (03 A 11 ANOS)';else if(idade<18)faixa='ADOLESCENTE (12 A 17 ANOS)';else if(idade<40)faixa='ADULTO JOVEM (18 A 39 ANOS)';else if(idade<60)faixa='ADULTO DE MEIA-IDADE (40 A 59 ANOS)';else if(idade<80)faixa='TERCEIRA IDADE (60 ANOS ACIMA)';else faixa='LONGEVO (80 ANOS OU MAIS)';document.getElementById('FaixaEtaria').value=faixa}
-function renderLista(dados,titulo){let vistos=new Set();let unicos=[];dados.forEach(r=>{let mat=getMat(r);let nome=getNome(r);if(!mat&&!nome)return;let chave=(mat||'')+'|'+(nome||'');if(!vistos.has(chave)){vistos.add(chave);unicos.push(r);}});dados=unicos;dadosListView=dados;dadosFiltrados=dados;indiceSelecionado=-1;document.getElementById('listTitulo').innerText=titulo+' - '+dados.length+' registros';const tbody=document.getElementById('listViewBody');tbody.innerHTML='';dados.forEach((r,i)=>{let mat=getMat(r);let nome=getNome(r);let cong=getCong(r);const tr=document.createElement('tr');tr.innerHTML=`<td>${mat}</td><td title="${nome}">${nome}</td><td title="${cong}">${cong}</td>`;tr.onclick=()=>{document.querySelectorAll('#listViewBody tr').forEach(x=>x.classList.remove('selected'));tr.classList.add('selected');indiceSelecionado=i;};tr.ondblclick=()=>{indiceSelecionado=i;carregarSelecionado();};tbody.appendChild(tr);});document.getElementById('listViewInfo').innerText='Localizados '+dados.length+' registros';if(dados.length>0){indiceSelecionado=0;tbody.children[0]?.classList.add('selected');}}
+
+
+function renderLista(dados,titulo){
+  let vistos=new Set();let unicos=[];
+  dados.forEach(r=>{
+    let mat=getMat(r);let nome=getNome(r);
+    if(!mat&&!nome)return;
+    let chave=(mat||'')+'|'+(nome||'');
+    if(!vistos.has(chave)){vistos.add(chave);unicos.push(r);}
+  });
+  dados=unicos;
+
+  // CORREÇÃO: só atualiza a lista mestra se NÃO for filtro
+  // Se for FILTRADO, mantém os 253 intactos
+  if(titulo.toUpperCase().indexOf('FILTRADO') === -1){
+    dadosListView=dados;
+  }
+  
+  dadosFiltrados=dados;
+  indiceSelecionado=-1;
+  document.getElementById('listTitulo').innerText=titulo+' - '+dados.length+' registros';
+  const tbody=document.getElementById('listViewBody');
+  tbody.innerHTML='';
+  dados.forEach((r,i)=>{
+    let mat=getMat(r);let nome=getNome(r);let cong=getCong(r);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${mat}</td><td title="${nome}">${nome}</td><td title="${cong}">${cong}</td>`;
+    tr.onclick=()=>{
+      document.querySelectorAll('#listViewBody tr').forEach(x=>x.classList.remove('selected'));
+      tr.classList.add('selected');
+      indiceSelecionado=i;
+    };
+    tr.ondblclick=()=>{indiceSelecionado=i;carregarSelecionado();};
+    tbody.appendChild(tr);
+  });
+  document.getElementById('listViewInfo').innerText='Localizados '+dados.length+' registros';
+  if(dados.length>0){
+    indiceSelecionado=0;
+    tbody.children[0]?.classList.add('selected');
+  }
+}
+
+
 function organizarLayout(){['DataCasamento','Conjuge','DataTermino'].forEach(id=>{const el=document.getElementById(id);if(!el) return;el.value='';el.disabled=true;el.style.background='rgba(255,255,255,0.3)';el.style.border='1px dashed #aaa';el.style.color='#666';el.style.opacity='0.5';el.style.pointerEvents='none';});}
 
 async function buscar(){tipoListaAtual='ALTERAR';modoEdicao=true;document.getElementById('listViewContainer').style.display='flex';document.getElementById('listViewBody').innerHTML='<tr><td colspan=3 style="text-align:center;padding:20px">Buscando...</td></tr>';try{const res=await apiGet('todos');cacheTodos=res.data||[];renderLista(cacheTodos,'BUSCA - ALTERAR');}catch(e){document.getElementById('listViewBody').innerHTML='<tr><td colspan=3>Erro: '+e.message+'</td></tr>'}}
