@@ -7,10 +7,13 @@
 <meta name="theme-color" content="#0d6efd">
 <script src="auth.js"></script>
 <title>RELATORIO DISCIPULADO</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <link rel="stylesheet" href="relatorio.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
+
 <div class="wrap">
 
 <div class="acesso-box" id="acessoBox">
@@ -36,9 +39,10 @@
 </div>
 
 <div class="botoes">
-<button id="btnPesquisar" onclick="pesquisar()" class="b-pesq">PESQUISAR</button>
-<button id="btnLimpar" onclick="limpar()" class="b-limp">LIMPAR</button>
-<button onclick="exportarExcel()" class="b-excel">📊 EXCEL</button>
+  <button id="btnPesquisar" onclick="pesquisar()" class="b-pesq">🔍 PESQUISAR</button>
+  <button id="btnLimpar" onclick="limpar()" class="b-limp">🧹 LIMPAR</button>
+  <button id="btnRelatorio" onclick="exportarRelatorio()" class="b-rel">📋 RELATORIO</button>
+  <button id="btnExcel" onclick="exportarExcel()" class="b-excel">📗 EXCEL</button>
 </div>
 
 <div id="msg">Selecione o Tipo e clique em PESQUISAR</div>
