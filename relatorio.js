@@ -209,18 +209,75 @@ function pesquisar(){
 }
 
 function render(listaComCab){
-  var thead=document.querySelector('#tab thead'); var tbody=document.querySelector('#tab tbody'); thead.innerHTML=''; tbody.innerHTML='';
-  if(!listaComCab || listaComCab.length<2){ document.getElementById('tabWrap').style.display='none'; ATUAL=listaComCab||[]; return; }
-  var cab=listaComCab[0].slice(); cab[6]="C1"; cab[8]="C2"; cab[10]="C3"; cab[12]="C4"; if(cab.length>17) cab=cab.slice(0,16);
-  var htmlHead='<tr>'; cab.forEach(function(h,i){ var cls=(i==7||i==9||i==11||i==13||i==14||i==16)?' class="col-pend"':''; htmlHead+='<th'+cls+'>'+h+'</th>'; }); htmlHead+='</tr>'; thead.innerHTML=htmlHead;
+  var thead=document.querySelector('#tab thead'); 
+  var tbody=document.querySelector('#tab tbody'); 
+  thead.innerHTML=''; tbody.innerHTML='';
+  if(!listaComCab || listaComCab.length<2){ 
+    document.getElementById('tabWrap').style.display='none'; 
+    ATUAL=listaComCab||[]; 
+    return; 
+  }
+  var cab=listaComCab[0].slice(); 
+  cab[6]="C1"; cab[8]="C2"; cab[10]="C3"; cab[12]="C4"; 
+  if(cab.length>17) cab=cab.slice(0,16);
+  var htmlHead='<tr>'; 
+  cab.forEach(function(h,i){ 
+    var cls=(i==7||i==9||i==11||i==13||i==14||i==16)?' class="col-pend"':''; 
+    htmlHead+='<th'+cls+'>'+h+'</th>'; 
+  }); 
+  htmlHead+='</tr>'; 
+  thead.innerHTML=htmlHead;
+  
   var corpo=listaComCab.slice(1);
+
   corpo.forEach(function(r,i){
-    var tr=document.createElement('tr'); tr.id='row-'+(i+1);
-    var htmlRow=''; r.slice(0,16).forEach(function(c,j){ var cls=(j==7||j==9||j==11||j==13||j==14)?' class="col-pend"':''; htmlRow+='<td'+cls+'>'+c+'</td>'; });
-    tr.innerHTML=htmlRow; tr.onclick=function(){ selecionar(i+1); }; tbody.appendChild(tr);
+    var tr=document.createElement('tr'); 
+    tr.id='row-'+(i+1);
+    
+    // APROVADO VERDINHO CLARINHO
+    var statusLinha = semAcentoJS(r[15]||'');
+    if(statusLinha.indexOf('APROVADO')!==-1){
+      tr.style.backgroundColor = '#d1fae5';
+      tr.style.fontWeight = '600';
+    }
+
+    var htmlRow=''; 
+    r.slice(0,16).forEach(function(c,j){ 
+      // ITEM 0001
+      if(j==0){ 
+        c = String(c||i+1).padStart(4,'0');
+      }
+      // NOME MAIUSCULO SEM ACENTO
+      if(j==2){ 
+        c = semAcentoJS(c); 
+      }
+      
+      var cls=(j==7||j==9||j==11||j==13||j==14)?' class="col-pend"':''; 
+      var ehDireita = (j==4||j==5||j==6||j==8||j==10||j==12); // MATRICULA, QTD, C1, C2, C3, C4
+      var ehCentro = (j==3); // WHATSAPP NO CENTRO
+      var estilo = '';
+      if(ehDireita) estilo = 'text-align:right; font-weight:700;';
+      if(ehCentro) estilo = 'text-align:center; font-weight:700;';
+      
+      if(cls && estilo){
+        htmlRow+='<td'+cls+' style="'+estilo+'">'+c+'</td>'; 
+      }else if(cls){
+        htmlRow+='<td'+cls+'>'+c+'</td>'; 
+      }else if(estilo){
+        htmlRow+='<td style="'+estilo+'">'+c+'</td>'; 
+      }else{
+        htmlRow+='<td>'+c+'</td>'; 
+      }
+    });
+
+    tr.innerHTML=htmlRow; 
+    tr.onclick=function(){ selecionar(i+1); }; 
+    tbody.appendChild(tr);
   });
-  document.getElementById('tabWrap').style.display='block'; ATUAL=listaComCab; idxSelecionado=-1;
+  document.getElementById('tabWrap').style.display='block'; 
+  ATUAL=listaComCab; idxSelecionado=-1;
 }
+
 
 function filtrar(){
   var termo=semAcentoJS(document.getElementById('buscar').value);
@@ -604,3 +661,72 @@ async function enviarPdfZap(){
     }
   });
 }
+
+function exportarRelatorio(){
+  if(!ATUAL || ATUAL.length < 2){
+    alert("Nada para gerar! Clique em PESQUISAR primeiro.");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('l', 'mm', 'a4'); // paisagem
+
+  var totalFiltrado = ATUAL.length - 1;
+  var cidade = document.getElementById('fCidade') ? document.getElementById('fCidade').value : '';
+  var nome = document.getElementById('fNome') ? document.getElementById('fNome').value : '';
+  var statusFiltro = document.getElementById('fStatus') ? document.getElementById('fStatus').value : 'APRO';
+
+  // CABEÇALHO
+  doc.setFontSize(14);
+  doc.setFont("helvetica","bold");
+  doc.text("RELATORIO DE ALUNOS - "+ totalFiltrado +" Localizados", 14, 12);
+  doc.setFontSize(9);
+  doc.setFont("helvetica","normal");
+  doc.text("Filtros: Cidade=["+ (cidade||"TODAS") +"]  Status=["+statusFiltro+"]  Nome=["+(nome||"-")+"]  Data: "+ new Date().toLocaleString(), 14, 18);
+
+  var corpo = ATUAL.slice(1).map(function(r, idx){
+    return [
+      String(idx+1).padStart(4,'0'), // ITEM 0005
+      semAcentoJS(r[1]||''), // CONGREGACAO
+      semAcentoJS(r[2]||''), // NOME
+      r[3]||'', // WHATSAPP
+      r[4]||'', // MATRICULA
+      r[5]||'', // QTD TOTAL
+      r[6]||'', // C1
+      r[8]||'', // C2
+      r[10]||'', // C3
+      r[12]||'', // C4
+      semAcentoJS(r[15]||'') // STATUS
+    ];
+  });
+
+  doc.autoTable({
+    head: [['ITEM','CONGREGACAO','NOME','WHATSAPP','MATRICULA','QTD','C1','C2','C3','C4','STATUS']],
+    body: corpo,
+    startY: 22,
+    theme: 'grid',
+    styles: { fontSize: 7, cellPadding: 1.5 },
+    headStyles: { fillColor: [0,0,0], textColor: [255,255,255], fontStyle: 'bold' },
+    columnStyles: {
+      0: { halign: 'left', cellWidth: 10 },
+      3: { halign: 'center' },
+      4: { halign: 'right' },
+      5: { halign: 'right' },
+      6: { halign: 'right' },
+      7: { halign: 'right' },
+      8: { halign: 'right' },
+      9: { halign: 'right' }
+    },
+    didParseCell: function(data){
+      // APROVADO VERDINHO NO PDF TAMBEM
+      if(data.section === 'body' && data.row.raw[10].indexOf('APROVADO') !== -1){
+        data.cell.styles.fillColor = [209, 250, 229]; // #d1fae5
+        data.cell.styles.fontStyle = 'bold';
+      }
+    }
+  });
+
+  doc.save('relatorio_'+ totalFiltrado +'_alunos_'+ new Date().toISOString().slice(0,10) +'.pdf');
+}
+
+
