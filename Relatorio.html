@@ -15,8 +15,8 @@
 <body>
 
 <div class="wrap">
-
-<div class="acesso-box" id="acessoBox">
+<!-- ESSE É A CAIXA NO RELATORIO <div class="acesso-box" id="acessoBox"> -->
+<div class="acesso-box" id="acessoBox" style="display:none;"><!-- ESSE QUE OCULTOU -->
 <div style="font-size:11px; font-weight:800; color:#0d6efd;">🔐 Acesso somente ao Administrador</div>
 <div class="acesso-linha-4" id="acessoLinha4" style="grid-template-columns:1fr 1fr 1fr">
 
@@ -38,7 +38,7 @@
     <input type="checkbox" id="chkDiscipulado" style="width:16px;height:16px"> Teste Discipulado
   </label>
   <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">
-    <input type="checkbox" id="chkObreiros" style="width:16px;height:16px"> Teste Obreiros
+    <input type="checkbox" id="chkObreiros" style="width:16px;height:16px"> Teste em Andamento
   </label>
   <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">
     <input type="checkbox" id="chkY" style="width:16px;height:16px"> Teste em Andamento
@@ -50,13 +50,13 @@
 <!-- FIM ALTERACAO -->
 
 <div class="filtros-busca">
-<input id="buscar" placeholder="Filtrar Cidade/Congregaçao" oninput="filtrar()">
-<input id="fCong" placeholder="Filtrar Status" oninput="filtrar()">
-<input id="fNome" placeholder="Filtrar Nome" oninput="filtrar()">
-<input id="fMatr" placeholder="Filtrar Matricula" oninput="filtrar()">
+  <input id="buscar" placeholder="Cidade/Congregaçao" oninput="filtrar()">
+  <input id="fCong" placeholder="Status" oninput="filtrar()">
+  <input id="fNome" placeholder="Nome" oninput="filtrar()">
+  <input id="fMatr" placeholder="Matricula" oninput="filtrar()">
 </div>
 
-<div class="botoes">
+<div class="botoes" style="display:flex; gap:8px;">
   <button id="btnPesquisar" onclick="pesquisar()" class="b-pesq">🔍 PESQUISAR</button>
   <button id="btnLimpar" onclick="limpar()" class="b-limp">🧹 LIMPAR</button>
   <button id="btnRelatorio" onclick="exportarRelatorio()" class="b-rel">📋 RELATORIO</button>
@@ -70,6 +70,7 @@
 <div id="acoes-extra" class="botoes">
 <button id="btnBoletim" onclick="gerarBoletim()" class="b-bol">📄 BOLETIM</button>
 <button id="btnCertificado" onclick="gerarCertificado()" class="b-cert">🎓 CERTIFICADO</button>
+  <button id="btnBoletimZap" onclick="VBoletimZap()" class="b-zap">📢 INFORMATIVO</button>
 <button id="btnWordDrive" onclick="gerarWordDrive()" class="b-excel" style="background:#2b579a">📝 WORD DRIVE</button>
 </div>
 <div id="boletim"></div>
@@ -97,5 +98,40 @@
 </div>
 
 <script src="relatorio.js"></script>
+
+<script>
+const checks = document.querySelectorAll('#wrapChecks input[type="checkbox"]');
+checks.forEach(chk => {
+  chk.addEventListener('change', function(){
+    if(this.checked){
+      checks.forEach(outro => {
+        if(outro !== this) outro.checked = false;
+      });
+    }
+  });
+});
+</script>
+
+<script>
+function enviarBoletimZap(){
+  var total = document.querySelectorAll('#tab tbody tr').length || 282;
+
+  var boletim = `-- Boletim Informativo --
+
+Povo de Deus
+Total de alunos no curso: 282
+Teste Realizado: ${total} (filtrados) / 4045 (geral)
+Concluintes: 26 Alunos
+Em conclusao: 11 Alunos (aguardando liberaçao para restauraçao de notas)
+
+Se anime povo!
+
+Outros cursos serao disponibilizados por aqui. 
+Aguardando nosso Pastor deliberar`;
+
+  window.open("https://wa.me/?text=" + encodeURIComponent(boletim), "_blank");
+}
+</script>
+
 </body>
 </html>
