@@ -567,12 +567,10 @@ function exportarRelatorio(){
   var cidade = document.getElementById('fCidade') ? document.getElementById('fCidade').value : '';
   var nome = document.getElementById('fNome') ? document.getElementById('fNome').value : '';
   var statusFiltro = document.getElementById('fStatus') ? document.getElementById('fStatus').value : 'APRO';
-  doc.setFontSize(14);
-  doc.setFont("helvetica","bold");
-  doc.text("RELATORIO DE ALUNOS - "+ totalFiltrado +" Localizados", 14, 12);
-  doc.setFontSize(9);
-  doc.setFont("helvetica","normal");
-  doc.text("Filtros: Cidade=["+ (cidade||"TODAS") +"]  Status=["+statusFiltro+"]  Nome=["+(nome||"-")+"]  Data: "+ new Date().toLocaleString(), 14, 18);
+  
+  var titulo = "Relatorio de Alunos - "+ totalFiltrado +" Localizados";
+  var subTitulo = "Filtros: Cidade=["+ (cidade||"TODAS") +"]  Status=["+statusFiltro+"]  Nome=["+(nome||"-")+"]  Data: "+ new Date().toLocaleString();
+
   var corpo = ATUAL.slice(1).map(function(r, idx){
     return [
       String(idx+1).padStart(4,'0'),
@@ -588,6 +586,7 @@ function exportarRelatorio(){
       semAcentoJS(r[15]||'')
     ];
   });
+
   doc.autoTable({
     head: [['ITEM','CONGREGACAO','NOME','WHATSAPP','MATRICULA','QTD','C1','C2','C3','C4','STATUS']],
     body: corpo,
@@ -607,10 +606,83 @@ function exportarRelatorio(){
     },
     didParseCell: function(data){
       if(data.section === 'body' && data.row.raw[10].indexOf('APROVADO') !== -1){
-        data.cell.styles.fillColor = [209, 250, 229];
+        data.cell.styles.fillColor = [240, 240, 240];
         data.cell.styles.fontStyle = 'bold';
       }
+    },
+    didDrawPage: function(data){
+      // TITULO EM TODAS AS PAGINAS
+      doc.setFontSize(14);
+      doc.setFont("helvetica","bold");
+      doc.text(titulo, 14, 12);
+      doc.setFontSize(9);
+      doc.setFont("helvetica","normal");
+      doc.text(subTitulo, 14, 18);
     }
   });
+
+  // CORREÇÃO DA NUMERAÇÃO - DEPOIS QUE SABE O TOTAL
+  var totalPages = doc.internal.getNumberOfPages();
+  var totalStr = String(totalPages).padStart(2, '0');
+  
+  for(var i = 1; i <= totalPages; i++){
+    doc.setPage(i);
+    var pagAtualStr = String(i).padStart(2, '0');
+    doc.setFontSize(8);
+    doc.setFont("helvetica","normal");
+    var pageHeight = doc.internal.pageSize.height;
+    var pageWidth = doc.internal.pageSize.width;
+    // limpa area do rodape
+    doc.setFillColor(255,255,255);
+    doc.rect(0, pageHeight - 12, pageWidth, 12, 'F');
+    // escreve certo
+    doc.text("Relatorio de Alunos", 14, pageHeight - 8);
+    doc.text("Pagina " + pagAtualStr + "/" + totalStr, pageWidth - 20, pageHeight - 8, { align: 'right' });
+  }
+
   doc.save('relatorio_'+ totalFiltrado +'_alunos_'+ new Date().toISOString().slice(0,10) +'.pdf');
+}
+
+// BOLETIM ZAP - CONTA DIRETO DO ATUAL - APÓS PESQUISA
+function VBoletimZap(){
+  if(!window.TOTAL_ORIGINAL || TOTAL_ORIGINAL.length < 2){
+    alert("Clique em PESQUISAR primeiro");
+    return;
+  }
+  // TOTAL ORIGINAL = os 282 da planilha toda
+  var listaTotal = window.TOTAL_ORIGINAL;
+  // ATUAL = só os 37 do filtro de agora
+  var listaFiltro = window.ATUAL;
+
+  var totalAlunos = listaFiltro.length - 1;
+  var concluintes = 0;
+  var emConclusao = 0;
+  
+  // TESTE REALIZADO = soma da coluna QTD de TODOS os 282, não só dos 37
+  // Isso que dá os 4049 da sua foto
+  var testeRealizado = 0;
+  for(var j=1; j<listaTotal.length; j++){
+    testeRealizado += parseInt(listaTotal[j][5] || 0);
+  }
+
+  for(var i=1; i<listaFiltro.length; i++){
+    var status = (listaFiltro[i][15] || "").toUpperCase();
+    if(status.indexOf("APROVADO") !== -1) concluintes++;
+    if(status.indexOf("PENDENTE") !== -1) emConclusao++;
+  }
+
+  var texto = "-- Boletim Informativo --\n"
+    + "---------------------------------------------\n"
+    + "Povo de Deus\n"
+    + "Total de alunos no curso: " + totalAlunos + "\n"
+    + "Teste Realizado: " + testeRealizado + "\n"
+    + "Concluintes: " + concluintes + " Alunos\n"
+    + "Em conclusao: " + emConclusao + " Alunos\n"
+    + "---------------------------------------------\n"
+    + "Se anime povo!\n"
+    + "---------------------------------------------\n"
+    + "Outros cursos serao disponibilizados por aqui.\n"
+    + "Aguardando nosso Pastor deliberar";
+
+  window.open("https://wa.me/?text="+encodeURIComponent(texto),"_blank");
 }
