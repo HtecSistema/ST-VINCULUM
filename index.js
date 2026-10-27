@@ -1,16 +1,24 @@
-// VERIFICA VERSÃO NO GITHUB E FORÇA ATUALIZAR - SEGURO
+// VERIFICA VERSÃO NO GITHUB E FORÇA ATUALIZAR - CORRIGIDO 20261027
 (async ()=>{
   try{
-    const r = await fetch('version.json?v='+Date.now(), {cache:'no-store'});
+    let r;
+    try{ 
+      r = await fetch('versao.json?v='+Date.now(), {cache:'no-store'}); 
+      if(!r.ok) throw 0; 
+    } catch(e){ 
+      r = await fetch('version.json?v='+Date.now(), {cache:'no-store'}); 
+    }
     const j = await r.json();
     let atual = localStorage.getItem('v_sistema');
-    if(atual!== j.versao){
+    if(!atual){
+      localStorage.setItem('v_sistema', j.versao);
+    } else if(atual !== j.versao){
       localStorage.setItem('v_sistema', j.versao);
       if('caches' in window){
         const ks = await caches.keys();
         ks.forEach(n=>caches.delete(n));
       }
-      location.reload();
+      location.reload(true);
     }
   }catch(e){}
 })();
