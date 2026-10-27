@@ -75,11 +75,34 @@ async function buscarNome(){
     document.getElementById('erro-login').style.display='block';
   }
 }
+
+
 async function logar(){
   const mat = (document.getElementById('matricula').value||'').trim().toUpperCase().padStart(5,'0');
   const sen = (document.getElementById('senha').value||'').trim().toUpperCase();
   if(!mat){ mostrarErro('DIGITE A MATRICULA'); return; }
   if(!sen){ mostrarErro('DIGITE A SENHA'); return; }
+
+  // === VERIFICA MANUTENÇÃO ===
+  try{
+    document.getElementById('erro-login').innerHTML='⏳ Verificando manutenção...';
+    document.getElementById('erro-login').style.display='block';
+    let rManut = await fetch(`${API_MANUT}?action=getmanutencao&t=${Date.now()}`, {cache:'no-store'});
+    let listaManut = await rManut.json();
+    if(Array.isArray(listaManut)){
+      let emManut = listaManut.find(x => String(x.status||x.Status||'').toUpperCase().includes('MANUTENCAO'));
+      if(emManut){
+        if(mat !== '00425'){ // só bloqueia os outros, você testa
+          mostrarErro(`🛠️ SISTEMA EM MANUTENÇÃO<br><b>${emManut.tipo||''}</b><br>Até: ${emManut.dataFinal||''} ${emManut.horario||''}`);
+          return;
+        } else {
+          document.getElementById('erro-login').innerHTML=`⚠️ MODO TESTE: Em manutenção mas liberado pra 00425`;
+        }
+      }
+    }
+  }catch(e){}
+  document.getElementById('erro-login').style.display='none';
+
   try{
     if(cacheDados.length===0){ let res = await apiGet('todos'); cacheDados = res.data||[]; }
     let achado = cacheDados.find(x=>{
