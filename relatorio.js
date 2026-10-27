@@ -299,7 +299,7 @@ function gerarBoletim(){
   var BORDA = '#d1d5db';
   var html='<div id="boletimPrint" style="background:#fff; padding:0; font-family:Arial, sans-serif; font-size:11px; color:#000; border:1px solid '+BORDA+'">'
   +'<div style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px solid '+BORDA+'">'
-  +'<img src="https://i.ibb.co/7hxL8x1/802853790-2155322575864895-5004929784006915147-n.png" style="width:auto; height:58px; object-fit:contain; display:block; object-fit:contain">'
+  +'<img src="https://i.postimg.cc/KKy4nMGY/igreja.jpg" style="width:auto; height:58px; object-fit:contain; display:block; object-fit:contain">'
   +'<div style="text-align:left; line-height:1.15"><b style="font-size:11px">Igreja Evangélica Assembleia de Deus Missões</b><br><span style="font-size:14px; font-weight:900">Curso <i>Discipulado</i></span><br><span style="font-size:10px">Pr. Eliezer Miranda Barbosa – Presidente</span></div></div>'
   +'<div style="background:'+AZUL_CLARINHO+'; color:#000; font-weight:900; padding:6px; font-size:13px; text-align:center;">BOLETIM DO ALUNO</div>'
   +'<div style="padding:10px">'
@@ -387,9 +387,9 @@ function gerarCertificado(){
         <div style="height:8px; background: linear-gradient(90deg, #0f2a4a 0%, #1e4a7a 50%, #c9a86a 100%);"></div>
         <div style="display:flex; justify-content:space-between; align-items:center; padding:18px 28px 10px 28px;">
           <div style="display:flex; align-items:center; gap:12px;">
-            <img src="https://i.ibb.co/7hxL8x1/802853790-2155322575864895-5004929784006915147-n.png" style="width:auto; height:58px; object-fit:contain; display:block;">
+            <img src="https://i.postimg.cc/KKy4nMGY/igreja.jpg" style="width:auto; height:58px; object-fit:contain; display:block;">
             <div style="line-height:1.2;">
-              <div style="font-size:11px; font-weight:900; color:#0f2a4a; letter-spacing:1px;">IEADMI</div>
+              <div style="font-size:11px; font-weight:900; color:#0f2a4a; letter-spacing:1px;">ADEMIP</div>
               <div style="font-size:8px; color:#555; max-width:180px;">Igreja Evangélica Assembleia de Deus Missões</div>
               <div style="font-size:8px; color:#0f2a4a; font-weight:700;">Pr. Eliezer Miranda Barbosa – Presidente</div>
             </div>
@@ -410,7 +410,7 @@ function gerarCertificado(){
           <div style="font-size:20px; font-weight:900; color:#0f2a4a; text-transform:uppercase; margin:8px 0; letter-spacing:0.5px; border-bottom:2px solid #e8dcc0; display:inline-block; padding-bottom:4px;">${a.nome.toUpperCase()}</div>
           <div style="font-size:14px; color:#444; margin-top:10px; text-align:justify; text-align-last:left;">
             Concluiu com êxito o <b>Curso de Discipulado – Ciclos 01 ao 04 com 52 Lições</b>, 
-            ministrado pela Igreja Evangélica Assembleia de Deus Missões – IEADMI. 
+            ministrado pela Igreja Evangélica Assembleia de Deus Missões – ADEMIP. 
             Demonstrando dedicação, esforço, persistência, aproveitamento 
             e aptidão no exercício da Fé Cristã.
           </div>
@@ -422,7 +422,7 @@ function gerarCertificado(){
         <div style="display:flex; justify-content:space-between; align-items:flex-end; padding:18px 40px 22px 40px;">
           <div style="text-align:center;">
             <div style="width:80px; height:80px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #f9e7a0, #c9a86a); border:2px solid #a88b4a; display:flex; align-items:center; justify-content:center; margin:0 auto 6px auto; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
-              <div style="font-size:10px; font-weight:900; color:#0f2a4a; line-height:1;">IEADMI<br><span style="font-size:14px;">★</span><br>2026</div>
+              <div style="font-size:10px; font-weight:900; color:#0f2a4a; line-height:1;">ADEMIP<br><span style="font-size:14px;">★</span><br>2026</div>
             </div>
             <div style="font-size:7px; color:#888;">Selo Oficial</div>
           </div>
@@ -430,12 +430,12 @@ function gerarCertificado(){
             <img src="${assinatura}" style="height:36px; width:auto; display:block; margin:0 auto 2px auto;">
             <div style="width:180px; border-top:1px solid #0f2a4a; padding-top:6px;">
               <div style="font-size:10px; font-weight:800; color:#0f2a4a;">Pr. Eliezer Miranda Barbosa</div>
-              <div style="font-size:8px; color:#555;">Presidente IEADMI</div>
+              <div style="font-size:8px; color:#555;">Presidente ADEMIP</div>
             </div>
           </div>
         </div>
         <div style="background:#0f2a4a; color:#c9a86a; text-align:center; padding:8px; font-size:8px; letter-spacing:0.5px;">
-          ${dataExtenso} • IEADMI Paragominas-PA • Documento válido com média ${sf(a.mediaGeral)}
+          ${dataExtenso} • ADEMIP Paragominas-PA • Documento válido com média ${sf(a.mediaGeral)}
         </div>
       </div>
     </div>
@@ -490,11 +490,11 @@ function enviarZapPDF(){
       var pdfBlob = pdf.output('blob');
       var pdfFile = new File([pdfBlob], nomeArquivo, {type:'application/pdf'});
       if(navigator.canShare && navigator.canShare({files:[pdfFile]})){
-        return navigator.share({ files: [pdfFile], title: 'Certificado IEADMI', text: `Certificado de ${a.nome} - Curso de Discipulado IEADMI` }).catch(()=>{});
+        return navigator.share({ files: [pdfFile], title: 'Certificado ADEMIP', text: `Certificado de ${a.nome} - Curso de Discipulado ADEMIP` }).catch(()=>{});
       } else {
         pdf.save(nomeArquivo);
         setTimeout(()=>{
-          var msg = `*IEADMI - CERTIFICADO*%0A%0A`+`Parabéns *${encodeURIComponent(a.nome.toUpperCase())}*! 🎓%0A`+`Seu Certificado foi gerado em PDF!%0A`+`*Matrícula:* ${a.mat}%0A`+`*Média:* ${sf(a.mediaGeral)}%0A%0A`+`Acabei de baixar o PDF. Agora é só anexar aqui no WhatsApp.`;
+          var msg = `*ADEMIP - CERTIFICADO*%0A%0A`+`Parabéns *${encodeURIComponent(a.nome.toUpperCase())}*! 🎓%0A`+`Seu Certificado foi gerado em PDF!%0A`+`*Matrícula:* ${a.mat}%0A`+`*Média:* ${sf(a.mediaGeral)}%0A%0A`+`Acabei de baixar o PDF. Agora é só anexar aqui no WhatsApp.`;
           window.open('https://wa.me/?text='+msg, '_blank');
         }, 800);
       }
@@ -523,7 +523,7 @@ function carregarEdicaoCadastro(){ var div=document.getElementById('listaEdicaoC
 function renderEdicaoCadastro(lista){ var div=document.getElementById('listaEdicaoCadastro'); if(!div) return; if(!lista || lista.length==0){ div.innerHTML='Nenhum cadastro'; return; } var html='<table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="background:#000;color:#fff"><th>NOME</th><th>STATUS</th><th>MAT</th><th>ACAO</th></tr>'; lista.forEach(function(it){ var cor=it.status=='APROVADO'?'#16a34a':'#dc2626'; html+='<tr><td>'+it.nome.toUpperCase()+'</td><td style="text-align:center"><span style="background:'+cor+';color:#fff;padding:2px 6px;border-radius:4px">'+it.status+'</span></td><td style="text-align:center">'+it.matricula+'</td><td style="text-align:center"><button onclick="editarCadastro(\''+it.matricula+'\')" style="background:#0d6efd;color:#fff;border:0;border-radius:6px;padding:4px 8px">EDITAR</button></td></tr>'; }); html+='</table>'; div.innerHTML=html; }
 function filtrarEdicaoCadastro(){ var termo=semAcentoJS(document.getElementById('pesqEdicao').value.toUpperCase()); var lista=CACHE_EDICAO.filter(function(a){ return!termo || semAcentoJS(a.nome).indexOf(termo)!=-1 || String(a.matricula).indexOf(termo)!=-1; }); renderEdicaoCadastro(lista); }
 function editarCadastro(linha){ var item=CACHE_EDICAO.find(function(a){return a.linha==linha}); if(!item) return; document.getElementById('cadNomeUsuario').value=item.nome; document.getElementById('cadMatricula').value=item.matricula||''; document.getElementById('cadIgreja').value=item.igreja||''; document.getElementById('cadSenha').value=item.senha||''; var st=document.getElementById('cadStatus'); if(st) st.value=item.status||'EM ANALISE'; LINHA_EDICAO_ATUAL=linha; }
-function enviarBoletimZap(){ if(!DETALHE){ alert('Gere o boletim primeiro'); return; } var pend = listarPendentesNA(DETALHE); var blocoPend = pend.length>0? '\n\nPENDÊNCIAS:\n'+pend.join('\n') : '\n\nNenhuma pendência - Tudo OK'; var relatorio = `BOLETIM DISCIPULADO - IEADMI\n\nAluno: ${DETALHE.nome.toUpperCase()}\nCongregação: ${DETALHE.congOrig||DETALHE.cong||''}\nMatrícula: ${DETALHE.mat}\nTotal Pontos: ${DETALHE.totalSoma||0}\nFeitos: ${(DETALHE.totalFeitos||0)}/52\nMédia Geral: ${sf(DETALHE.mediaGeral)}\nStatus: ${DETALHE.status||''}${blocoPend}`; var zapRaw = (DETALHE.zap || SELECIONADO?.zap || '').toString().replace(/\D/g,''); if(zapRaw.length>=10){ if(zapRaw.length==10||zapRaw.length==11) zapRaw='55'+zapRaw; window.open('https://wa.me/'+zapRaw+'?text='+encodeURIComponent(relatorio), '_blank'); } else { window.open('https://wa.me/?text='+encodeURIComponent(relatorio), '_blank'); } }
+function enviarBoletimZap(){ if(!DETALHE){ alert('Gere o boletim primeiro'); return; } var pend = listarPendentesNA(DETALHE); var blocoPend = pend.length>0? '\n\nPENDÊNCIAS:\n'+pend.join('\n') : '\n\nNenhuma pendência - Tudo OK'; var relatorio = `BOLETIM DISCIPULADO - ADEMIP\n\nAluno: ${DETALHE.nome.toUpperCase()}\nCongregação: ${DETALHE.congOrig||DETALHE.cong||''}\nMatrícula: ${DETALHE.mat}\nTotal Pontos: ${DETALHE.totalSoma||0}\nFeitos: ${(DETALHE.totalFeitos||0)}/52\nMédia Geral: ${sf(DETALHE.mediaGeral)}\nStatus: ${DETALHE.status||''}${blocoPend}`; var zapRaw = (DETALHE.zap || SELECIONADO?.zap || '').toString().replace(/\D/g,''); if(zapRaw.length>=10){ if(zapRaw.length==10||zapRaw.length==11) zapRaw='55'+zapRaw; window.open('https://wa.me/'+zapRaw+'?text='+encodeURIComponent(relatorio), '_blank'); } else { window.open('https://wa.me/?text='+encodeURIComponent(relatorio), '_blank'); } }
 async function enviarPdfZap(){
   if(!DETALHE){ alert('Clique em BOLETIM primeiro'); return; }
   var el = document.getElementById('boletimPrint');
@@ -543,7 +543,7 @@ async function enviarPdfZap(){
         setTimeout(function(){
           var pend = listarPendentesNA(DETALHE);
           var bloco = pend.length? '\n\nPENDÊNCIAS:\n'+pend.join('\n') : '\n\nTudo OK - APROVADO';
-          var txt = `BOLETIM DISCIPULADO - IEADMI\nAluno: ${DETALHE.nome.toUpperCase()}\nMat: ${DETALHE.mat}\nMédia: ${sf(DETALHE.mediaGeral)}\nStatus: ${DETALHE.status}${bloco}\n\nPDF baixado - envie em anexo`;
+          var txt = `BOLETIM DISCIPULADO - ADEMIP\nAluno: ${DETALHE.nome.toUpperCase()}\nMat: ${DETALHE.mat}\nMédia: ${sf(DETALHE.mediaGeral)}\nStatus: ${DETALHE.status}${bloco}\n\nPDF baixado - envie em anexo`;
           var zap = (DETALHE.zap||'').replace(/\D/g,'');
           if(zap.length==10||zap.length==11) zap='55'+zap;
           window.open(zap? 'https://wa.me/'+zap+'?text='+encodeURIComponent(txt) : 'https://wa.me/?text='+encodeURIComponent(txt), '_blank');
