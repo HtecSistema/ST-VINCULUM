@@ -91,25 +91,28 @@ async function logar(){
   if(!mat){ mostrarErro('DIGITE A MATRICULA'); return; }
   if(!sen){ mostrarErro('DIGITE A SENHA'); return; }
 
-  // === VERIFICA MANUTENÇÃO ===
+  // === VERIFICA MANUTENÇÃO RÁPIDA - SÓ SISTEMA GERAL ===
   try{
-    document.getElementById('erro-login').innerHTML='⏳ Verificando manutenção...';
-    document.getElementById('erro-login').style.display='block';
-    let rManut = await fetch(`${API_MANUT}?action=getmanutencao&t=${Date.now()}`, {cache:'no-store'});
+    let controller = new AbortController();
+    setTimeout(()=>controller.abort(), 2500); // se demorar mais de 2.5s, ignora e deixa entrar
+    let rManut = await fetch(`${API_MANUT}?action=getmanutencao&t=${Date.now()}`, {cache:'no-store', signal: controller.signal});
     let listaManut = await rManut.json();
     if(Array.isArray(listaManut)){
-      let emManut = listaManut.find(x => String(x.status||x.Status||'').toUpperCase().includes('MANUTENCAO'));
+      let emManut = listaManut.find(x => {
+        let st = String(x.status||x.Status||'').toUpperCase().includes('MANUTENCAO');
+        let tp = String(x.tipo||x.TipoCiclo||x.Tipo||'').toUpperCase().includes('SISTEMA GERAL');
+        return st && tp;
+      });
       if(emManut){
-        if(mat !== '00425'){ // só bloqueia os outros, você testa
-          mostrarErro(`🛠️ SISTEMA EM MANUTENÇÃO<br><b>${emManut.tipo||''}</b><br>Até: ${emManut.dataFinal||''} ${emManut.horario||''}`);
+        if(mat !== '00425'){
+          mostrarErro(`🛠️ SISTEMA EM MANUTENÇÃO<br><b>${emManut.tipo||emManut.TipoCiclo||''}</b><br>Até: ${emManut.dataFinal||emManut.DataFinal||''} ${emManut.horario||emManut.Horario||''}`);
           return;
-        } else {
-          document.getElementById('erro-login').innerHTML=`⚠️ MODO TESTE: Em manutenção mas liberado pra 00425`;
         }
       }
     }
-  }catch(e){}
-  document.getElementById('erro-login').style.display='none';
+  }catch(e){
+    // se der erro ou demorar, deixa passar - não trava o login
+  }
 
   try{
     if(cacheDados.length===0){ let res = await apiGet('todos'); cacheDados = res.data||[]; }
@@ -134,6 +137,7 @@ async function logar(){
     mostrarErro('ERRO AO BUSCAR: '+e.message);
   }
 }
+
 
 function mostrarErro(msg){ let el=document.getElementById('erro-login'); el.innerHTML=msg; el.style.display='block'; }
 function limparCampos_ORIG(){ document.getElementById('matricula').value=''; document.getElementById('nome').value=''; document.getElementById('senha').value=''; document.getElementById('senha').type='password'; document.getElementById('senha').style.background='#0F172A'; document.getElementById('senha').style.color='#F1F5F9'; document.getElementById('senha').style.border='1px solid #334155'; document.getElementById('senha').style.fontWeight='400'; document.getElementById('senha').style.fontSize='14px'; document.getElementById('erro-login').style.display='none'; document.getElementById('box-primeiro-acesso').style.display='none'; document.getElementById('box-cadastro-novo').style.display='none'; document.getElementById('box-novo-aluno').style.display='none'; document.getElementById('link-primeiro').style.display='flex'; document.getElementById('link-cadastro-novo').style.display='flex'; document.getElementById('link-novo-aluno').style.display='flex'; document.getElementById('nome').readOnly = true; document.getElementById('nome').style.background = "#0F172A"; document.getElementById('nome').style.color = "#F1F5F9"; document.getElementById('nome').style.border = "1px solid #334155"; modoPreCadastro = false; modoNovoAluno = false; document.getElementById('matricula').placeholder = "MATRÍCULA"; document.getElementById('matricula').focus(); }
