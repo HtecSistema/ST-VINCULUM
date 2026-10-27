@@ -32,9 +32,6 @@
       <button onclick="limparCampos()" style="flex:1; background:#1E293B; color:#F1F5F9; border:1px solid #334155; padding:13px; border-radius:10px; font-weight:700; cursor:pointer;">Limpar</button>
     </div>
     <div id="erro-login"></div>
-
-
-
 <div style="margin-top:18px; text-align:left; background:#1E293B; border:1px solid #334155; border-radius:14px; padding:6px 10px; display:flex; flex-direction:column;">
       <div style="padding:10px 8px 6px; font-size:14px; font-weight:900; color:#fda4af; letter-spacing:0.4px;">ATENÇÃO - Tipos de Acesso</div>
       <div id="link-primeiro" onclick="abrirPrimeiroAcesso()" style="display:flex; align-items:center; gap:10px; padding:12px 8px; cursor:pointer;"><span style="width:32px; height:32px; background:transparent; border:none; border-radius:0; display:grid; place-items:center; font-size:18px;">🔑</span><div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:13px; font-weight:600; color:#cbd5e1;">1 - Tenho Teste</span><span style="font-size:13px; font-weight:800; color:#93c5fd; text-decoration:underline; text-underline-offset:3px;">Preciso da Senha</span></div></div>
@@ -47,7 +44,6 @@
       <div id="sep-masterlista" style="height:1px; background:#334155; margin-left:50px; display:none;"></div>
       <div id="link-masterlista" onclick="abrirMasterLista()" style="display:none; align-items:center; gap:10px; padding:12px 8px; cursor:pointer;"><span style="width:32px; height:32px; background:transparent; border:none; border-radius:0; display:grid; place-items:center; color:#fcd34d; font-size:18px;">📋</span><div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:13px; font-weight:600; color:#cbd5e1;">MasterLista</span><span style="font-size:13px; font-weight:800; color:#fcd34d; text-decoration:underline; text-underline-offset:3px;">Ver Usuarios</span></div></div>
     </div>
-
     <div id="box-primeiro-acesso"><h4 style="margin:0 0 8px 0;font-size:14px">Tenho Teste - Preciso da Senha</h4><div id="primeiro-mat-info" style="padding:8px;background:#0F172A;border:1px solid #334155;border-radius:6px;font-weight:700;font-size:13px;margin-bottom:10px;display:none;color:#F1F5F9"></div><label style="font-size:11px;font-weight:700;color:#94A3B8">DIGITE SEU E-MAIL</label><input type="email" id="emailPrimeiro" placeholder="seuemail@gmail.com" style="text-transform:lowercase;margin-top:4px"><button onclick="enviarSenhaParaEmail()" style="background:#7c3aed">📧 ENVIAR MINHA SENHA NO E-MAIL</button><div id="resultado-email" style="margin-top:10px"></div><div style="text-align:center;margin-top:10px"><span onclick="fecharPrimeiroAcesso()" style="font-size:12px;color:#94A3B8;cursor:pointer">Fechar</span></div></div>
     <div id="box-cadastro-novo"><h4 style="margin:0 0 8px 0;font-size:14px;color:#fb923c">Tenho Teste - Estou nos Pendentes</h4>
       <div id="cadastro-novo-info" style="padding:8px;background:#0F172A;border:1px solid #334155;border-radius:6px;font-weight:700;font-size:12px;margin-bottom:10px;color:#F1F5F9">Carregando Pendentes...</div>
@@ -131,9 +127,6 @@
     </div>
     <span id="hora-atual">-</span>
   </div>
-
-
-
   <div id="frame-acompanhamento.html" class="tela-frame"><iframe id="tela-acompanhamento.html" src="acompanhamento.html?v=20261027.1.07"></iframe></div>
   <div id="frame-AcessoUsuario.html" class="tela-frame"><iframe id="tela-AcessoUsuario.html" src="AcessoUsuario.html?v=20261027.1.07"></iframe></div>
   <div id="frame-Baixar.html" class="tela-frame"><iframe id="tela-Baixar.html" src="Baixar.html?v=20261027.1.07"></iframe></div>
@@ -160,7 +153,7 @@
       <div style="background:#0f0f14; padding:16px; border-radius:14px; border:1px solid #222; height:fit-content">
         <div style="display:grid; gap:10px">
           <div><label style="color:#f59e0b;font-size:10px;font-weight:900">COD</label><input id="mCodNovo" placeholder="001" style="width:100%;margin-top:4px;background:#15151d;border:1px solid #2a2a3a;border-radius:10px;padding:14px;color:#fff;outline:none;font-size:16px"></div>
-          <div><label style="color:#f59e0b;font-size:10px;font-weight:900">TIPO DE CICLO</label><select id="mTipoNovo" style="width:100%;margin-top:4px;background:#15151d;border:1px solid #2a2a3a;border-radius:10px;padding:14px;color:#fff;font-size:15px"><option>CICLO 01</option><option>CICLO 02</option><option>CICLO 03</option><option>CICLO 04</option><option>CICLO 05</option><option>CICLO 06</option><option>CICLO 07</option><option>CICLO 08</option></select></div>
+          <div><label style="color:#f59e0b;font-size:10px;font-weight:900">TIPO DE CICLO</label><select id="mTipoNovo" style="width:100%;margin-top:4px;background:#15151d;border:1px solid #2a2a3a;border-radius:10px;padding:14px;color:#fff;font-size:15px"><option value="SISTEMA GERAL">🚨 SISTEMA GERAL - BLOQUEIA TODOS</option><option>CICLO 01</option><option>CICLO 02</option><option>CICLO 03</option><option>CICLO 04</option><option>CICLO 05</option><option>CICLO 06</option><option>CICLO 07</option><option>CICLO 08</option></select></div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
             <div><label style="color:#f59e0b;font-size:10px;font-weight:900">DATA INICIO</label><input id="mInicioNovo" type="date" style="width:100%;margin-top:4px;background:#15151d;border:1px solid #2a2a3a;border-radius:10px;padding:14px;color:#fff;font-size:14px"></div>
             <div><label style="color:#f59e0b;font-size:10px;font-weight:900">DATA FINAL</label><input id="mFinalNovo" type="date" style="width:100%;margin-top:4px;background:#15151d;border:1px solid #2a2a3a;border-radius:10px;padding:14px;color:#fff;font-size:14px"></div>
