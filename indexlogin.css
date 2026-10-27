@@ -71,10 +71,9 @@ button.menu-btn.ativo{background:#3B82F6; color:white; border-color:#3B82F6; box
 }
 
 .card-login .logo img {
-  width: 280px !important;
+  width: 150px !important;
   height: auto !important;
-  background: transparent !important;
-  mix-blend-mode: normal !important;
+  background: #1E293B !important;
   display: block;
   margin: 0 auto;
 }
