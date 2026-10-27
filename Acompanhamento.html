@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acompanhamento - reltodos AO VIVO</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="acompanhamento.css">
+</head>
+<body>
+<div class="top">
+  <h1><i>◧</i> reltodos - AO VIVO</h1>
+  <div class="bar">
+    <span class="pill live"><b id="status">Conectando...</b></span>
+    <span class="pill mono" id="count">0</span>
+    <label style="display:flex;gap:6px;align-items:center;font-size:12px"><input type="checkbox" id="auto" checked> Auto - só novos</label>
+    <button onclick="loadAll(true)">↻ Recarregar tudo</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="toolbar">
+    <div class="filters">
+      <input id="fNome" placeholder="Nome">
+      <input id="fMat" placeholder="Matrícula" style="width:110px">
+      <input id="fTeste" placeholder="Teste">
+      <select id="fSexo">
+        <option value="">Sexo (todos)</option>
+        <option value="MASCULINO">Masculino</option>
+        <option value="FEMININO">Feminino</option>
+        <option value="M">M</option>
+        <option value="F">F</option>
+      </select>
+      <select id="fFuncao">
+        <option value="">Função Eclesiástica (todas)</option>
+        <option value="MEMBRO">Membro</option>
+        <option value="OBREIRO">Obreiro</option>
+        <option value="DIACONO">Diácono</option>
+        <option value="PRESBITERO">Presbítero</option>
+        <option value="EVANGELISTA">Evangelista</option>
+        <option value="PASTOR">Pastor</option>
+      </select>
+      <input id="q" placeholder="Busca geral...">
+      <button onclick="limparFiltros()" class="btn-clear">Limpar</button>
+    </div>
+    <b id="info" class="muted"></b>
+  </div>
+  <div class="progress"><i id="pbar"></i></div>
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr>
+<th>item</th>
+<th>CONGREGAÇÃO</th>
+<th class="r">MATRICULA</th>
+<th>NOME</th>
+<th>WHATSAPP</th>
+<th>Func Ecles</th>
+<th>Teste</th>
+<th class="r">PONTUAÇÃO</th>
+<th>Ciclo</th>
+<th>Sexo</th>
+<th>BatAgua</th>
+<th>Func Cong</th>
+<th>Data</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <div class="foot"><span>item • CONGREGAÇÃO • MATRICULA • NOME • WHATSAPP • Func Ecles • Teste • PONTUAÇÃO • Ciclo • Sexo • BatAgua • Func Cong • Data</span><span class="mono" id="foot">aguardando</span></div>
+</div>
+
+<script src="acompanhamento.js"></script>
+</body>
+</html>
