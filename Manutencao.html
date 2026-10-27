@@ -3,14 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Manutenção - Htec SistemaTD</title>
-<style>
-body{background:#08080c;color:#fff;font-family:sans-serif;margin:0}
-.grid-manut{display:grid;grid-template-columns:380px 1fr;gap:16px;padding:16px}
-@media(max-width:900px){.grid-manut{grid-template-columns:1fr}}
-.botoes-manut{display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:8px;margin-top:12px}
-#wrapTabelaManut{max-height:70vh;overflow:auto}
-</style>
+<title>Manutenção - Htec ST-VINCULUM</title>
+<link rel="stylesheet" href="Manutencao.css">
 </head>
 <body>
 <div style="padding:16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; border-bottom:1px solid #1f1f28">
@@ -43,11 +37,18 @@ body{background:#08080c;color:#fff;font-family:sans-serif;margin:0}
     </div>
     <div class="botoes-manut">
       <button onclick="limparFormManutNovo()" style="background:#1f1f28; border:1px solid #2a2a3a; border-radius:10px; padding:14px; color:#a1a1aa; font-weight:800; cursor:pointer; font-size:11px">🧹 LIMPAR</button>
-      <button onclick="excluirTudoManutNovo()" style="background:#2a1515; border:1px solid #7f1d1d; border-radius:10px; padding:14px; color:#f87171; font-weight:800; cursor:pointer; font-size:11px">🗑️ EXCLUIR TUDO</button>
-      <button onclick="lancarManutencaoNova()" id="btnLancarManut" style="background:linear-gradient(90deg,#f59e0b,#ea580c); border:0; border-radius:10px; padding:14px; color:#000; font-weight:900; cursor:pointer; font-size:11px">🚀 SALVAR NA PLANILHA</button>
+      <button onclick="excluirTudoManutNovo()" style="background:#2a1515; border:1px solid #7f1d1d; border-radius:10px; padding:14px; color:#f87171; font-weight:800; cursor:pointer; font-size:11px">🗑️ EXCLUIR</button>
+      <button onclick="lancarManutencaoNova()" id="btnLancarManut" style="background:linear-gradient(90deg,#f59e0b,#ea580c); border:0; border-radius:10px; padding:14px; color:#000; font-weight:900; cursor:pointer; font-size:11px">🚀 SALVAR</button>
     </div>
   </div>
   <div style="background:#0f0f14; border-radius:14px; border:1px solid #222; overflow:hidden; display:flex; flex-direction:column">
+    <!-- 👇 AQUI COLOCA O CAMPO DE PESQUISA - EM CIMA DA TABELA -->
+    <div style="padding:10px 12px; display:flex; gap:8px; background:#0a0a0f; border-bottom:1px solid #1f1f28">
+      <input id="buscaManutNovo" oninput="filtrarManutNova()" placeholder="🔍 PESQUISAR COD, CICLO, STATUS..." style="flex:1;background:#15151d;border:1px solid #2a2a3a;border-radius:8px;padding:10px 12px;color:#fff;font-size:12px;outline:none">
+      <button onclick="document.getElementById('buscaManutNovo').value='';filtrarManutNova()" style="background:#1f1f28;border:1px solid #333;border-radius:8px;padding:0 12px;color:#a1a1aa;cursor:pointer">✕</button>
+    </div>
+    <!-- FIM DA PESQUISA -->
+
     <div id="wrapTabelaManut">
       <table style="width:100%; border-collapse:collapse; font-size:11px; color:#d4d4d8">
         <thead style="position:sticky; top:0; background:#15151d; z-index:1">
