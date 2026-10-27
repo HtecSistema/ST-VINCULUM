@@ -69,3 +69,12 @@ button.menu-btn.ativo{background:#3B82F6; color:white; border-color:#3B82F6; box
 #box-primeiro-acesso *, #box-cadastro-novo *, #box-novo-aluno *, #box-master *, #box-masterlista *{
   color:#F1F5F9;
 }
+
+.card-login .logo img {
+  width: 280px !important;
+  height: auto !important;
+  background: transparent !important;
+  mix-blend-mode: normal !important;
+  display: block;
+  margin: 0 auto;
+}
