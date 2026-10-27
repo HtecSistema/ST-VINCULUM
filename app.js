@@ -59,7 +59,7 @@ function mostrarModalManutencao(info){
 }
 // ===== FIM NOVO MANUTENCAO =====
 // ===== NOVO - SUBSTITUI O ALERT "Essa página diz" - ADICIONADO AGORA =====
-function mostrarAlerta(msg, titulo = "SistemaTD - Htec"){
+function mostrarAlerta(msg, titulo = "ST-VINCULUM - Htec"){
   let old=document.getElementById('modalAlertaTD'); if(old) old.remove();
   let div=document.createElement('div');
   div.id='modalAlertaTD';
