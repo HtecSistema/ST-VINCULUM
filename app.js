@@ -1,3 +1,4 @@
+  const API_LIB = 'https://script.google.com/macros/s/AKfycbz2phEY97FZOsloQriNH9i0cWQ0Qex0PAr02jbL18qZHjHwnTtOB4tRcwJRIQbHjMYC/exec';
 const API_URL = 'https://script.google.com/macros/s/AKfycbxLXw-nu5oXXtjE8HKik_W_bbT9CGjTNJWw-dUm4wWYv-hjcz1dOhMHLxoUTRHGJA3D0A/exec';
 // ===== NOVO - API LOG - PARA MANUTENCAO - 09/10/2026 - NAO APAGA NADA ACIMA =====
 const API_URL_LOG = 'https://script.google.com/macros/s/AKfycbz94-3iCkeVDD7Za2XAYzYL7BtCM3rWWMxGc_9kL-xtpnRoog91IR4KmqgWzLXYHIsb/exec';
@@ -363,9 +364,34 @@ async function buscarMatriculaBD1(){
   }catch(e){ toast('Erro: '+e.message,'err'); }
 }
 
-    
-
-
+// ===== INICIO VerTestes =====
+async function VerTestes(matParam){
+  // PEGA DA FOTO - MATRICULA * PESQUISE = 00425
+  let mat = (matParam || document.getElementById('Matricula')?.value || getMatriculaAtual() || '').toString().replace(/\D/g,'').padStart(5,'0');
+  
+  if(!mat || mat=='00000') return alert('Digite matrícula no campo MATRICULA * PESQUISE');
+  
+  let btn = document.querySelector('.btn-buscar');
+  let elStatus = document.getElementById('status') || document.getElementById('listaTestes');
+  
+  if(btn){ btn.innerHTML = '⏳ GERANDO...'; btn.disabled = true; }
+  if(elStatus) elStatus.innerHTML = 'Gerando para MAT: '+mat+'...';
+  
+  try{
+    let url = API_LIB + '?action=realizado&matricula='+mat+'&t='+Date.now();
+    let r = await fetch(url);
+    let j = await r.json();
+    if(elStatus) elStatus.innerHTML = `
+      <div style="background:#ecfdf5;border:1px solid #16a34a;border-radius:10px;padding:12px;margin-top:10px">
+        <b style="color:#16a34a">✅ GERADO - MAT ${j.matricula}</b><br>
+        Achados: <b>${j.encontrados||0}</b> | Gravados: <b>${j.enviados||0}</b>
+      </div>`;
+  }catch(e){
+    if(elStatus) elStatus.innerHTML = '<span style="color:red">ERRO: '+e.message+'</span>';
+  }finally{
+    if(btn){ btn.innerHTML = '🔍 BUSCAR'; btn.disabled = false; }
+  }
+}// ===== FIM VerTestes =====
 
 function tornarMovel(modalId, handleId){
   let modal = document.getElementById(modalId);
@@ -511,7 +537,17 @@ async function abrirTeste52(){
   modal.innerHTML = `<div style="background:#f8f9fa;width:96%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.3)"><div id="handleTestes" style="background:#111;color:white;padding:12px;display:flex;align-items:center;gap:12px"><button onclick="document.getElementById('modalTestes').remove()" style="background:white;color:#111;border:0;padding:8px 14px;border-radius:8px;font-weight:900">✕ FECHAR</button><h3 id="tituloTeste" style="margin:0;font-size:14px;font-weight:900;flex:1;cursor:move">📝 BEM VINDO AOS TESTES</h3></div><div id="listaTestes" style="overflow-y:auto;padding:10px;background:#f8f9fa">Carregando... Por gentileza, Aguarde!</div></div>`;
   document.body.appendChild(modal);
   try{ tornarMovel('modalTestes','handleTestes'); }catch(e){}
+
+  let matriculaBusca = (getMatriculaAtual() || document.getElementById('Matricula')?.value || '').toString().replace(/\D/g,'').padStart(5,'0');
+  console.log('MAT DA TELA:', matriculaBusca);
+
   try{
+    // === GERA O RELATORIO LA NA TESTLINK ===
+    if(matriculaBusca && matriculaBusca != '00000'){
+      await fetch(API_LIB + '?action=realizado&matricula='+matriculaBusca+'&t='+Date.now());
+    }
+
+    // === AGORA BUSCA E MOSTRA OS TESTES COMO ANTES ===
     let r = await apiGet('testeLink',{});
     listaTestes = r.data || r || [];
     try{
@@ -519,9 +555,6 @@ async function abrirTeste52(){
       listaLiberacao = rLib.data || rLib || [];
     }catch(e){ listaLiberacao = []; }
 
-    let matriculaBusca = getMatriculaAtual();
-    console.log('MATRICULA DA TELA:', matriculaBusca);
-    
     if(!matriculaBusca || matriculaBusca=='00000'){
       document.getElementById('tituloTeste').innerText = '📝 TESTES - '+listaTestes.length+' | SEM MATRICULA';
       listaFeitos = [];
@@ -532,8 +565,11 @@ async function abrirTeste52(){
     }
     
     renderTestes(listaTestes);
+
   }catch(e){ document.getElementById('listaTestes').innerHTML='ERRO: '+e.message; }
 }
+
+
 
 function renderTestes(lista){
   listaTestes = lista;
@@ -548,35 +584,37 @@ function renderTestes(lista){
     let nf=String(cont[ciclo]).padStart(2,'0');
     let cod=t.Cod||(ciclo+'-'+nf);
     let tema=t.Tema||'Conhecendo Jesus e o Seu Reino';
-    let ja=!!abertos[cod];
-    
-    // VERIFICA SE FEZ NO BD (COLUNA F)
-    let feitoBD = listaFeitos.find(f=>{
-      let c = String(f.ciclo||'').toUpperCase();
-      let tt = String(f.numeroTeste||'').toUpperCase();
-      let n = (tt.match(/\d+/)||[''])[0].padStart(2,'0');
-      return c===ciclo && n===nf;
-    });
 
-    let cicloNumBotao = (ciclo.match(/\d+/)||[''])[0].replace(/^0+/,'') || '0';
-    let testeNumBotao = nf.replace(/^0+/,'') || '0';
-    let manut = checkCicloEmManutencao(ciclo);
-    let emReedicao = listaLiberacao.some(it=>{
+    // ===== CORRIGIDO - I com B e J com D =====
+    let cNum = (ciclo.match(/\d+/)||['0'])[0].replace(/^0+/,'')||'0';
+    let tNum = nf.replace(/^0+/,'')||'0';
+    let chave = cNum+'-'+tNum;
+    let info = listaFeitos.find(f=> String(f.chave||'').replace(/^0+/,'')==chave || String(f.cod||'').toUpperCase()==cod.toUpperCase()) || {};
+
+    let isFeito = info.feito===true || info.status==='REALIZADO';
+    let statusTexto = isFeito ? 'REALIZADO' : 'PENDENTE'; // <--- AQUI TAVA BUGADO
+    
+    let cicloNumBotao = cNum;
+    let testeNumBotao = tNum;
+    
+    let manut = info.manutencao ? info.manutencao : checkCicloEmManutencao(ciclo);
+    let emReedicao = info.liberacao ? true : listaLiberacao.some(it=>{
       let c = String(it.CICLO || it.E || it.e || '').toUpperCase().trim();
       let tt = String(it.TESTE || it.F || it.f || '').toUpperCase().trim();
       if(!c ||!tt) return false;
-      let cNum = (c.match(/\d+/)||[''])[0].replace(/^0+/,'') || '0';
-      let tNum = (tt.match(/\d+/)||[''])[0].replace(/^0+/,'') || '0';
-      return cNum===cicloNumBotao && tNum===testeNumBotao;
+      let cNumL = (c.match(/\d+/)||[''])[0].replace(/^0+/,'') || '0';
+      let tNumL = (tt.match(/\d+/)||[''])[0].replace(/^0+/,'') || '0';
+      return cNumL===cicloNumBotao && tNumL===testeNumBotao;
     });
+
     let cor = cores[ciclo] || '#111827';
     let card = document.createElement('div');
-    let isFeito = !!feitoBD;
-let bgCard = isFeito ? '#ecfdf5' : (manut ? '#fff7ed' : (emReedicao ? '#fef3c7' : 'white'));
+    let bgCard = isFeito ? '#ecfdf5' : (manut ? '#fff7ed' : (emReedicao ? '#fef3c7' : 'white'));
     let borderColor = isFeito ? '#16a34a' : ((manut || emReedicao) ? '#f59e0b' : cor);
-card.style = `background:${bgCard};border-left:6px solid ${borderColor};border-radius:12px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;opacity:${emReedicao?'0.9':''}`;
-card.innerHTML = `<div style="flex:1"><span style="background:${isFeito ? '#16a34a' : ((manut||emReedicao)?'#f59e0b':cor)};color:white;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900">${ciclo}</span><span style="font-weight:900;font-size:13px"> TESTE ${nf}</span><div style="font-size:11px;margin-top:2px;color:#333">${tema}</div></div>`;
-   let btn = document.createElement('button');
+    card.style = `background:${bgCard};border-left:6px solid ${borderColor};border-radius:12px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;opacity:${emReedicao?'0.9':''}`;
+    card.innerHTML = `<div style="flex:1"><span style="background:${isFeito ? '#16a34a' : ((manut||emReedicao)?'#f59e0b':cor)};color:white;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900">${ciclo}</span><span style="font-weight:900;font-size:13px"> TESTE ${nf} - ${statusTexto}</span><div style="font-size:11px;margin-top:2px;color:#333">${tema}</div></div>`;
+    
+    let btn = document.createElement('button');
     if(isFeito){
       btn.innerText = '✅ Realizado';
       btn.style = `background:#16a34a;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:130px;width:130px;text-align:center`;
@@ -588,7 +626,7 @@ card.innerHTML = `<div style="flex:1"><span style="background:${isFeito ? '#16a3
     }else if(emReedicao){
       btn.innerText = '⏸️ Recuperação';
       btn.style = `background:#9ca3af;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:not-allowed;min-width:130px;width:130px;text-align:center`;
-      btn.onclick = () => { mostrarAlerta('Teste LIBERADO para Recuperação. Por gentileza, aguarde', '⏸️ RECUPERAÇÃO'); toast('Teste LIBERADO para Recuperação. Por gentileza, aguarde','err'); };
+      btn.onclick = () => { mostrarAlerta('Teste LIBERADO para Recuperação. Por gentileza, aguarde', '⏸️ RECUPERAÇÃO'); };
     }else{
       btn.innerText = '📋 Pendente';
       btn.style = `background:${cor};color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:130px;width:130px;text-align:center`;
