@@ -233,12 +233,19 @@ async function enviarParaLiberacao(){
   let btn=document.getElementById('btnEnviar');
   btn.disabled=true;
   btn.innerText="ENVIANDO...";
-  setProgresso(50,'ENVIANDO... LIMPANDO A2:J E GERANDO LINK H');
+  setProgresso(50,'ENVIANDO... LIMPANDO A2:J E GERANDO LINK H + R:S');
+
+  // --- AQUI GERA CICLO E TESTE PRA R e S ---
+  let dadosRS = dadosVisiveis.map(r => ({
+    CICLO: r.CICLO || r.E || '',
+    TESTE: r.TESTE || r.F || ''
+  }));
+
   try{
     let resp = await fetch(URL_WEBAPP, {
       method:'POST',
       headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({acao:'salvarliberacao', dados:dadosVisiveis})
+      body: JSON.stringify({acao:'salvarliberacao', dados:dadosVisiveis, rs:dadosRS})
     });
     let txt = await resp.text();
     let res = {};
@@ -246,11 +253,13 @@ async function enviarParaLiberacao(){
     retornoEnvio(res);
   }catch(err){
     let dadosEncoded = encodeURIComponent(JSON.stringify(dadosVisiveis));
+    let rsEncoded = encodeURIComponent(JSON.stringify(dadosRS));
     let s=document.createElement('script');
-    s.src=URL_WEBAPP+"?acao=salvarliberacao&dados="+dadosEncoded+"&callback=retornoEnvio&t="+Date.now();
+    s.src=URL_WEBAPP+"?acao=salvarliberacao&dados="+dadosEncoded+"&rs="+rsEncoded+"&callback=retornoEnvio&t="+Date.now();
     document.body.appendChild(s);
   }
 }
+
 
 function retornoEnvio(res){
   let btn=document.getElementById('btnEnviar');
@@ -329,7 +338,7 @@ function gerarImagemZapProfissional(){
 
   let hoje = new Date().toLocaleDateString('pt-BR');
   ctx.textAlign = 'center'; ctx.fillStyle = '#c9a86a'; ctx.font = '600 30px Segoe UI, Arial';
-  ctx.fillText('IEADMI • SistemaTD • '+hoje, canvas.width/2, canvas.height-38);
+  ctx.fillText('ADEMIP • ST-VINCULUM • '+hoje, canvas.width/2, canvas.height-38);
 
   // PREVIEW
   let dataUrl = canvas.toDataURL('image/png');
