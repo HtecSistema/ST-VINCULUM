@@ -20,7 +20,7 @@
 <body>
 <div id="tela-login">
   <div class="card-login">
-    <div class="logo" style="margin-bottom:8px;"><img src="logo-branco.png" style="width:100px; height:auto; display:block; margin:0 auto;"></div>
+    <div class="logo" style="margin-bottom:8px;"><img src="logo-branco.png" style="width:140px; height:auto; display:block; margin:0 auto;"></div>
     <p style="margin-top:10px;">Sistema de Teste do Discipulado</p>
     <h2 style="margin-top:22px;">Bem-vindo</h2>
     <p>Informe sua matrícula e senha</p>
@@ -113,7 +113,7 @@
   <button class="menu-btn" onclick="abrir('Relatorio.html', this, 'Certificados')"><span class="icon">📊</span> Certificados</button>
   <button class="menu-btn" onclick="abrir('Liberacao.html', this, 'Liberação')"><span class="icon">🔓</span> Liberação</button>
   <button class="menu-btn" onclick="abrir('Baixar.html', this, 'Lições')"><span class="icon">📖</span> Lições</button>
-  <button id="btn-manutencao" class="menu-btn" style="display:none" onclick="abrir('Manutencao.html', this, 'Manutenção')"><span class="icon">🛠️</span> Manutenção</button>
+  <button id="btn-manutencao" class="menu-btn" onclick="abrir('Manutencao.html', this, 'Manutenção')"><span class="icon">🛠️</span> Manutenção</button>
   <button id="btn-movimento-adm" class="menu-btn" style="display:none" onclick="abrir('MovimentoAdm.html', this, 'Movimento Adm')"><span class="icon">📊</span> Relatório Administrador</button>
   <button id="btn-acesso-usuario" class="menu-btn" style="display:none" onclick="abrir('AcessoUsuario.html', this, 'Acesso Usuário')"><span class="icon">👤</span> Relatório Usuario</button>
   <button id="btn-sair" class="menu-btn" onclick="sair()"><span class="icon">🚪</span> Sair do Sistema</button>
@@ -133,59 +133,9 @@
   <div id="frame-Cadastro.html" class="tela-frame ativa"><iframe id="tela-Cadastro.html" src="Cadastro.html?v=20261027.1.07"></iframe></div>
   <div id="frame-CadastroAdm.html" class="tela-frame"><iframe id="tela-CadastroAdm.html" src="CadastroAdm.html?v=20261027.1.07"></iframe></div>
   <div id="frame-Liberacao.html" class="tela-frame"><iframe id="tela-Liberacao.html" src="Liberacao.html?v=20261027.1.07"></iframe></div>
-  
-  <div id="frame-Manutencao.html" class="tela-frame" style="background:#08080c;overflow:auto">
-    <div style="padding:16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; border-bottom:1px solid #1f1f28">
-      <div style="display:flex; align-items:center; gap:12px">
-        <div style="width:42px;height:42px;background:linear-gradient(135deg,#f59e0b,#ea580c);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px">🚀</div>
-        <div>
-          <div style="color:#fff; font-weight:900; font-size:14px">LANÇAR MANUTENÇÃO</div>
-          <div style="color:#71717a; font-size:9px; letter-spacing:1px">NIVEL GALAXY • PLANILHA Manutencao</div>
-        </div>
-      </div>
-      <div style="display:flex; gap:8px; align-items:center">
-        <span id="totalManutNovo" style="color:#f59e0b; font-weight:800; font-size:11px">0 REGISTROS</span>
-        <button onclick="carregarManutencaoNova()" style="background:#1f1f28; border:1px solid #333; border-radius:8px; padding:6px 10px; color:#fff; font-size:11px; cursor:pointer">↻</button>
-        <span id="msgManutNovo" style="color:#22c55e; font-size:11px; font-weight:700; margin-left:8px"></span>
-      </div>
-    </div>
-    <div class="grid-manut">
-      <div style="background:#0f0f14; padding:16px; border-radius:14px; border:1px solid #222; height:fit-content">
-        <div style="display:grid; gap:10px">
-          <div><label style="color:#f59e0b;font-size:10px;font-weight:900">COD</label><input id="mCodNovo" placeholder="001" style="width:100%;margin-top:4px;background:#15151d;border:1px solid #2a2a3a;border-radius:10px;padding:14px;color:#fff;outline:none;font-size:16px"></div>
-          <div><label style="color:#f59e0b;font-size:10px;font-weight:900">TIPO DE CICLO</label><select id="mTipoNovo" style="width:100%;margin-top:4px;background:#15151d;border:1px solid #2a2a3a;border-radius:10px;padding:14px;color:#fff;font-size:15px"><option value="SISTEMA GERAL">🚨 SISTEMA GERAL - BLOQUEIA TODOS</option><option>CICLO 01</option><option>CICLO 02</option><option>CICLO 03</option><option>CICLO 04</option><option>CICLO 05</option><option>CICLO 06</option><option>CICLO 07</option><option>CICLO 08</option></select></div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
-            <div><label style="color:#f59e0b;font-size:10px;font-weight:900">DATA INICIO</label><input id="mInicioNovo" type="date" style="width:100%;margin-top:4px;background:#15151d;border:1px solid #2a2a3a;border-radius:10px;padding:14px;color:#fff;font-size:14px"></div>
-            <div><label style="color:#f59e0b;font-size:10px;font-weight:900">DATA FINAL</label><input id="mFinalNovo" type="date" style="width:100%;margin-top:4px;background:#15151d;border:1px solid #2a2a3a;border-radius:10px;padding:14px;color:#fff;font-size:14px"></div>
-          </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
-            <div><label style="color:#f59e0b;font-size:10px;font-weight:900">HORARIO</label><input id="mHoraNovo" type="time" style="width:100%;margin-top:4px;background:#15151d;border:1px solid #2a2a3a;border-radius:10px;padding:14px;color:#fff;font-size:14px"></div>
-            <div><label style="color:#f59e0b;font-size:10px;font-weight:900">STATUS</label><select id="mStatusNovo" style="width:100%;margin-top:4px;background:#15151d;border:1px solid #f59e0b;border-radius:10px;padding:14px;color:#fff;font-weight:700;font-size:13px"><option>EM MANUTENCAO</option><option>ATIVO</option><option>CONCLUIDO</option><option>EM OBSERVAÇÃO</option></select></div>
-          </div>
-        </div>
-        <div class="botoes-manut">
-          <button onclick="limparFormManutNovo()" style="background:#1f1f28; border:1px solid #2a2a3a; border-radius:10px; padding:14px; color:#a1a1aa; font-weight:800; cursor:pointer; font-size:11px">🧹 LIMPAR</button>
-          <button onclick="excluirTudoManutNovo()" style="background:#2a1515; border:1px solid #7f1d1d; border-radius:10px; padding:14px; color:#f87171; font-weight:800; cursor:pointer; font-size:11px">🗑️ EXCLUIR TUDO</button>
-          <button onclick="lancarManutencaoNova()" id="btnLancarManut" style="background:linear-gradient(90deg,#f59e0b,#ea580c); border:0; border-radius:10px; padding:14px; color:#000; font-weight:900; cursor:pointer; font-size:11px">🚀 SALVAR NA PLANILHA</button>
-        </div>
-      </div>
-      <div style="background:#0f0f14; border-radius:14px; border:1px solid #222; overflow:hidden; display:flex; flex-direction:column">
-        <div id="wrapTabelaManut">
-          <table style="width:100%; border-collapse:collapse; font-size:11px; color:#d4d4d8">
-            <thead style="position:sticky; top:0; background:#15151d; z-index:1">
-              <tr style="text-align:left; color:#71717a; font-size:9px"><th style="padding:10px; border-bottom:1px solid #222">COD</th><th style="padding:10px; border-bottom:1px solid #222">CICLO</th><th style="padding:10px; border-bottom:1px solid #222">INICIO</th><th style="padding:10px; border-bottom:1px solid #222">FINAL</th><th style="padding:10px; border-bottom:1px solid #222">HORA</th><th style="padding:10px; border-bottom:1px solid #222">STATUS</th><th style="padding:10px; border-bottom:1px solid #222">AÇAO</th></tr>
-            </thead>
-            <tbody id="tbodyManutNovo"></tbody>
-          </table>
-        </div>
-        <div style="padding:8px 12px; background:#0a0a0f; border-top:1px solid #1f1f28; color:#52525b; font-size:9px; text-align:center">👆 Toque na linha pra editar • ENTER destaca • Mobile: arrasta pro lado</div>
-      </div>
-    </div>
-  </div>
-
+  <div id="frame-Manutencao.html" class="tela-frame"><iframe id="tela-Manutencao.html" src="Manutencao.html?v=20261027.1.07"></iframe></div>
   <div id="frame-MovimentoAdm.html" class="tela-frame"><iframe id="tela-MovimentoAdm.html" src="MovimentoAdm.html?v=20261027.1.07"></iframe></div>
   <div id="frame-Relatorio.html" class="tela-frame"><iframe id="tela-Relatorio.html" src="Relatorio.html?v=20261027.1.07"></iframe></div>
-</div>
 </div>
 </div>
 <div id="aviso-entrada-roxo"><div style="background:#1E293B;max-width:380px;width:100%;border-radius:20px;padding:28px 24px;text-align:center;font-family:sans-serif;box-shadow:0 20px 60px rgba(0,0,0,0.4);border:1px solid #334155"><div style="font-size:36px; margin-bottom:8px;">🔑</div><h3 style="margin:0 0 12px 0;font-weight:900;font-size:16px;color:#a78bfa">ATENÇÃO ALUNO</h3><p style="font-size:14px;line-height:1.5;margin:0 0 22px 0;text-align:left;color:#F1F5F9">Por gentileza, clique na opção <b>PESQUISE</b> e altere os seus dados imediatamente, salvando em ALTERAR, validando assim o seu acesso aos testes.<br><br><small>Havendo duvidas, contate HtecSistemas 91 98603-2155</small></p><button onclick="fecharAvisoEntradaRoxo()" style="background:#7c3aed;color:white;border:0;padding:14px;width:100%;border-radius:12px;font-weight:900;cursor:pointer">OK - ENTENDI</button></div></div>
