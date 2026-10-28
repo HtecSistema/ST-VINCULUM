@@ -70,7 +70,7 @@
 <div id="acoes-extra" class="botoes">
 <button id="btnBoletim" onclick="gerarBoletim()" class="b-bol">📄 BOLETIM</button>
 <button id="btnCertificado" onclick="gerarCertificado()" class="b-cert">🎓 CERTIFICADO</button>
-  <button id="btnBoletimZap" onclick="VBoletimZap()" class="b-zap">📢 INFORMATIVO</button>
+  <button id="btnBoletimZap" onclick="VBoletimZap()" class="b-zap">📢 INFORMATIVOx</button>
 <button id="btnWordDrive" onclick="gerarWordDrive()" class="b-excel" style="background:#2b579a">📝 WORD DRIVE</button>
 </div>
 <div id="boletim"></div>
@@ -113,24 +113,16 @@ checks.forEach(chk => {
 </script>
 
 <script>
-function enviarBoletimZap(){
-  var total = document.querySelectorAll('#tab tbody tr').length || 282;
-
-  var boletim = `-- Boletim Informativo --
-
-Povo de Deus
-Total de alunos no curso: 282
-Teste Realizado: ${total} (filtrados) / 4045 (geral)
-Concluintes: 26 Alunos
-Em conclusao: 11 Alunos (aguardando liberaçao para restauraçao de notas)
-
-Se anime povo!
-
-Outros cursos serao disponibilizados por aqui. 
-Aguardando nosso Pastor deliberar`;
-
-  window.open("https://wa.me/?text=" + encodeURIComponent(boletim), "_blank");
-}
+const checks = document.querySelectorAll('#wrapChecks input[type="checkbox"]');
+checks.forEach(chk => {
+  chk.addEventListener('change', function(){
+    if(this.checked){
+      checks.forEach(outro => {
+        if(outro !== this) outro.checked = false;
+      });
+    }
+  });
+});
 </script>
 
 </body>
