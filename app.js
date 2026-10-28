@@ -768,6 +768,8 @@ async function abrirTeste(linkOriginal, codUnico, rowId){
   }catch(e){}
   mostrarAvisoAntesAbrir(base);
 }
+
+
 (function(){
   function ativarArraste(){
     const container = document.getElementById('listViewContainer'); if(!container) return;
@@ -797,6 +799,17 @@ window.addEventListener('message', function(e){
     setarMatriculaLogin();
     aplicarRegraTrava();
   }
+  if(e.data && e.data.tipo==='AUTO_PESQUISE'){
+    setTimeout(async ()=>{
+      try{
+        setarMatriculaLogin();
+        aplicarRegraTrava();
+        if(typeof buscarMatriculaBD1 === 'function'){
+          await buscarMatriculaBD1();
+        }
+      }catch(err){}
+    }, 400);
+  }
 });
 window.addEventListener('load', function(){
   setTimeout(()=>{
@@ -806,8 +819,10 @@ window.addEventListener('load', function(){
     if(mat) document.getElementById('Matricula').value=normaliza5Dig(mat);
     if(sen) document.getElementById('Senha').value=sen.toUpperCase();
     if(mat||sen){ aplicarRegraTrava(); }
-  }, 700);
+  }, 400);
 });
+
+
 async function recuperar(){
   let m = document.getElementById('modalRecuperar'); if(m){ m.remove(); return; }
   let matAtual = getMatriculaLogin();
