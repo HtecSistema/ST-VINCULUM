@@ -2,153 +2,57 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Htec | ST-VINCULUM</title>
-<link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
-<link rel="icon" type="image/png" sizes="512x512" href="favicon.png">
-<link rel="apple-touch-icon" sizes="180x180" href="c.png">
-<link rel="manifest" href="manifest.json">
-<meta property="og:title" content="Htec | ST-VINCULUM">
-<meta property="og:description" content="ADEMIP 360 V1">
-<meta property="og:image" content="https://htecsistema.github.io/ST-VINCULUM/og-image.jpeg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://htecsistema.github.io/ST-VINCULUM/">
-<link rel="stylesheet" href="indexlogin.css?v=20261027.1.07">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Início | ST-VINCULUM</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Inter,sans-serif;}
+html,body{width:100%; max-width:100%; overflow-x:hidden;}
+body{background:#0F172A; color:#F1F5F9; min-height:100vh; display:flex; flex-direction:column; padding:20px 18px 12px 18px;}
+.top{display:flex; align-items:center; gap:16px; width:100%;}
+.logo{width:86px; height:86px; flex-shrink:0; border-radius:18px; overflow:hidden; background:#1E293B; display:grid; place-items:center; box-shadow:0 6px 22px rgba(0,0,0,.4);}
+.logo img{width:100%; height:100%; object-fit:cover;}
+.badge{display:inline-flex; align-items:center; gap:10px; color:#a78bfa; font-size:15px; font-weight:900; letter-spacing:1px;}
+.v-icon{width:28px; height:28px; background:linear-gradient(135deg,#7c3aed,#a78bfa); color:#fff; border-radius:8px; display:grid; place-items:center; font-weight:900; font-size:14px;}
+.sub{font-size:15.5px; color:#CBD5E1; line-height:1.4; margin-top:6px; font-weight:500;}
+.sub-small{font-size:11.5px; color:#94A3B8; line-height:1.3; margin-top:4px; font-weight:400; font-style:italic; letter-spacing:.2px;}
+.center-wrap{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; padding-top:60px; padding-bottom:40px;}
+.title{font-size:clamp(30px, 9vw, 36px); font-weight:900; text-align:center; line-height:1.1; letter-spacing:-0.8px;}
+.title span{background:linear-gradient(90deg,#a78bfa,#d8b4fe); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;}
+.line{width:60px; height:3px; background:linear-gradient(90deg,#7c3aed,#a78bfa); border-radius:14px; margin:16px auto 0 auto;}
+.verse-center{margin-top:18px; text-align:center; width:100%; max-width:320px;}
+.verse-center p{font-size:14px; color:#94A3B8; font-style:italic; line-height:1.4; font-weight:500;}
+
+/* LINHA LARANJA QUE VOCE QUER MANTER */
+.footer-wrap{width:100%; border-top:1px solid #1E293B; margin-top:auto; padding-top:12px;}
+.footer{width:100%; text-align:center; font-size:11px; letter-spacing:.4px; color:#94A3B8; font-weight:500; line-height:1.6; border:none;}
+.footer2{width:100%; text-align:center; font-size:11px; letter-spacing:.4px; color:#64748B; padding-top:6px; font-weight:400; line-height:1.6; border:none;}
+</style>
 </head>
 <body>
-<div id="tela-login">
-  <div class="card-login">
-    <div class="logo" style="margin-bottom:8px;"><img src="logo-branco.png" style="width:140px; height:auto; display:block; margin:0 auto;"></div>
-    <p style="margin-top:7px;">Sistema de Treinamento<br>Formação de Obreiros e Liderança</p>
-    <h2 style="margin-top:20px;">Bem-vindo</h2>
-    <p>Informe sua matrícula e senha</p>
-    <input type="text" id="matricula" placeholder="MATRÍCULA" onblur="formatarMatricula(this); buscarNome()" oninput="formatarMatriculaAoDigitar(this)">
-    <input type="text" id="nome" placeholder="NOME COMPLETO" readonly>
-    <input type="password" id="senha" placeholder="SENHA" style="text-transform:none;">
-    <p style="margin-top:4px; margin-bottom:2px; text-align:center; font-size:9px; color:#94A3B8; font-weight:600; line-height:1.3;">
-     "...conservem a unidade do Espírito Santo pelo VINCULUM da paz Ef 4.3"
-    </p>
-    <div style="display:flex; gap:8px; margin-top:8px;">
-      <button onclick="logar()" style="flex:1; background:#0F172A; padding:13px; border-radius:10px; font-weight:700; border:1px solid #334155; color:#F1F5F9; cursor:pointer;">Entrar no Sistema</button>
-      <button onclick="limparCampos()" style="flex:1; background:#1E293B; color:#F1F5F9; border:1px solid #334155; padding:13px; border-radius:10px; font-weight:700; cursor:pointer;">Limpar</button>
-    </div>
-    <div id="erro-login"></div>
-<div style="margin-top:18px; text-align:left; background:#1E293B; border:1px solid #334155; border-radius:14px; padding:6px 10px; display:flex; flex-direction:column;">
-      <div style="padding:10px 8px 6px; font-size:14px; font-weight:900; color:#fda4af; letter-spacing:0.4px;">ATENÇÃO - Tipos de Acesso</div>
-      <div id="link-primeiro" onclick="abrirPrimeiroAcesso()" style="display:flex; align-items:center; gap:10px; padding:12px 8px; cursor:pointer;"><span style="width:32px; height:32px; background:transparent; border:none; border-radius:0; display:grid; place-items:center; font-size:18px;">🔑</span><div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:13px; font-weight:600; color:#cbd5e1;">1 - Tenho Teste</span><span style="font-size:13px; font-weight:800; color:#93c5fd; text-decoration:underline; text-underline-offset:3px;">Preciso da Senha</span></div></div>
-      <div style="height:1px; background:#334155; margin-left:50px;"></div>
-      <div id="link-cadastro-novo" onclick="abrirCadastroNovo()" style="display:flex; align-items:center; gap:10px; padding:12px 8px; cursor:pointer;"><span style="width:32px; height:32px; background:transparent; border:none; border-radius:0; display:grid; place-items:center; font-size:18px;">📄</span><div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:13px; font-weight:600; color:#cbd5e1;">2 - Tenho Teste</span><span style="font-size:13px; font-weight:800; color:#fca5a5; text-decoration:underline; text-underline-offset:3px;">Mas tenho Matriculas Divergentes</span></div></div>
-      <div style="height:1px; background:#334155; margin-left:50px;"></div>
-      <div id="link-novo-aluno" onclick="abrirNovoAluno()" style="display:flex; align-items:center; gap:10px; padding:12px 8px; cursor:pointer;"><span style="width:32px; height:32px; background:transparent; border:none; border-radius:0; display:grid; place-items:center; font-size:18px;">📝</span><div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:13px; font-weight:600; color:#cbd5e1;">3 - Aluno Novo</span><span style="font-size:13px; font-weight:800; color:#6ee7b7; text-decoration:underline; text-underline-offset:3px;">Não tenho teste</span></div></div>
-      <div id="sep-master" style="height:1px; background:#334155; margin-left:50px; display:none;"></div>
-      <div id="link-master" onclick="abrirMaster()" style="display:none; align-items:center; gap:10px; padding:12px 8px; cursor:pointer;"><span style="width:32px; height:32px; background:transparent; border:none; border-radius:0; display:grid; place-items:center; color:#fcd34d; font-size:18px;">🔐</span><div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:13px; font-weight:600; color:#cbd5e1;">Master</span><span style="font-size:13px; font-weight:800; color:#fcd34d; text-decoration:underline; text-underline-offset:3px;">Ver Senha / Zap</span></div></div>
-      <div id="sep-masterlista" style="height:1px; background:#334155; margin-left:50px; display:none;"></div>
-      <div id="link-masterlista" onclick="abrirMasterLista()" style="display:none; align-items:center; gap:10px; padding:12px 8px; cursor:pointer;"><span style="width:32px; height:32px; background:transparent; border:none; border-radius:0; display:grid; place-items:center; color:#fcd34d; font-size:18px;">📋</span><div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:13px; font-weight:600; color:#cbd5e1;">MasterLista</span><span style="font-size:13px; font-weight:800; color:#fcd34d; text-decoration:underline; text-underline-offset:3px;">Ver Usuarios</span></div></div>
-    </div>
-    <div id="box-primeiro-acesso"><h4 style="margin:0 0 8px 0;font-size:14px">Tenho Teste - Preciso da Senha</h4><div id="primeiro-mat-info" style="padding:8px;background:#0F172A;border:1px solid #334155;border-radius:6px;font-weight:700;font-size:13px;margin-bottom:10px;display:none;color:#F1F5F9"></div><label style="font-size:11px;font-weight:700;color:#94A3B8">DIGITE SEU E-MAIL</label><input type="email" id="emailPrimeiro" placeholder="seuemail@gmail.com" style="text-transform:lowercase;margin-top:4px"><button onclick="enviarSenhaParaEmail()" style="background:#7c3aed">📧 ENVIAR MINHA SENHA NO E-MAIL</button><div id="resultado-email" style="margin-top:10px"></div><div style="text-align:center;margin-top:10px"><span onclick="fecharPrimeiroAcesso()" style="font-size:12px;color:#94A3B8;cursor:pointer">Fechar</span></div></div>
-    <div id="box-cadastro-novo"><h4 style="margin:0 0 8px 0;font-size:14px;color:#fb923c">Tenho Teste - Estou nos Pendentes</h4>
-      <div id="cadastro-novo-info" style="padding:8px;background:#0F172A;border:1px solid #334155;border-radius:6px;font-weight:700;font-size:12px;margin-bottom:10px;color:#F1F5F9">Carregando Pendentes...</div>
-      <div style="margin-bottom:10px; display:flex; gap:6px; align-items:center;">
-        <input type="text" id="buscaPendenteAzul" placeholder="🔍 BUSCAR NO..." style="flex:1; padding:12px 12px; border:1.5px solid #334155; border-radius:10px; font-size:13px; font-weight:800; outline:none; text-transform:uppercase; background:#0F172A;color:#F1F5F9;">
-        <button onclick="document.getElementById('buscaPendenteAzul').value=''; mostrarListaPendentes(cachePendentes); document.getElementById('cadastro-novo-info').innerText = `✅ ${cachePendentes.length} pendentes - Clique para selecionar`" style="width:50px; min-width:50px; height:44px; border-radius:10px; border:1px solid #334155; background:#1E293B; cursor:pointer; font-weight:900; color:#F1F5F9; font-size:14px;">X</button>
-      </div>
-      <div id="lista-nomes-pendentes" style="max-height:220px;overflow-y:auto;background:#0F172A;border:1px solid #334155;border-radius:6px;display:none;margin-bottom:10px;"></div>
-      <label style="font-size:11px;font-weight:700;color:#fb923c">CPF * OBRIGATÓRIO</label>
-      <input type="text" id="cpfPendente" placeholder="000.000.000-00" maxlength="14" style="text-transform:none;margin-top:4px;background:#0F172A;color:#F1F5F9;border:1px solid #334155" oninput="formatarCPF(this)">
-      <button id="btn-salvar-pendente" onclick="salvarPreCadastro()" style="background:#ea580c">💾 SALVAR PENDENTE</button><div id="resultado-cadastro-novo" style="margin-top:10px"></div><div style="text-align:center;margin-top:10px"><span onclick="fecharCadastroNovo()" style="font-size:12px;color:#94A3B8;cursor:pointer">Fechar</span></div></div>
-    <div id="box-novo-aluno"><h4 style="margin:0 0 8px 0;font-size:14px;color:#22c55e">Aluno Novo - Não tenho teste</h4><div style="padding:8px;background:#0F172A;border:1px solid #334155;border-radius:6px;font-size:11px;margin-bottom:10px;color:#94A3B8">Digite matrícula, nome e CPF. Se estiver em Pendentes o sistema vai avisar.</div><label style="font-size:11px;font-weight:700">MATRÍCULA (5 dígitos)</label><input type="text" id="novaMatricula" placeholder="EX: 00123" style="text-transform:none;margin-top:4px" oninput="formatarMatriculaAoDigitar(this)"><label style="font-size:11px;font-weight:700">NOME COMPLETO</label><input type="text" id="novoNome" placeholder="NOME DO ALUNO" style="margin-top:4px"><label style="font-size:11px;font-weight:700">CPF</label><input type="text" id="novoCpf" placeholder="000.000.000-00" maxlength="14" style="text-transform:none;margin-top:4px" oninput="formatarCPF(this)"><button onclick="salvarNovoAluno()" style="background:#16a34a">✅ SALVAR DADOS</button><div id="resultado-novo-aluno" style="margin-top:10px"></div><div style="text-align:center;margin-top:10px"><span onclick="fecharNovoAluno()" style="font-size:12px;color:#94A3B8;cursor:pointer">Fechar</span></div></div>
-    <div id="box-master"><h4 style="margin:0 0 10px 0;font-size:14px;color:#c9a86a">🔐 Master</h4>
-      <label style="font-size:10px;font-weight:700;color:#c9a86a">SENHA MASTER (sua senha)</label>
-      <input type="password" id="senhamaster" placeholder="Digite sua senha" style="text-transform:none;margin-top:4px;background:#0F172A;color:#F1F5F9;border:1px solid #334155">
-      <label style="font-size:10px;font-weight:700;color:#F1F5F9;margin-top:6px;display:block;">MATRICULA NOVA (digite p/ buscar)</label>
-      <input type="text" id="matriculanova" placeholder="EX: 00123" style="margin-top:4px;background:#0F172A;color:#F1F5F9;border:1px solid #334155" oninput="buscarDadosMatriculaNova(this)">
-      <label style="font-size:10px;font-weight:700;color:#F1F5F9;margin-top:6px;display:block;">NOME NOVO</label>
-      <input type="text" id="novonomenovo" placeholder="NOME" readonly style="margin-top:4px;background:#0F172A;color:#F1F5F9;border:1px solid #334155">
-      <label style="font-size:10px;font-weight:700;color:#F1F5F9;margin-top:6px;display:block;">SENHA NOVA (sem ****)</label>
-      <input type="text" id="senhanova" placeholder="Senha aparece aqui" readonly style="margin-top:4px;background:#0F172A;font-weight:900;font-size:16px;text-transform:none;color:#fbbf24;border:1px solid #334155">
-      <label style="font-size:10px;font-weight:700;color:#F1F5F9;margin-top:6px;display:block;">CONTATO</label>
-      <input type="text" id="contato" placeholder="Zap" readonly style="margin-top:4px;background:#0F172A;text-transform:none;color:#F1F5F9;border:1px solid #334155">
-      <button onclick="gerarRelatorioZap()" style="background:#25D366;margin-top:10px;">📲 GERAR RELATÓRIO E ENVIAR NO ZAP</button>
-      <div id="statusMaster5" style="margin-top:8px;font-size:11px;color:#F1F5F9;text-align:center;"></div>
-      <div style="text-align:center;margin-top:10px"><span onclick="fecharMaster()" style="font-size:12px;color:#c9a86a;cursor:pointer">Fechar</span></div>
-    </div>
-    <div id="box-masterlista"><h4 style="margin:0 0 10px 0;font-size:14px;color:#c9a86a">📋 MasterLista - Ver Usuarios</h4>
-      <label style="font-size:10px;font-weight:700;color:#c9a86a">SENHA MASTER (sua senha)</label>
-      <input type="password" id="senhaMasterLista" placeholder="Digite sua senha master" style="text-transform:none;margin-top:4px;background:#0F172A;color:#F1F5F9;border:1px solid #334155">
-      <button onclick="validarSenhaMasterLista()" style="background:#c9a86a;color:#0F172A;margin-top:6px;">🔓 VALIDAR E ABRIR LISTA</button>
-      <div id="areaFiltroLista" style="display:none;">
-        <label style="font-size:10px;font-weight:700;color:#F1F5F9;margin-top:10px;display:block;">FILTRO - MATRICULA / NOME / CONGREGACAO</label>
-        <div style="display:flex;gap:6px;margin-top:6px;">
-          <input type="text" id="filtroMasterLista" placeholder="DIGITE PARA FILTRAR..." style="flex:1;background:#0F172A;color:#F1F5F9;font-weight:800;text-transform:uppercase;border:1px solid #334155" oninput="filtrarMasterLista()">
-          <button onclick="carregarListaUsuarios()" style="width:50px;background:#1E293B;border:1px solid #c9a86a;color:#c9a86a;padding:11px;border-radius:10px;">↻</button>
-        </div>
-        <div id="contadorLista" style="margin-top:8px;font-size:11px;color:#94A3B8;">Aguardando...</div>
-        <div id="listaUsuariosDiv" style="max-height:320px;overflow-y:auto;background:#0F172A;border:1px solid #334155;border-radius:8px;margin-top:8px;display:none;"></div>
-      </div>
-      <div id="statusMasterLista" style="margin-top:8px;font-size:11px;color:#F1F5F9;text-align:center;"></div>
-      <div style="text-align:center;margin-top:10px"><span onclick="fecharMasterLista()" style="font-size:12px;color:#c9a86a;cursor:pointer">Fechar</span></div>
-    </div>
+
+<div class="top">
+  <div class="logo"><img src="eliezer.png" onerror="this.src='logo-branco.png'"></div>
+  <div>
+    <div class="badge"><span class="v-icon">V</span> ST-VINCULUM</div>
+    <div class="sub">Sistema de Treinamento<br>Formação de Obreiros e Liderança</div>
+    <div class="sub-small">"Antes, crescei na graça e no conhecimento de nosso Senhor e Salvador Jesus Cristo 2 Pedro 3:18</div>
   </div>
 </div>
-<div id="sistema">
-<div id="overlay" onclick="fecharMenuLateral()"></div>
-<div id="menu-lateral">
-<div class="menu-topo">
-  <div class="logo-sistema">
-    <div class="logo-icon" onclick="toggleMenuLateral()" style="background:#0F172A; border:1px solid #334155; padding:4px;">
-      <img src="logo-branco.png" style="width:100%; height:100%; object-fit:contain;">
-    </div> 
-    ST-VINCULUM
-  </div>
-  <div class="user-info">
-    <small>Usuário logado</small>
-    <b id="user-display">-</b>
-    <small id="versao-display" style="display:block; margin-top:6px; color:#7c3aed; font-weight:800; font-size:10px; letter-spacing:0.5px;">v20261027.1.07</small>
+
+<div class="center-wrap">
+  <div class="title">Bem-vindo,<br><span>Obreiro, Lider!</span></div>
+  <div class="line"></div>
+  <div class="verse-center">
+    <p>📖 "procurando diligentemente guardar a unidade do Espírito pelo VINCULUM da paz Ef 4.3"</p>
   </div>
 </div>
-<div class="menu-nav">
-  <div class="label">Principal</div>
-  <!-- ACRESCIMO - PAGINA INICIAL - NAO REMOVE NADA -->
-  <button class="menu-btn ativo" onclick="abrir('inicio.html', this, 'Início')"><span class="icon">🏠</span> Início</button>
-  <button class="menu-btn" onclick="abrir('acompanhamento.html', this, 'Acompanhamento')"><span class="icon">📈</span> Acompanhamento</button>
-  <button class="menu-btn" onclick="abrir('CadastroAdm.html', this, 'Administradores')"><span class="icon">👑</span> Administrador</button>
-  <button class="menu-btn" onclick="abrir('Cadastro.html', this, 'Cadastro e Acesso Testes')"><span class="icon">📝</span> Cadastro/Teste</button>
-  <button class="menu-btn" onclick="abrir('Relatorio.html', this, 'Certificados')"><span class="icon">📊</span> Certificados</button>
-  <button class="menu-btn" onclick="abrir('Liberacao.html', this, 'Liberação')"><span class="icon">🔓</span> Liberação</button>
-  <button class="menu-btn" onclick="abrir('Baixar.html', this, 'Lições')"><span class="icon">📖</span> Lições</button>
-  <button id="btn-manutencao" class="menu-btn" onclick="abrir('Manutencao.html', this, 'Manutenção')"><span class="icon">🛠️</span> Manutenção</button>
-  <button id="btn-movimento-adm" class="menu-btn" style="display:none" onclick="abrir('MovimentoAdm.html', this, 'Movimento Adm')"><span class="icon">📊</span> Relatório Administrador</button>
-  <button id="btn-acesso-usuario" class="menu-btn" style="display:none" onclick="abrir('AcessoUsuario.html', this, 'Acesso Usuário')"><span class="icon">👤</span> Relatório Usuario</button>
-  <button id="btn-sair" class="menu-btn" onclick="sair()"><span class="icon">🚪</span> Sair do Sistema</button>
+
+<div class="footer-wrap">
+  <div class="footer">Desenvolvido para ADEMIP - Assembleia de Deus de Missões | PARAGOMINAS-PA</div>
+  <div class="footer">ST-VINCULUM, um produto Htec</div>
+  <div class="footer">WhatSapp 91 98603-2155 | Email heliosouza1@hotmail.com</div>
+  <div class="footer2">Htec Sistemas - Uma forma simples e eficiente em produzir</div>
 </div>
-</div>
-<div id="conteudo-direita">
-  <div class="barra-topo-conteudo">
-    <div style="display:flex; align-items:center; gap:10px;">
-      <button id="btn-menu-mobile" onclick="abrirMenuLateral()">☰</button>
-      <span>📍 <b id="pagina-atual">Início</b></span>
-    </div>
-    <span id="hora-atual">-</span>
-  </div>
-  <!-- ACRESCIMO - FRAME INICIAL - NAO REMOVE NADA -->
-  <div id="frame-inicio.html" class="tela-frame ativa"><iframe id="tela-inicio.html" src="inicio.html?v=20261027.1.07"></iframe></div>
-  <div id="frame-acompanhamento.html" class="tela-frame"><iframe id="tela-acompanhamento.html" src="acompanhamento.html?v=20261027.1.07"></iframe></div>
-  <div id="frame-AcessoUsuario.html" class="tela-frame"><iframe id="tela-AcessoUsuario.html" src="AcessoUsuario.html?v=20261027.1.07"></iframe></div>
-  <div id="frame-Baixar.html" class="tela-frame"><iframe id="tela-Baixar.html" src="Baixar.html?v=20261027.1.07"></iframe></div>
-  <div id="frame-Cadastro.html" class="tela-frame"><iframe id="tela-Cadastro.html" src="Cadastro.html?v=20261027.1.07"></iframe></div>
-  <div id="frame-CadastroAdm.html" class="tela-frame"><iframe id="tela-CadastroAdm.html" src="CadastroAdm.html?v=20261027.1.07"></iframe></div>
-  <div id="frame-Liberacao.html" class="tela-frame"><iframe id="tela-Liberacao.html" src="Liberacao.html?v=20261027.1.07"></iframe></div>
-  <div id="frame-Manutencao.html" class="tela-frame"><iframe id="tela-Manutencao.html" src="Manutencao.html?v=20261027.1.07"></iframe></div>
-  <div id="frame-MovimentoAdm.html" class="tela-frame"><iframe id="tela-MovimentoAdm.html" src="MovimentoAdm.html?v=20261027.1.07"></iframe></div>
-  <div id="frame-Relatorio.html" class="tela-frame"><iframe id="tela-Relatorio.html" src="Relatorio.html?v=20261027.1.07"></iframe></div>
-</div>
-</div>
-<div id="aviso-entrada-roxo"><div style="background:#1E293B;max-width:380px;width:100%;border-radius:20px;padding:28px 24px;text-align:center;font-family:sans-serif;box-shadow:0 20px 60px rgba(0,0,0,0.4);border:1px solid #334155"><div style="font-size:36px; margin-bottom:8px;">🔑</div><h3 style="margin:0 0 12px 0;font-weight:900;font-size:16px;color:#a78bfa">ATENÇÃO ALUNO</h3><p style="font-size:14px;line-height:1.5;margin:0 0 22px 0;text-align:left;color:#F1F5F9">Por gentileza, clique na opção <b>PESQUISE</b> e altere os seus dados imediatamente, salvando em ALTERAR, validando assim o seu acesso aos testes.<br><br><small>Havendo duvidas, contate HtecSistemas 91 98603-2155</small></p><button onclick="fecharAvisoEntradaRoxo()" style="background:#7c3aed;color:white;border:0;padding:14px;width:100%;border-radius:12px;font-weight:900;cursor:pointer">OK - ENTENDI</button></div></div>
-<div id="aviso-entrada-laranja"><div style="background:#1E293B;max-width:380px;width:100%;border-radius:20px;padding:28px 24px;text-align:center;font-family:sans-serif;box-shadow:0 20px 60px rgba(0,0,0,0.4);border:1px solid #334155"><div style="font-size:36px; margin-bottom:8px;">📄</div><h3 style="margin:0 0 12px 0;font-weight:900;font-size:16px;color:#fb923c">ATENÇÃO ALUNO</h3><p style="font-size:14px;line-height:1.5;margin:0 0 22px 0;text-align:left;color:#F1F5F9">Por gentileza, clique na opção <b>PESQUISE</b> e altere os seus dados imediatamente, salvando em ALTERAR, validando assim o seu acesso aos testes.<br><br><small>Havendo duvidas, contate HtecSistemas 91 98603-2155</small></p><button onclick="fecharAvisoEntradaLaranja()" style="background:#ea580c;color:white;border:0;padding:14px;width:100%;border-radius:12px;font-weight:900;cursor:pointer">OK - ENTENDI</button></div></div>
-<div id="aviso-entrada-verde"><div style="background:#1E293B;max-width:380px;width:100%;border-radius:20px;padding:28px 24px;text-align:center;font-family:sans-serif;box-shadow:0 20px 60px rgba(0,0,0,0.4);border:1px solid #334155"><div style="font-size:36px; margin-bottom:8px;">✅</div><h3 style="margin:0 0 12px 0;font-weight:900;font-size:16px;color:#22c55e">ATENÇÃO - ALUNO NOVO</h3><p style="font-size:14px;line-height:1.5;margin:0 0 22px 0;text-align:left;color:#F1F5F9">Por gentileza, clique na opção <b>PESQUISE</b> e altere os seus dados imediatamente, salvando em ALTERAR, validando assim o seu acesso aos testes.<br><br><small>Havendo duvidas, contate HtecSistemas 91 98603-2155</small></p><button onclick="fecharAvisoEntradaVerde()" style="background:#16a34a;color:white;border:0;padding:14px;width:100%;border-radius:12px;font-weight:900;cursor:pointer">OK - ENTENDI</button></div></div>
-<div id="aviso-entrada-pendente"><div style="background:#1E293B;max-width:380px;width:100%;border-radius:20px;padding:28px 24px;text-align:center;font-family:sans-serif;box-shadow:0 20px 60px rgba(0,0,0,0.4);border:1px solid #334155"><div style="font-size:36px; margin-bottom:8px;">📄</div><h3 style="margin:0 0 12px 0;font-weight:900;font-size:16px;color:#fb923c">ATENÇÃO PARA ESTE COMUNICADO</h3><p style="font-size:14px;line-height:1.5;margin:0 0 22px 0;text-align:justify;color:#F1F5F9">MATRICULAS DIVERGENTES, são alunos com testes e diversas MATRÍCULAS diferentes e ou NOME não condizentes com sua matrícula, assim trazendo divergência ao ST-VINCULUM.<br><br>Por gentileza, confirme sua matrícula e nome corretamente na lista a seguir, pesquisando no campo BUSCAR NO... digite seu nome ou matricula e em seguida, selecione na lista o nome e matricula correto, informe o seu CPF e salve.<br><br>O sistema vai GERAR UMA SENHA, copie e cole em senha no login e clique em "Entrar no Sistema".<br><br>Se o seu NOME não estiver na relação, então você não faz parte desse sobreaviso.</p><button onclick="fecharAvisoEntradaPendente()" style="background:#ea580c;color:white;border:0;padding:14px;width:100%;border-radius:12px;font-weight:900;cursor:pointer">OK - ENTENDI</button></div></div>
-<script src="indexlogin.js?v=20261027.1.07"></script>
+
 </body>
 </html>
