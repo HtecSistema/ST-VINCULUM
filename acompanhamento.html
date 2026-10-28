@@ -6,7 +6,10 @@
 <title>Acompanhamento - reltodos AO VIVO</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="acompanhamento.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
+
 <body>
 <div class="top">
   <h1><i>◧</i> Acompanhamento ao VIVO</h1>
@@ -15,6 +18,7 @@
     <span class="pill mono" id="count">0</span>
     <label style="display:flex;gap:6px;align-items:center;font-size:12px"><input type="checkbox" id="auto" checked> Auto - só novos</label>
     <button onclick="loadAll(true)">↻ Recarregar tudo</button>
+<button id="btnRelatorio" style="background:#7c3aed;border-color:#7c3aed">📄 Relatório (<span id="selCount">0</span>)</button>
   </div>
 </div>
 
@@ -46,29 +50,32 @@
     <b id="info" class="muted"></b>
   </div>
   <div class="progress"><i id="pbar"></i></div>
-  <div class="scroll">
+
+<div class="scroll">
     <table>
       <thead>
         <tr>
-<th>item</th>
-<th>CONGREGAÇÃO</th>
-<th class="r">MATRICULA</th>
-<th>NOME</th>
-<th>WHATSAPP</th>
-<th>Func Ecles</th>
-<th>Teste</th>
-<th class="r">PONTUAÇÃO</th>
-<th>Ciclo</th>
-<th>Sexo</th>
-<th>BatAgua</th>
-<th>Func Cong</th>
-<th>Data</th>
+          <th style="width:36px;text-align:center"><input type="checkbox" id="selAll"></th>
+          <th>item</th>
+          <th>CONGREGAÇÃO</th>
+          <th class="r">MATRICULA</th>
+          <th>NOME</th>
+          <th>WHATSAPP</th>
+          <th>Func Ecles</th>
+          <th>Teste</th>
+          <th class="r">PONTUAÇÃO</th>
+          <th>Ciclo</th>
+          <th>Sexo</th>
+          <th>BatAgua</th>
+          <th>Func Cong</th>
+          <th>Data</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
     </table>
   </div>
-  <div class="foot"><span>HtecSistemas</span><span class="mono" id="foot">aguardando</span></div>
+
+<div class="foot"><span>HtecSistemas</span><span class="mono" id="foot">aguardando</span></div>
 </div>
 <script src="acompanhamento.js"></script>
 </body>
