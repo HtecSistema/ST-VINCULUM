@@ -1,4 +1,4 @@
-// RELATORIO.JS COMPLETO - FINAL - FILTRO + PDF 100% - 03/10/2026 - ORGANIZADO - CORRIGIDO toFixed
+// RELATORIO.JS COMPLETO - FINAL - FILTRO + PDF 100% - 03/10/2026 - ORGANIZADO - CORRIGIDO toFixed + MASTER 05722
 const API_URL = "https://script.google.com/macros/s/AKfycbz2phEY97FZOsloQriNH9i0cWQ0Qex0PAr02jbL18qZHjHwnTtOB4tRcwJRIQbHjMYC/exec";
 if(typeof google === 'undefined' ||!google.script ||!google.script.run){
   window.google = { script: { run: {
@@ -21,21 +21,58 @@ window.CACHE_DETALHES = window.CACHE_DETALHES || {};
 var TOTAL=[]; var ATUAL=[]; var SELECIONADO=null; var DETALHE=null; var idxSelecionado=-1;
 var LIBERADO=false; var USUARIO_NOME="";
 var CACHE_EDICAO=[]; var LINHA_EDICAO_ATUAL=null;
-var LISTA_IGREJAS_CACHE=[]; var LISTA_ACESSO_CACHE=[];
+var LISTA_IGREJAS_CACHE=[]; 
+var LISTA_ACESSO_CACHE = window.LISTA_ACESSO_CACHE || [];
 var idxIgrejaSel=-1; var idxAcessoSel=-1;
+var API_DUSUARIO = "https://script.google.com/macros/s/AKfycbxLXw-nu5oXXtjE8HKik_W_bbT9CGjTNJWw-dUm4wWYv-hjcz1dOhMHLxoUTRHGJA3D0A/exec";
 
 function semAcentoJS(s){return (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim().toUpperCase();}
 function sf(v){ return (parseFloat(v)||0).toFixed(2); }
 function ensureHtml2pdf(cb){ if(typeof html2pdf!== 'undefined'){ cb(); return; } var s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'; s.onload=function(){ setTimeout(cb, 400); }; document.head.appendChild(s); }
 function salvarCacheB(lista){ try{ localStorage.setItem('cache_dusuario_b', JSON.stringify({t:Date.now(), lista})) }catch(e){} }
-function carregarCacheB(){ try{ const c = JSON.parse(localStorage.getItem('cache_dusuario_b')||'null'); if(c && c.lista && c.lista.length>0){ LISTA_ACESSO_CACHE = c.lista; return true; } }catch(e){} return false; }
+function carregarCacheB(){ try{ const c = JSON.parse(localStorage.getItem('cache_dusuario_b')||'null'); if(c && c.lista && c.lista.length>0){ LISTA_ACESSO_CACHE = c.lista; window.LISTA_ACESSO_CACHE = c.lista; return true; } }catch(e){} return false; }
 carregarCacheB();
-function isMasterMat(mat){ var m = String(mat||"").replace(/\D/g,"").padStart(5,'0'); return m==="00425" || m==="00001"; }
-function isMasterNome(nome){ var n = semAcentoJS(nome||""); return n.indexOf("HELIO SOUZA SILVA")!==-1 || n.indexOf("ELIEZER MIRANDA BARBOSA")!==-1; }
+
+(function carregaDUsuario(){
+  fetch(API_DUSUARIO+"?action=getDUsuario&t="+Date.now(), {cache:'no-store'})
+  .then(r=>r.json())
+  .then(d=>{
+    var lista = Array.isArray(d) ? d : (d.dados||d.data||[]);
+    LISTA_ACESSO_CACHE = lista.map(row=>{
+      if(Array.isArray(row)) return {Matricula: row[3], Status: row[7], nome: row[1]};
+      return {Matricula: row.matricula, Status: row.status, nome: row.nome};
+    });
+    window.LISTA_ACESSO_CACHE = LISTA_ACESSO_CACHE;
+    var matRaw = String(localStorage.getItem('mat_logada')||'').replace(/\D/g,'').padStart(5,'0');
+    var ach = LISTA_ACESSO_CACHE.find(u=> String(u.Matricula||'').replace(/\D/g,'').padStart(5,'0')===matRaw);
+    if(ach && ach.Status) localStorage.setItem('status_logado', ach.Status);
+    console.log('DUsuario carregada:', LISTA_ACESSO_CACHE.length);
+  })
+  .catch(e=> console.log('Erro DUsuario:', e));
+})();
+
+function isMasterLiberado(){
+  var matRaw = String(localStorage.getItem('mat_logada')||'').replace(/\D/g,'').padStart(5,'0');
+  if(!matRaw) return false;
+  if(!LISTA_ACESSO_CACHE || LISTA_ACESSO_CACHE.length==0){
+    return String(localStorage.getItem('status_logado')||'').toUpperCase()==="APROVADO";
+  }
+  var ach = LISTA_ACESSO_CACHE.find(u=> String(u.Matricula||'').replace(/\D/g,'').padStart(5,'0')===matRaw);
+  return ach && String(ach.Status||'').toUpperCase()==="APROVADO";
+}
+function isMasterMat(mat){ 
+  var m = String(mat||"").replace(/\D/g,"").padStart(5,'0'); 
+  if(m==="00425" || m==="00001" || m==="05722") return true;
+  return isMasterLiberado();
+}
+function isMasterNome(nome){ 
+  var n = semAcentoJS(nome||""); 
+  if(n.indexOf("HELIO SOUZA SILVA")!==-1 || n.indexOf("ELIEZER MIRANDA BARBOSA")!==-1 || n.indexOf("HAYERK")!==-1 || n.indexOf("HAYERKSLEY")!==-1) return true;
+  return isMasterLiberado();
+}
 
 function travarPosMenu(matricula){ 
-  var statusLogado = (localStorage.getItem('status_logado')||'').toUpperCase();
-  if(statusLogado === "APROVADO") return;
+  if(isMasterLiberado()) return;
   var matFinal = String(matricula || localStorage.getItem('mat_logada') || "").replace(/\D/g,"").padStart(5,'0'); 
   var nomeFinal = USUARIO_NOME || localStorage.getItem('nome_logado') || ""; 
   if(isMasterMat(matFinal) || isMasterNome(nomeFinal)) return; 
@@ -80,7 +117,7 @@ function entrarAcessoGeral(){
     var API_MOVADM = 'https://script.google.com/macros/s/AKfycbz94-3iCkeVDD7Za2XAYzYL7BtCM3rWWMxGc_9kL-xtpnRoog91IR4KmqgWzLXYHIsb/exec';
     fetch(API_MOVADM+"?action=registrarLogAcesso&adm="+encodeURIComponent(USUARIO_NOME)+"&mat="+encodeURIComponent(matLogada)+"&data="+encodeURIComponent(dataHoje)+"&hora="+encodeURIComponent(horaHoje)+"&t="+Date.now(), {mode:'no-cors'});
   }catch(e){ console.log("Erro log MovAdm", e); }
-  if(statusUsuario === "APROVADO"){
+  if(statusUsuario === "APROVADO" || isMasterLiberado() || isMasterMat(usuario.matricula||usuario.Matricula||'') || isMasterNome(nome)){
     ['fNome','fMatr','buscar','fCong'].forEach(id=>{
       const el=document.getElementById(id);
       if(el){ el.disabled=false; el.readOnly=false; el.style.background=''; el.style.opacity='1'; el.style.pointerEvents='auto'; el.value=''; }
@@ -90,7 +127,7 @@ function entrarAcessoGeral(){
   }
 }
 
-function carregarListaAcessoNomes(){ if(LISTA_ACESSO_CACHE.length>0) return; google.script.run.withSuccessHandler(function(lista){ LISTA_ACESSO_CACHE=lista; salvarCacheB(lista); }).listarAcessosPendentes(); }
+function carregarListaAcessoNomes(){ if(LISTA_ACESSO_CACHE.length>0) return; google.script.run.withSuccessHandler(function(lista){ LISTA_ACESSO_CACHE=lista; window.LISTA_ACESSO_CACHE=lista; salvarCacheB(lista); }).listarAcessosPendentes(); }
 function renderDropdownAcessoNomes(lista){ var drop=document.getElementById('dropdownAcessoNome'); if(!drop) return; drop.innerHTML=''; var termo = (document.getElementById('acessoNome').value||'').trim(); if(!termo){ drop.style.display='none'; return; } if(!lista || lista.length==0){ drop.style.display='none'; return; } lista.slice(0,50).forEach(function(a){ var nome=(a.nome||a.NomeUsuario||a.B||"").toString().trim(); if(!nome) return; var st=(a.status||a.Status||"APROVADO").toUpperCase(); var cor=st=="APROVADO"?"#198754":"#dc3545"; var mat=(a.matricula||a.Matricula||a.D||"").toString(); var div=document.createElement('div'); div.className='dropdown-item'; div.innerHTML='<b>'+nome+'</b><small style="color:'+cor+'">Mat: '+mat+' - '+st+'</small>'; div.onclick=function(){ document.getElementById('acessoNome').value=nome; esconderAcessoNomes(); document.getElementById('acessoSenha').focus(); }; drop.appendChild(div); }); drop.style.display='block'; idxAcessoSel=-1; }
 function mostrarAcessoNomes(){ var input = document.getElementById('acessoNome'); var termo = (input.value||'').trim(); if(!termo){ var drop=document.getElementById('dropdownAcessoNome'); if(drop){ drop.style.display='none'; drop.innerHTML=''; } return; } if(LISTA_ACESSO_CACHE.length==0){ if(!carregarCacheB()){ carregarListaAcessoNomes(); return; } } var termoSem = semAcentoJS(termo); var lista=LISTA_ACESSO_CACHE.filter(function(a){ var n=a.nome||a.NomeUsuario||a.B||""; return semAcentoJS(n).indexOf(termoSem)!=-1; }); renderDropdownAcessoNomes(lista); }
 function filtrarAcessoNome(){ mostrarAcessoNomes(); }
@@ -127,6 +164,15 @@ function selecionar(idx){
 }
 
 function pesquisar(){
+  // --- MASTER LIBERADO - LIMPA COLUNA B=Matricula e COLUNA D=Nome ---
+  if(isMasterLiberado()){
+    var elNome = document.getElementById('fNome');
+    var elMat = document.getElementById('fMatr');
+    if(elNome) elNome.value = '';
+    if(elMat) elMat.value = '';
+  }
+  // --- FIM MASTER ---
+
   var fCong=document.getElementById('buscar')?.value||document.getElementById('fCong')?.value||'';
   var fNome=document.getElementById('fNome')?.value||'';
   var fMat=document.getElementById('fMatr')?.value||'';
@@ -246,7 +292,7 @@ window.limpar = function(){
   try{
     var matLogada = (localStorage.getItem('mat_logada') || '').toString().trim();
     var nomeLogado = (localStorage.getItem('nome_logado') || '').toString().trim().toUpperCase();
-    var ehMaster = isMasterMat(matLogada) || isMasterNome(nomeLogado);
+    var ehMaster = isMasterLiberado() || isMasterMat(matLogada) || isMasterNome(nomeLogado);
     var elBuscar = document.getElementById('buscar');
     var elFStatus = document.getElementById('fCong');
     var elFNome = document.getElementById('fNome');
@@ -338,6 +384,7 @@ function gerarBoletim(){
   +'<button onclick="window.print()" style="flex:1; min-width:0; height:44px; background:#0d6efd; color:#fff; border:0; border-radius:8px; font-weight:900; font-size:10px">🖨 IMPRIMIR</button>'
   +'<button onclick="enviarPdfZap()" style="flex:1; min-width:0; height:44px; background:#25D366; color:#fff; border:0; border-radius:8px; font-weight:900; font-size:10px">📄 PDF + ZAP</button>'
   +'<button onclick="enviarBoletimZap()" style="flex:1; min-width:0; height:44px; background:#128C7E; color:#fff; border:0; border-radius:8px; font-weight:900; font-size:10px">📱 TEXTO ZAP</button>'
+
   +'<button onclick="document.getElementById(\'boletim\').style.display=\'none\'" style="flex:1; min-width:0; height:44px; background:#6c757d; color:#fff; border:0; border-radius:8px; font-weight:900; font-size:10px">FECHAR</button>'
   +'</div>';
   document.getElementById('boletim').innerHTML=html;
@@ -368,7 +415,7 @@ function gerarCertificado(){
   var meses=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro']; 
   var dataHoje=new Date(); 
   var dataExtenso='Paragominas-PA, '+dataHoje.getDate()+' de '+meses[dataHoje.getMonth()]+' de '+dataHoje.getFullYear();
-  var assinatura = "data:image/png;base64,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";
+  var assinatura = "data:image/png;base64,[STRIPPED]";
   var html=`
   <style>
     @media print{
@@ -567,26 +614,11 @@ function exportarRelatorio(){
   var cidade = document.getElementById('fCidade') ? document.getElementById('fCidade').value : '';
   var nome = document.getElementById('fNome') ? document.getElementById('fNome').value : '';
   var statusFiltro = document.getElementById('fStatus') ? document.getElementById('fStatus').value : 'APRO';
-  
   var titulo = "Relatorio de Alunos - "+ totalFiltrado +" Localizados";
   var subTitulo = "Filtros: Cidade=["+ (cidade||"TODAS") +"]  Status=["+statusFiltro+"]  Nome=["+(nome||"-")+"]  Data: "+ new Date().toLocaleString();
-
   var corpo = ATUAL.slice(1).map(function(r, idx){
-    return [
-      String(idx+1).padStart(4,'0'),
-      semAcentoJS(r[1]||''),
-      semAcentoJS(r[2]||''),
-      r[3]||'',
-      r[4]||'',
-      r[5]||'',
-      r[6]||'',
-      r[8]||'',
-      r[10]||'',
-      r[12]||'',
-      semAcentoJS(r[15]||'')
-    ];
+    return [ String(idx+1).padStart(4,'0'), semAcentoJS(r[1]||''), semAcentoJS(r[2]||''), r[3]||'', r[4]||'', r[5]||'', r[6]||'', r[8]||'', r[10]||'', r[12]||'', semAcentoJS(r[15]||'') ];
   });
-
   doc.autoTable({
     head: [['ITEM','CONGREGACAO','NOME','WHATSAPP','MATRICULA','QTD','C1','C2','C3','C4','STATUS']],
     body: corpo,
@@ -594,37 +626,12 @@ function exportarRelatorio(){
     theme: 'grid',
     styles: { fontSize: 7, cellPadding: 1.5 },
     headStyles: { fillColor: [0,0,0], textColor: [255,255,255], fontStyle: 'bold' },
-    columnStyles: {
-      0: { halign: 'left', cellWidth: 10 },
-      3: { halign: 'center' },
-      4: { halign: 'right' },
-      5: { halign: 'right' },
-      6: { halign: 'right' },
-      7: { halign: 'right' },
-      8: { halign: 'right' },
-      9: { halign: 'right' }
-    },
-    didParseCell: function(data){
-      if(data.section === 'body' && data.row.raw[10].indexOf('APROVADO') !== -1){
-        data.cell.styles.fillColor = [240, 240, 240];
-        data.cell.styles.fontStyle = 'bold';
-      }
-    },
-    didDrawPage: function(data){
-      // TITULO EM TODAS AS PAGINAS
-      doc.setFontSize(14);
-      doc.setFont("helvetica","bold");
-      doc.text(titulo, 14, 12);
-      doc.setFontSize(9);
-      doc.setFont("helvetica","normal");
-      doc.text(subTitulo, 14, 18);
-    }
+    columnStyles: { 0: { halign: 'left', cellWidth: 10 }, 3: { halign: 'center' }, 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' }, 7: { halign: 'right' }, 8: { halign: 'right' }, 9: { halign: 'right' } },
+    didParseCell: function(data){ if(data.section === 'body' && data.row.raw[10].indexOf('APROVADO') !== -1){ data.cell.styles.fillColor = [240, 240, 240]; data.cell.styles.fontStyle = 'bold'; } },
+    didDrawPage: function(data){ doc.setFontSize(14); doc.setFont("helvetica","bold"); doc.text(titulo, 14, 12); doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.text(subTitulo, 14, 18); }
   });
-
-  // CORREÇÃO DA NUMERAÇÃO - DEPOIS QUE SABE O TOTAL
   var totalPages = doc.internal.getNumberOfPages();
   var totalStr = String(totalPages).padStart(2, '0');
-  
   for(var i = 1; i <= totalPages; i++){
     doc.setPage(i);
     var pagAtualStr = String(i).padStart(2, '0');
@@ -632,57 +639,28 @@ function exportarRelatorio(){
     doc.setFont("helvetica","normal");
     var pageHeight = doc.internal.pageSize.height;
     var pageWidth = doc.internal.pageSize.width;
-    // limpa area do rodape
     doc.setFillColor(255,255,255);
     doc.rect(0, pageHeight - 12, pageWidth, 12, 'F');
-    // escreve certo
     doc.text("Relatorio de Alunos", 14, pageHeight - 8);
     doc.text("Pagina " + pagAtualStr + "/" + totalStr, pageWidth - 20, pageHeight - 8, { align: 'right' });
   }
-
   doc.save('relatorio_'+ totalFiltrado +'_alunos_'+ new Date().toISOString().slice(0,10) +'.pdf');
 }
 
-// BOLETIM ZAP - CONTA DIRETO DO ATUAL - APÓS PESQUISA
 function VBoletimZap(){
-  if(!window.TOTAL_ORIGINAL || TOTAL_ORIGINAL.length < 2){
-    alert("Clique em PESQUISAR primeiro");
-    return;
-  }
-  // TOTAL ORIGINAL = os 282 da planilha toda
+  if(!window.TOTAL_ORIGINAL || TOTAL_ORIGINAL.length < 2){ alert("Clique em PESQUISAR primeiro"); return; }
   var listaTotal = window.TOTAL_ORIGINAL;
-  // ATUAL = só os 37 do filtro de agora
   var listaFiltro = window.ATUAL;
-
   var totalAlunos = listaFiltro.length - 1;
   var concluintes = 0;
   var emConclusao = 0;
-  
-  // TESTE REALIZADO = soma da coluna QTD de TODOS os 282, não só dos 37
-  // Isso que dá os 4049 da sua foto
   var testeRealizado = 0;
-  for(var j=1; j<listaTotal.length; j++){
-    testeRealizado += parseInt(listaTotal[j][5] || 0);
-  }
-
+  for(var j=1; j<listaTotal.length; j++){ testeRealizado += parseInt(listaTotal[j][5] || 0); }
   for(var i=1; i<listaFiltro.length; i++){
     var status = (listaFiltro[i][15] || "").toUpperCase();
     if(status.indexOf("APROVADO") !== -1) concluintes++;
     if(status.indexOf("PENDENTE") !== -1) emConclusao++;
   }
-
-  var texto = "-- Boletim Informativo --\n"
-    + "---------------------------------------------\n"
-    + "Povo de Deus\n"
-    + "Total de alunos no curso: " + totalAlunos + "\n"
-    + "Teste Realizado: " + testeRealizado + "\n"
-    + "Concluintes: " + concluintes + " Alunos\n"
-    + "Em conclusao: " + emConclusao + " Alunos\n"
-    + "---------------------------------------------\n"
-    + "Se anime povo!\n"
-    + "---------------------------------------------\n"
-    + "Outros cursos serao disponibilizados por aqui.\n"
-    + "Aguardando nosso Pastor deliberar";
-
+  var texto = "-- Boletim Informativo --\n---------------------------------------------\nPovo de Deus\nTotal de alunos no curso: " + totalAlunos + "\nTeste Realizado: " + testeRealizado + "\nConcluintes: " + concluintes + " Alunos\nEm conclusao: " + emConclusao + " Alunos\n---------------------------------------------\nSe anime povo!\n---------------------------------------------\nOutros cursos serao disponibilizados por aqui.\nAguardando nosso Pastor deliberar";
   window.open("https://wa.me/?text="+encodeURIComponent(texto),"_blank");
 }
