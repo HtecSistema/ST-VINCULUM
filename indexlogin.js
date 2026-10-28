@@ -374,12 +374,30 @@ function abrir(pagina, botao, titulo){
     alvo.classList.add('ativa');
     jaEnviou = false;
     setTimeout(enviarParaForm, 200);
+
+    // AUTO PESQUISE SÓ NA 1ª VEZ
+    if(pagina === 'Cadastro.html'){
+      if(!sessionStorage.getItem('auto_pesquisa_cadastro')){
+        setTimeout(()=>{
+          try{
+            let iframe = document.getElementById('tela-Cadastro.html');
+            if(iframe && iframe.contentWindow){
+              iframe.contentWindow.postMessage({tipo:'AUTO_PESQUISE'}, '*');
+              sessionStorage.setItem('auto_pesquisa_cadastro','1');
+            }
+          }catch(e){}
+        }, 1300);
+      }
+    }
+
     if(pagina==='Manutencao.html'){ carregarManutencaoNova(); }
   }
   paginaAtual = pagina;
   if(pagina === 'CadastroAdm.html'){ setTimeout(travarIframeAdm, 400); }
   if(window.innerWidth <= 768){ fecharMenuLateral(); }
 }
+
+
 function abrirMenuLateral(){ document.getElementById('menu-lateral').classList.add('aberto'); document.getElementById('overlay').classList.add('aberto'); }
 function fecharMenuLateral(){ document.getElementById('menu-lateral').classList.remove('aberto'); document.getElementById('overlay').classList.remove('aberto'); }
 function toggleMenuLateral(){ var menu = document.getElementById('menu-lateral'); if(menu.classList.contains('aberto')) fecharMenuLateral(); else abrirMenuLateral(); }
