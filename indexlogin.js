@@ -174,7 +174,52 @@ function mostrarSistema(){
   setInterval(()=>{ document.getElementById('hora-atual').innerText = new Date().toLocaleString('pt-BR'); },1000);
   setTimeout(travarIframeAdm, 1000);
 }
-function sair(){ localStorage.clear(); sessionStorage.clear(); location.reload(); }
+
+
+async function sair(){
+  try{
+    // 1 - LIMPA FORMULÁRIOS DE TODOS OS IFRAMES
+    document.querySelectorAll('iframe').forEach(f=>{
+      try{
+        let d = f.contentDocument || f.contentWindow.document;
+        if(d){
+          d.querySelectorAll('input, select, textarea').forEach(el=>{
+            if(el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+            else el.value = '';
+          });
+        }
+      }catch(e){}
+    });
+
+    // 2 - LIMPA FORMULÁRIOS DA TELA PRINCIPAL
+    document.querySelectorAll('input, select, textarea').forEach(el=>{
+      if(el.id === 'matricula' || el.id === 'senha' || el.id === 'nome') return; // deixa login limpo depois
+      if(el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+      else el.value = '';
+    });
+
+    // 3 - LIMPA CACHE DO NAVEGADOR
+    if('caches' in window){
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k=>caches.delete(k)));
+    }
+
+    // 4 - LIMPA STORAGE
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // 5 - LIMPA COOKIES
+    document.cookie.split(";").forEach(c=>{
+      document.cookie = c.replace(/^ +/,"").replace(/=.*/,"=;expires="+new Date().toUTCString()+";path=/");
+    });
+
+  }catch(e){}
+  
+  // 6 - SAI E RECARREGA LIMPO
+  location.href = location.origin + location.pathname + '?v=' + Date.now();
+}
+
+
 function abrirPrimeiroAcesso(){ fecharCadastroNovo(); fecharNovoAluno(); fecharMaster(); fecharMasterLista(); let mat=(document.getElementById('matricula').value||'').trim().padStart(5,'0'); let nome=(document.getElementById('nome').value||'').trim(); let box=document.getElementById("box-primeiro-acesso"); let info=document.getElementById("primeiro-mat-info"); box.style.display="block"; document.getElementById("link-primeiro").style.display="none"; document.getElementById("link-cadastro-novo").style.display="none"; document.getElementById("link-novo-aluno").style.display="none"; document.getElementById("link-master").style.display="none"; document.getElementById("link-masterlista").style.display="none"; document.getElementById("sep-master").style.display="none"; document.getElementById("sep-masterlista").style.display="none"; if(!mat || mat==="00000"){ info.style.display="block"; info.innerHTML="⚠️ Digite sua matrícula primeiro lá em cima"; return; } info.style.display="block"; info.innerHTML=mat+" - "+nome; let achado = cacheDados.find(x=> String(x.Matricula||'').padStart(5,'0')===mat); document.getElementById("emailPrimeiro").value = achado?.Email||""; document.getElementById("resultado-email").innerHTML=""; }
 function fecharPrimeiroAcesso(){ document.getElementById("box-primeiro-acesso").style.display="none"; document.getElementById("link-primeiro").style.display="flex"; document.getElementById("link-cadastro-novo").style.display="flex"; document.getElementById("link-novo-aluno").style.display="flex"; let v=document.getElementById('matricula').value.replace(/\D/g,'').padStart(5,'0'); if(["00425","00001","05722"].includes(v)){ document.getElementById("link-master").style.display="flex"; document.getElementById("sep-master").style.display="block"; } if(["00425","00001","05722","05891"].includes(v)){ document.getElementById("link-masterlista").style.display="flex"; document.getElementById("sep-masterlista").style.display="block"; } }
 function abrirCadastroNovo(){ fecharPrimeiroAcesso(); fecharNovoAluno(); fecharMaster(); fecharMasterLista(); abrirAvisoEntradaPendente(); }
@@ -379,3 +424,31 @@ setInterval(()=>{
     if(el) el.textContent = "v" + versao;
   }catch(e){}
 })();
+
+// USA ENTER NO LOGIN
+function ativarEnter(){
+  const mat = document.getElementById('matricula') || document.querySelector('input[placeholder*="MATRÍCULA"]');
+  const nome = document.getElementById('nome') || document.querySelector('input[placeholder*="NOME"]');
+  const senha = document.getElementById('senha') || document.querySelector('input[placeholder*="SENHA"]');
+  const btnEntrar = document.getElementById('btnEntrar') || document.querySelector('button') || document.querySelector('[onclick*="entrar"]');
+
+  [mat, nome, senha].forEach(el=>{
+    if(!el) return;
+    el.addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        if(this === mat && nome){ nome.focus(); }
+        else if(this === nome && senha){ senha.focus(); }
+        else {
+          // último campo - entra no sistema
+          if(typeof entrar === 'function') entrar();
+          else if(typeof entrarNoSistema === 'function') entrarNoSistema();
+          else if(typeof login === 'function') login();
+          else if(btnEntrar) btnEntrar.click();
+        }
+      }
+    });
+  });
+}
+
+ativarEnter();
