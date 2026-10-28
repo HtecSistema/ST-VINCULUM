@@ -20,14 +20,11 @@ td{padding:4px 10px;font-size:11px;font-weight:400 !important;border-bottom:1px 
 tr:hover td{background:#f8fafc} .mono{font-family:'JetBrains Mono',monospace} .muted{color:var(--muted)}
 .foot{padding:8px 12px;display:flex;justify-content:space-between;font-size:11px;color:var(--muted);background:#fcfdfe;border-top:1px solid var(--line)}
 @keyframes novo{from{background:#dcfce7} to{background:transparent}} .novo td{animation:novo 3s ease}
-/* matricula e nota na direita */
-th.r, td.r { text-align:right !important; }
-th:nth-child(3), td:nth-child(3),
-th:nth-child(8), td:nth-child(8) { 
-  text-align:right !important; 
-  font-variant-numeric: tabular-nums;
-  padding-right:18px;
-}
-td:nth-child(8), th:nth-child(8){text-align:right !important; padding-right:20px}
-td:nth-child(3), th:nth-child(3){text-align:right !important; padding-right:20px}
 #fMat.travado, #fMat:disabled{background:#e2e8f0 !important;color:#0f172a !important;font-weight:700 !important;opacity:1 !important;cursor:not-allowed !important;border-color:#94a3b8 !important;border-style:dashed !important;}
+
+/* === ALINHAMENTOS QUE VOCE PEDIU === */
+th:nth-child(2), td:nth-child(2){ text-align:right !important; padding-right:18px; } /* ITEM */
+th:nth-child(3), td:nth-child(3){ text-align:left !important; } /* CONGREGACAO */
+th:nth-child(4), td:nth-child(4){ text-align:right !important; padding-right:20px; font-variant-numeric: tabular-nums; } /* MATRICULA */
+th:nth-child(8), td:nth-child(8){ text-align:left !important; } /* TESTE */
+th:nth-child(9), td:nth-child(9){ text-align:right !important; padding-right:20px; } /* PONTUACAO */
