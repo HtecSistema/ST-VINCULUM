@@ -142,8 +142,20 @@ if(fMatInput){
 
 
 function getMatriculaLogada(){
+  const urlParams = new URLSearchParams(window.location.search);
+  let matUrl = urlParams.get('mat') || urlParams.get('matricula') || urlParams.get('mat_logada');
+  if(matUrl) return String(matUrl).replace(/\D/g,'').padStart(5,'0');
+
   let m = localStorage.getItem('mat_logada') || localStorage.getItem('matricula') || localStorage.getItem('MATRICULA') || sessionStorage.getItem('mat_logada');
   if(m) return String(m).replace(/\D/g,'').padStart(5,'0');
+
+  try{
+    if(window.parent && window.parent !== window){
+      let pm = window.parent.localStorage.getItem('mat_logada');
+      if(pm) return String(pm).replace(/\D/g,'').padStart(5,'0');
+    }
+  }catch(e){}
+
   try{
     let user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('usuario') || 'null');
     if(user){
@@ -151,9 +163,6 @@ function getMatriculaLogada(){
       if(mat) return String(mat).replace(/\D/g,'').padStart(5,'0');
     }
   }catch(e){}
-  const urlParams = new URLSearchParams(window.location.search);
-  let matUrl = urlParams.get('mat') || urlParams.get('matricula') || urlParams.get('mat_logada');
-  if(matUrl) return String(matUrl).replace(/\D/g,'').padStart(5,'0');
   return null;
 }
 
@@ -161,34 +170,53 @@ function travarMatricula(){
   const ADMINS = ["00425","00001","05722","425","1","5722"];
   const matricula = getMatriculaLogada();
   const campo = document.getElementById('fMat');
-  if(!campo) return;
-  
-  if(!matricula){
-    // sem login, deixa livre pra não quebrar
-    campo.value = "";
-    campo.readOnly = false;
-    campo.classList.remove('travado');
-    return;
-  }
+  if(!campo) return false;
+  if(!matricula) return false;
 
   let mat5 = matricula.padStart(5,'0');
-  let matSemZero = matricula.replace(/^0+/,'');
+  let matSemZero = mat5.replace(/^0+/,'');
   let ehAdm = ADMINS.includes(matricula) || ADMINS.includes(matSemZero) || ADMINS.includes(mat5);
 
+  campo.value = mat5;
   if(ehAdm){
-    campo.value = mat5; // ADM VEM com matrícula mas pode editar
     campo.readOnly = false;
     campo.classList.remove('travado');
     campo.title = "ADM - liberado";
+    campo.style.background = "";
+    campo.style.cursor = "";
   } else {
-    campo.value = mat5; // usuário comum
-    campo.readOnly = true; // SÓ readOnly, sem disabled
+    campo.readOnly = true;
     campo.classList.add('travado');
     campo.title = "Travado: " + mat5;
+    campo.style.background = "#e5e7eb";
+    campo.style.cursor = "not-allowed";
   }
   render();
+  return true;
 }
+
+window.addEventListener('message', function(e){
+  if(e.data && (e.data.tipo === 'LOGIN_DADOS' || e.data.matricula)){
+    let mat = e.data.matricula || e.data.mat;
+    if(mat){
+      localStorage.setItem('mat_logada', mat);
+      travarMatricula();
+    }
+  }
+});
 
 travarMatricula();
 loadAll(true);
-setInterval(()=> { if(document.getElementById('auto').checked) checarNovos(); }, 3000);
+
+// tenta por 10s até achar a matrícula
+let tentativas = 0;
+let intervaloTrava = setInterval(()=>{
+  tentativas++;
+  if(travarMatricula() || tentativas > 20){
+    clearInterval(intervaloTrava);
+  }
+}, 500);
+
+setInterval(()=> { 
+  if(document.getElementById('auto') && document.getElementById('auto').checked) checarNovos(); 
+}, 3000);
