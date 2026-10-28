@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="c.png">
 <link rel="manifest" href="manifest.json">
 <meta property="og:title" content="Htec | ST-VINCULUM">
-<meta property="og:description" content="Sistema de Treinamento Formação de Obreiros">
+<meta property="og:description" content="ADEMIP 360 V1">
 <meta property="og:image" content="https://htecsistema.github.io/ST-VINCULUM/og-image.jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -27,13 +27,9 @@
     <input type="text" id="matricula" placeholder="MATRÍCULA" onblur="formatarMatricula(this); buscarNome()" oninput="formatarMatriculaAoDigitar(this)">
     <input type="text" id="nome" placeholder="NOME COMPLETO" readonly>
     <input type="password" id="senha" placeholder="SENHA" style="text-transform:none;">
-
-    
-<!-- TEXTO NOVO QUE VOCÊ QUER AQUI -->
     <p style="margin-top:4px; margin-bottom:2px; text-align:center; font-size:9px; color:#94A3B8; font-weight:600; line-height:1.3;">
      "...conservem a unidade do Espírito Santo pelo VINCULUM da paz Ef 4.3"
     </p>
-
     <div style="display:flex; gap:8px; margin-top:8px;">
       <button onclick="logar()" style="flex:1; background:#0F172A; padding:13px; border-radius:10px; font-weight:700; border:1px solid #334155; color:#F1F5F9; cursor:pointer;">Entrar no Sistema</button>
       <button onclick="limparCampos()" style="flex:1; background:#1E293B; color:#F1F5F9; border:1px solid #334155; padding:13px; border-radius:10px; font-weight:700; cursor:pointer;">Limpar</button>
@@ -114,9 +110,11 @@
 </div>
 <div class="menu-nav">
   <div class="label">Principal</div>
+  <!-- ACRESCIMO - PAGINA INICIAL - NAO REMOVE NADA -->
+  <button class="menu-btn ativo" onclick="abrir('Inicio.html', this, 'Início')"><span class="icon">🏠</span> Início</button>
   <button class="menu-btn" onclick="abrir('acompanhamento.html', this, 'Acompanhamento')"><span class="icon">📈</span> Acompanhamento</button>
   <button class="menu-btn" onclick="abrir('CadastroAdm.html', this, 'Administradores')"><span class="icon">👑</span> Administrador</button>
-  <button class="menu-btn ativo" onclick="abrir('Cadastro.html', this, 'Cadastro e Acesso Testes')"><span class="icon">📝</span> Cadastro/Teste</button>
+  <button class="menu-btn" onclick="abrir('Cadastro.html', this, 'Cadastro e Acesso Testes')"><span class="icon">📝</span> Cadastro/Teste</button>
   <button class="menu-btn" onclick="abrir('Relatorio.html', this, 'Certificados')"><span class="icon">📊</span> Certificados</button>
   <button class="menu-btn" onclick="abrir('Liberacao.html', this, 'Liberação')"><span class="icon">🔓</span> Liberação</button>
   <button class="menu-btn" onclick="abrir('Baixar.html', this, 'Lições')"><span class="icon">📖</span> Lições</button>
@@ -130,14 +128,16 @@
   <div class="barra-topo-conteudo">
     <div style="display:flex; align-items:center; gap:10px;">
       <button id="btn-menu-mobile" onclick="abrirMenuLateral()">☰</button>
-      <span>📍 <b id="pagina-atual">Cadastro e Acesso Testes</b></span>
+      <span>📍 <b id="pagina-atual">Início</b></span>
     </div>
     <span id="hora-atual">-</span>
   </div>
+  <!-- ACRESCIMO - FRAME INICIAL - NAO REMOVE NADA -->
+  <div id="frame-Inicio.html" class="tela-frame ativa"><iframe id="tela-Inicio.html" src="Inicio.html?v=20261027.1.07"></iframe></div>
   <div id="frame-acompanhamento.html" class="tela-frame"><iframe id="tela-acompanhamento.html" src="acompanhamento.html?v=20261027.1.07"></iframe></div>
   <div id="frame-AcessoUsuario.html" class="tela-frame"><iframe id="tela-AcessoUsuario.html" src="AcessoUsuario.html?v=20261027.1.07"></iframe></div>
   <div id="frame-Baixar.html" class="tela-frame"><iframe id="tela-Baixar.html" src="Baixar.html?v=20261027.1.07"></iframe></div>
-  <div id="frame-Cadastro.html" class="tela-frame ativa"><iframe id="tela-Cadastro.html" src="Cadastro.html?v=20261027.1.07"></iframe></div>
+  <div id="frame-Cadastro.html" class="tela-frame"><iframe id="tela-Cadastro.html" src="Cadastro.html?v=20261027.1.07"></iframe></div>
   <div id="frame-CadastroAdm.html" class="tela-frame"><iframe id="tela-CadastroAdm.html" src="CadastroAdm.html?v=20261027.1.07"></iframe></div>
   <div id="frame-Liberacao.html" class="tela-frame"><iframe id="tela-Liberacao.html" src="Liberacao.html?v=20261027.1.07"></iframe></div>
   <div id="frame-Manutencao.html" class="tela-frame"><iframe id="tela-Manutencao.html" src="Manutencao.html?v=20261027.1.07"></iframe></div>
