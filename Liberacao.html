@@ -30,12 +30,36 @@
 </table>
 </div>
 
+<div style="margin-top:30px; text-align:center; font-size:11px; color:#9ca3af; border-top:1px solid #eee; padding:10px;"><span id="campoUsuario">00000 - FULANO DE TAL</span></div>
+
 <script>
-// BLOQUEIO SÓ 00425 - HELIO SOUZA SILVA
+// ===== 1 - PEGA USUARIO LOGADO DO LOGIN =====
+let matLogadaSistema = localStorage.getItem('mat_logada')||'';
+let nomeLogadoSistema = localStorage.getItem('nome_logado')||'';
+
+try{
+  if(!matLogadaSistema && window.parent && window.parent.localStorage){
+    matLogadaSistema = window.parent.localStorage.getItem('mat_logada')||'';
+    nomeLogadoSistema = window.parent.localStorage.getItem('nome_logado')||'';
+  }
+}catch(e){}
+
+// Escuta o postMessage que vem do indexlogin.js
+window.addEventListener('message', function(e){
+  if(e.data && e.data.tipo === 'LOGIN_DADOS'){
+    matLogadaSistema = String(e.data.matricula||'').toUpperCase().padStart(5,'0');
+    nomeLogadoSistema = String(e.data.nome||'').toUpperCase();
+    localStorage.setItem('mat_logada', matLogadaSistema);
+    localStorage.setItem('nome_logado', nomeLogadoSistema);
+    console.log('LOGIN recebido na LIBERACAO:', matLogadaSistema, nomeLogadoSistema);
+    document.getElementById('campoUsuario').innerText = matLogadaSistema + ' - ' + nomeLogadoSistema;
+  }
+});
+
+// ===== 2 - BLOQUEIO SÓ 00425 =====
 function temPermissao(){
-  let mat = '';
+  let mat = matLogadaSistema || localStorage.getItem('mat_logada') || '';
   try{
-    mat = localStorage.getItem('mat_logada') || '';
     if(!mat && window.parent) mat = window.parent.localStorage.getItem('mat_logada') || '';
   }catch(e){}
   return String(mat).replace(/\D/g,'').padStart(5,'0') === '00425';
@@ -55,8 +79,6 @@ window.gerar = function(){
     msgEl.style.borderRadius='10px';
     msgEl.style.fontWeight='700';
     msgEl.innerText = "Perdão,\nMas vossa senhoria nao tem permissão\npara este procedimento\nProcure o Administrador Htec";
-    
-    // limpa lista e esconde botão azul
     let tb=document.querySelector('#tab tbody');
     if(tb) tb.innerHTML='';
     document.getElementById('lista').style.display='none';
@@ -65,6 +87,28 @@ window.gerar = function(){
   }
   if(gerarOriginal) gerarOriginal();
 }
+
+// ===== 3 - ENVIA COM NOME DO USUARIO LOGADO =====
+const enviarOriginal = window.enviarParaLiberacao;
+window.enviarParaLiberacao = async function(){
+  if(!matLogadaSistema) matLogadaSistema = localStorage.getItem('mat_logada')||'';
+  if(!nomeLogadoSistema) nomeLogadoSistema = localStorage.getItem('nome_logado')||'';
+  
+  window.MAT_LOGADA_PARA_SHEET = matLogadaSistema;
+  window.NOME_LOGADO_PARA_SHEET = nomeLogadoSistema;
+
+  console.log('Enviando para LIBERACAO com usuario:', matLogadaSistema, nomeLogadoSistema);
+
+  if(enviarOriginal) return enviarOriginal();
+}
+
+// preenche o campo discreto
+try{
+  let el = document.getElementById('campoUsuario');
+  if(matLogadaSistema || nomeLogadoSistema){
+    el.innerText = (matLogadaSistema || '00000') + ' - ' + (nomeLogadoSistema || 'FULANO DE TAL');
+  }
+}catch(e){}
 </script>
 
 <script src="liberacao.js"></script>
