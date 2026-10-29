@@ -112,18 +112,5 @@ checks.forEach(chk => {
 });
 </script>
 
-<script>
-const checks = document.querySelectorAll('#wrapChecks input[type="checkbox"]');
-checks.forEach(chk => {
-  chk.addEventListener('change', function(){
-    if(this.checked){
-      checks.forEach(outro => {
-        if(outro !== this) outro.checked = false;
-      });
-    }
-  });
-});
-</script>
-
 </body>
 </html>
