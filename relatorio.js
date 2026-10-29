@@ -1,5 +1,6 @@
 // RELATORIO.JS COMPLETO - FINAL - FILTRO + PDF 100% - 03/10/2026 - ORGANIZADO - CORRIGIDO toFixed + MASTER 05722
 const API_URL = "https://script.google.com/macros/s/AKfycbz2phEY97FZOsloQriNH9i0cWQ0Qex0PAr02jbL18qZHjHwnTtOB4tRcwJRIQbHjMYC/exec";
+
 if(typeof google === 'undefined' ||!google.script ||!google.script.run){
   window.google = { script: { run: {
     _s:null,_f:null,
@@ -330,6 +331,7 @@ function exportarExcel(){ var dados=ATUAL; if(!dados||dados.length<2){alert('Pes
 function gerarBoletim(){
   if(!SELECIONADO){ alert("Clique em um nome na lista primeiro"); return; }
   if(!DETALHE){ alert("Clique na lista primeiro"); return; }
+  if(document.getElementById('modalBoletim')) document.getElementById('modalBoletim').remove();
   var a=DETALHE;
   var ano = new Date().getFullYear();
   var totalFeitosReal = parseInt(a.totalFeitos||0);
@@ -344,53 +346,40 @@ function gerarBoletim(){
   var AZUL_CLARINHO = '#8ab4f8';
   var BORDA = '#d1d5db';
   var html='<div id="boletimPrint" style="background:#fff; padding:0; font-family:Arial, sans-serif; font-size:11px; color:#000; border:1px solid '+BORDA+'">'
-  +'<div style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px solid '+BORDA+'">'
+  +'<div id="dragHandle" style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px solid '+BORDA+'; cursor:move; touch-action:none; user-select:none">'
   +'<img src="https://i.postimg.cc/KKy4nMGY/igreja.jpg" style="width:auto; height:58px; object-fit:contain; display:block; object-fit:contain">'
   +'<div style="text-align:left; line-height:1.15"><b style="font-size:11px">Igreja Evangélica Assembleia de Deus Missões</b><br><span style="font-size:14px; font-weight:900">Curso <i>Discipulado</i></span><br><span style="font-size:10px">Pr. Eliezer Miranda Barbosa – Presidente</span></div></div>'
   +'<div style="background:'+AZUL_CLARINHO+'; color:#000; font-weight:900; padding:6px; font-size:13px; text-align:center;">BOLETIM DO ALUNO</div>'
   +'<div style="padding:10px">'
   +'<div style="display:flex; justify-content:space-between; font-size:11px; margin-top:6px"><div><b>Congregação:</b> '+(a.congOrig||a.cong||'')+'</div><div><b>Ano Curso:</b> '+ano+'</div></div>'
   +'<div style="display:flex; justify-content:space-between; font-size:11px; margin-top:2px"><div><b>Nome:</b> <span style="text-transform:uppercase; font-weight:900">'+(a.nome||'').toString().toUpperCase()+'</span></div><div><b>Matrícula:</b> '+a.mat+'</div></div>';
+  // AJUSTE SÓ AQUI - MEDIA DE CADA CICLO IGUAL O %
+  var calcMedia = function(total, qtd){ if(!qtd || qtd==0) return '0.00'; return (total / qtd).toFixed(2); };
   var calcPerc = function(total, qtd){ if(!qtd || qtd==0) return '0%'; return Math.round((total / (qtd*100) * 100))+'%'; };
+  var media1 = calcMedia(a.r1?a.r1.soma:0, a.r1?a.r1.qtd:0); var media2 = calcMedia(a.r2?a.r2.soma:0, a.r2?a.r2.qtd:0); var media3 = calcMedia(a.r3?a.r3.soma:0, a.r3?a.r3.qtd:0); var media4 = calcMedia(a.r4?a.r4.soma:0, a.r4?a.r4.qtd:0);
   var perc1 = calcPerc(a.r1?a.r1.soma:0, a.r1?a.r1.qtd:0); var perc2 = calcPerc(a.r2?a.r2.soma:0, a.r2?a.r2.qtd:0); var perc3 = calcPerc(a.r3?a.r3.soma:0, a.r3?a.r3.qtd:0); var perc4 = calcPerc(a.r4?a.r4.soma:0, a.r4?a.r4.qtd:0);
+
   html+='<table style="width:100%; border-collapse:collapse; margin-top:8px; font-size:10px; border:1px solid '+BORDA+'" border="0">'
   +'<tr style="background:'+AZUL_CLARINHO+'; color:#000; font-weight:900"><th style="text-align:left; padding:4px; background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Ciclos Temas</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Média</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">NA</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">%</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Media Geral</th></tr>'
-  +'<tr><td style="padding:4px; background:#fff; border:1px solid '+BORDA+'">Ciclo 01: Conhecendo Jesus e o seu Reino</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+(a.r1?sf(a.r1.media):'')+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+(a.r1?a.r1.nas:0)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+perc1+'</td><td rowspan="4" style="text-align:center; font-weight:900; font-size:14px; vertical-align:middle; background:#fff; border:1px solid '+BORDA+'">'+sf(a.mediaGeral)+'</td></tr>'
-  +'<tr><td style="padding:4px; background:#fff; border:1px solid '+BORDA+'">Ciclo 02: Conhecendo as Doutrinas Cristã</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+(a.r2?sf(a.r2.media):'')+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+(a.r2?a.r2.nas:0)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+perc2+'</td></tr>'
-  +'<tr><td style="padding:4px; background:#fff; border:1px solid '+BORDA+'">Ciclo 03: Vivendo as Verdades Bíblicas</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+(a.r3?sf(a.r3.media):'')+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+(a.r3?a.r3.nas:0)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+perc3+'</td></tr>'
-  +'<tr><td style="padding:4px; background:#fff; border:1px solid '+BORDA+'">Ciclo 04: Portando uma Nova Identidade</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+(a.r4?sf(a.r4.media):'')+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+(a.r4?a.r4.nas:0)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+perc4+'</td></tr>'
+  +'<tr><td style="padding:4px; background:#fff; border:1px solid '+BORDA+'">Ciclo 01: Conhecendo Jesus e o seu Reino</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+media1+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+(a.r1?a.r1.nas:0)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+perc1+'</td><td rowspan="4" style="text-align:center; font-weight:900; font-size:14px; vertical-align:middle; background:#fff; border:1px solid '+BORDA+'">'+sf(a.mediaGeral)+'</td></tr>'
+  +'<tr><td style="padding:4px; background:#fff; border:1px solid '+BORDA+'">Ciclo 02: Conhecendo as Doutrinas Cristã</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+media2+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+(a.r2?a.r2.nas:0)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+perc2+'</td></tr>'
+  +'<tr><td style="padding:4px; background:#fff; border:1px solid '+BORDA+'">Ciclo 03: Vivendo as Verdades Bíblicas</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+media3+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+(a.r3?a.r3.nas:0)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+perc3+'</td></tr>'
+  +'<tr><td style="padding:4px; background:#fff; border:1px solid '+BORDA+'">Ciclo 04: Portando uma Nova Identidade</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+media4+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+(a.r4?a.r4.nas:0)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+perc4+'</td></tr>'
   +'</table>';
   html+='<table style="width:100%; border-collapse:collapse; margin-top:8px; font-size:9px; border:1px solid '+BORDA+'" border="0">'
-  +'<tr style="background:'+AZUL_CLARINHO+'; color:#000; font-weight:900">'
-  +'<th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Item</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Ciclo 01</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Nota</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Obs</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Ciclo 02</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Nota</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Obs</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Ciclo 03</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Nota</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Obs</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Ciclo 04</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Nota</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Obs</th></tr>';
+  +'<tr style="background:'+AZUL_CLARINHO+'; color:#000; font-weight:900"><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Item</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Ciclo 01</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Nota</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Obs</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Ciclo 02</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Nota</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Obs</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Ciclo 03</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Nota</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Obs</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Ciclo 04</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Nota</th><th style="background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Obs</th></tr>';
   var totalC1=0, totalC2=0, totalC3=0, totalC4=0;
-  for(var i=1;i<=13;i++){
-    var n1 = a.c1[i]; var n2 = a.c2[i]; var n3 = a.c3[i]; var n4 = a.c4[i];
-    if(n1!==undefined) totalC1+=parseFloat(n1)||0; if(n2!==undefined) totalC2+=parseFloat(n2)||0; if(n3!==undefined) totalC3+=parseFloat(n3)||0; if(n4!==undefined) totalC4+=parseFloat(n4)||0;
-    var f1 = formatNota(n1); var f2 = formatNota(n2); var f3 = formatNota(n3); var f4 = formatNota(n4);
-    html+='<tr style="height:14px; line-height:1">'
-    +'<td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+(i<10?'0'+i:i)+'</td>'
-    +'<td style="background:#fff; border:1px solid '+BORDA+'">Teste '+(i<10?'0'+i:i)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f1.nota+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f1.obs+'</td>'
-    +'<td style="background:#fff; border:1px solid '+BORDA+'">Teste '+(i<10?'0'+i:i)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f2.nota+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f2.obs+'</td>'
-    +'<td style="background:#fff; border:1px solid '+BORDA+'">Teste '+(i<10?'0'+i:i)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f3.nota+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f3.obs+'</td>'
-    +'<td style="background:#fff; border:1px solid '+BORDA+'">Teste '+(i<10?'0'+i:i)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f4.nota+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f4.obs+'</td>'
-    +'</tr>';
-  }
+  for(var i=1;i<=13;i++){ var n1 = a.c1[i]; var n2 = a.c2[i]; var n3 = a.c3[i]; var n4 = a.c4[i]; if(n1!==undefined) totalC1+=parseFloat(n1)||0; if(n2!==undefined) totalC2+=parseFloat(n2)||0; if(n3!==undefined) totalC3+=parseFloat(n3)||0; if(n4!==undefined) totalC4+=parseFloat(n4)||0; var f1 = formatNota(n1); var f2 = formatNota(n2); var f3 = formatNota(n3); var f4 = formatNota(n4); html+='<tr style="height:14px; line-height:1"><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+(i<10?'0'+i:i)+'</td><td style="background:#fff; border:1px solid '+BORDA+'">Teste '+(i<10?'0'+i:i)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f1.nota+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f1.obs+'</td><td style="background:#fff; border:1px solid '+BORDA+'">Teste '+(i<10?'0'+i:i)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f2.nota+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f2.obs+'</td><td style="background:#fff; border:1px solid '+BORDA+'">Teste '+(i<10?'0'+i:i)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f3.nota+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f3.obs+'</td><td style="background:#fff; border:1px solid '+BORDA+'">Teste '+(i<10?'0'+i:i)+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f4.nota+'</td><td style="text-align:center; background:#fff; border:1px solid '+BORDA+'">'+f4.obs+'</td></tr>'; }
   html+='<tr style="background:'+AZUL_CLARINHO+'; font-weight:900; color:#000"><td colspan="2" style="text-align:center; background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">Total Pontos</td><td style="text-align:center; background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">'+totalC1+'</td><td style="background:'+AZUL_CLARINHO+'; border:1px solid '+BORDA+'"></td><td style="background:'+AZUL_CLARINHO+'; border:1px solid '+BORDA+'"></td><td style="text-align:center; background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">'+totalC2+'</td><td style="background:'+AZUL_CLARINHO+'; border:1px solid '+BORDA+'"></td><td style="background:'+AZUL_CLARINHO+'; border:1px solid '+BORDA+'"></td><td style="text-align:center; background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">'+totalC3+'</td><td style="background:'+AZUL_CLARINHO+'; border:1px solid '+BORDA+'"></td><td style="background:'+AZUL_CLARINHO+'; border:1px solid '+BORDA+'"></td><td style="text-align:center; background:'+AZUL_CLARINHO+'; color:#000; border:1px solid '+BORDA+'">'+totalC4+'</td><td style="background:'+AZUL_CLARINHO+'; border:1px solid '+BORDA+'"></td></tr></table>';
   html+='<div style="font-size:8px; margin-top:4px"><b>Legenda:</b> NA -> Nota não Atingida | Total: '+a.totalFeitos+'/52 | Pend: '+a.totalPend+' | 100% Real</div>';
   if(bloqueado){ html+='<div style="margin-top:8px; background:#f8d7da; color:#721c24; padding:8px; border:1px solid #f5c6cb; text-align:center; font-weight:900">⛔ PENDENTE - '+(a.totalNA>0? a.totalNA+' nota(s) <70 (NA)' : a.totalFeitos<52? 'Faltam '+(52-a.totalFeitos)+' testes' : 'Média <70')+' - NÃO PODE IMPRIMIR CERTIFICADO</div>'; } else { html+='<div style="margin-top:8px; background:#d4edda; color:#155724; padding:8px; border:1px solid #c3e6cb; text-align:center; font-weight:900">✅ APROVADO - Média '+sf(a.mediaGeral)+'</div>'; }
   html+='</div></div>';
-  html+='<div class="no-print" data-html2canvas-ignore="true" style="margin-top:10px; display:flex; gap:8px; flex-wrap:nowrap">'
-  +'<button onclick="window.print()" style="flex:1; min-width:0; height:44px; background:#0d6efd; color:#fff; border:0; border-radius:8px; font-weight:900; font-size:10px">🖨 IMPRIMIR</button>'
-  +'<button onclick="enviarPdfZap()" style="flex:1; min-width:0; height:44px; background:#25D366; color:#fff; border:0; border-radius:8px; font-weight:900; font-size:10px">📄 PDF + ZAP</button>'
-  +'<button onclick="enviarBoletimZap()" style="flex:1; min-width:0; height:44px; background:#128C7E; color:#fff; border:0; border-radius:8px; font-weight:900; font-size:10px">📱 TEXTO ZAP</button>'
-
-  +'<button onclick="document.getElementById(\'boletim\').style.display=\'none\'" style="flex:1; min-width:0; height:44px; background:#6c757d; color:#fff; border:0; border-radius:8px; font-weight:900; font-size:10px">FECHAR</button>'
-  +'</div>';
-  document.getElementById('boletim').innerHTML=html;
-  document.getElementById('boletim').style.display='block';
-  document.getElementById('boletim').scrollIntoView({behavior:'smooth'});
+  var botoes = `<div class="no-print" style="display:flex; gap:8px; flex-wrap:nowrap; justify-content:center"><button onclick="window.print()" style="flex:1; min-width:0; height:44px; background:#0d6efd; color:#fff; border:0; border-radius:8px; font-weight:900; font-size:11px">🖨 IMPRIMIR</button><button onclick="enviarPdfZap()" style="flex:1; min-width:0; height:44px; background:#25D366; color:#fff; border:0; border-radius:8px; font-weight:900; font-size:11px">📄 PDF + ZAP</button><button onclick="enviarBoletimZap()" style="flex:1; min-width:0; height:44px; background:#128C7E; color:#fff; border:0; border-radius:8px; font-weight:900; font-size:11px">📱 TEXTO ZAP</button><button onclick="document.getElementById('modalBoletim').remove()" style="flex:1; min-width:0; height:44px; background:#6c757d; color:#fff; border:0; border-radius:8px; font-weight:900; font-size:11px">FECHAR</button></div>`;
+  var modalHtml = `<div id="modalBoletim" style="position:fixed;inset:0;background:rgba(15,23,42,.65);backdrop-filter:blur(3px);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:12px"><div id="modalBoletimBox" style="background:#fff;width:100%;max-width:1080px;max-height:98vh;overflow:auto;border-radius:16px;padding:14px 14px 10px 14px;box-shadow:0 20px 60px rgba(0,0,0,.35);border:1px solid #e2e8f0;animation:pop .18s ease;overflow-x:hidden;scrollbar-width:none;-ms-overflow-style:none">${botoes}<div style="height:10px"></div>${html}</div></div><style>@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}#modalBoletimBox::-webkit-scrollbar{display:none;width:0;height:0}#dragHandle{cursor:grab}#dragHandle:active{cursor:grabbing}</style>`;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  (function(){ var box=document.getElementById('modalBoletimBox'); var handle=document.getElementById('dragHandle'); var overlay=document.getElementById('modalBoletim'); if(!box||!handle) return; var startX,startY,initLeft,initTop,dragging=false; function getPos(e){ var t=e.touches?e.touches[0]:e; return {x:t.clientX, y:t.clientY}; } function startDrag(e){ var p=getPos(e); dragging=true; startX=p.x; startY=p.y; var r=box.getBoundingClientRect(); initLeft=r.left; initTop=r.top; box.style.position='fixed'; box.style.left=initLeft+'px'; box.style.top=initTop+'px'; box.style.margin='0'; box.style.width=r.width+'px'; if(e.cancelable) e.preventDefault(); } function moveDrag(e){ if(!dragging) return; var p=getPos(e); box.style.left=(initLeft + p.x - startX)+'px'; box.style.top=(initTop + p.y - startY)+'px'; if(e.cancelable) e.preventDefault(); } function endDrag(){ dragging=false; } handle.addEventListener('mousedown', startDrag); handle.addEventListener('touchstart', startDrag, {passive:false}); window.addEventListener('mousemove', moveDrag); window.addEventListener('touchmove', moveDrag, {passive:false}); window.addEventListener('mouseup', endDrag); window.addEventListener('touchend', endDrag); overlay.addEventListener('click', function(e){ if(e.target===overlay) document.getElementById('modalBoletim').remove(); }); })();
 }
+
 
 function listarPendentesNA(a){ var lista=[]; for(var ciclo=1;ciclo<=4;ciclo++){ var chave='c'+ciclo; var obj = a[chave] || {}; for(var i=1;i<=13;i++){ var v = obj[i]; var teste = (i<10?'0'+i:i); if(v===undefined || v==='' || v===null){ lista.push('C'+ciclo+'-Teste '+teste+' - Pendente'); }else{ var num=parseFloat(v); if(!isNaN(num) && num<70){ lista.push('C'+ciclo+'-Teste '+teste+' - Nota abaixo de 70 (Nota: '+num+')'); } } } } return lista; }
 
@@ -400,22 +389,25 @@ function gerarCertificado(){
     if(mat){ pesquisar(); return; } 
     alert("Selecione aluno"); return; 
   } 
-    var a=DETALHE; 
+  var a=DETALHE; 
+
   if(a.totalNA>0 || a.totalFeitos<52 || a.mediaGeral<70){ 
     var motivo='';
     var partes=[];
     if(a.totalNA>0) partes.push(a.totalNA+' nota(s) <70');
     if(a.totalFeitos<52) partes.push((52-a.totalFeitos)+' teste(s) faltando');
     if(partes.length>0) motivo = partes.join(' e ');
-    else motivo='Média '+sf(a.mediaGeral)+' <70';
-    var htmlBloq='<div style="background:#fff;padding:20px;border-radius:12px;border:3px solid #dc3545;text-align:center"><h2 style="color:#dc3545">⛔ CERTIFICADO BLOQUEADO</h2><div><b>'+a.nome.toUpperCase()+'</b><br>Motivo: <b>'+motivo+'</b></div><div style="margin-top:12px"><button onclick="gerarBoletim()" style="background:#0d6efd;color:#fff;border:0;border-radius:8px;padding:10px 16px">VER BOLETIM</button></div></div>'; 
-    document.getElementById('boletim').innerHTML=htmlBloq; 
-    document.getElementById('boletim').style.display='block'; return; 
+    else motivo='Média '+a.mediaGeral.toFixed(2)+' <70';
+    modalCertificado(motivo, a.nome);
+    return; 
   } 
-  var meses=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro']; 
+
+ var meses=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro']; 
   var dataHoje=new Date(); 
   var dataExtenso='Paragominas-PA, '+dataHoje.getDate()+' de '+meses[dataHoje.getMonth()]+' de '+dataHoje.getFullYear();
-  var assinatura = "data:image/png;base64,[STRIPPED]";
+
+var assinatura = "data:image/png;base64,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";
+
   var html=`
   <style>
     @media print{
@@ -428,11 +420,12 @@ function gerarCertificado(){
       #certPrint{ transform:none !important; width:100% !important; max-width:100% !important; }
     }
   </style>
+
   <div id="certWrap" style="width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; display:flex; justify-content:center; background:#e5e7eb; padding:8px 0;">
     <div id="certPrint" style="background:#fff; width:800px; min-width:800px; font-family:'Segoe UI', Arial, sans-serif; border:8px solid #0f2a4a; position:relative; padding:0; box-shadow:0 0 0 2px #c9a86a inset;">
       <div style="border:1px solid #c9a86a; margin:6px; padding:0; position:relative; background: linear-gradient(180deg, #ffffff 0%, #f8f9fc 100%);">
         <div style="height:8px; background: linear-gradient(90deg, #0f2a4a 0%, #1e4a7a 50%, #c9a86a 100%);"></div>
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:18px 28px 10px 28px;">
+        <div id="dragHandleCert" style="display:flex; justify-content:space-between; align-items:center; padding:18px 28px 10px 28px; cursor:move; touch-action:none; user-select:none;">
           <div style="display:flex; align-items:center; gap:12px;">
             <img src="https://i.postimg.cc/KKy4nMGY/igreja.jpg" style="width:auto; height:58px; object-fit:contain; display:block;">
             <div style="line-height:1.2;">
@@ -443,7 +436,7 @@ function gerarCertificado(){
           </div>
           <div style="text-align:right; font-size:9px; color:#666;">
             <div>Matrícula: <b style="color:#0f2a4a;">${a.mat}</b></div>
-            <div>Média: <b style="color:#198754;">${sf(a.mediaGeral)}</b></div>
+            <div>Média: <b style="color:#198754;">${a.mediaGeral.toFixed(2)}</b></div>
             <div style="font-size:7px; margin-top:2px; background:#f1f5f9; padding:2px 6px; border-radius:4px; display:inline-block;">${a.totalFeitos||52}/52 Testes Concluídos</div>
           </div>
         </div>
@@ -482,7 +475,7 @@ function gerarCertificado(){
           </div>
         </div>
         <div style="background:#0f2a4a; color:#c9a86a; text-align:center; padding:8px; font-size:8px; letter-spacing:0.5px;">
-          ${dataExtenso} • ADEMIP Paragominas-PA • Documento válido com média ${sf(a.mediaGeral)}
+          ${dataExtenso} • ADEMIP Paragominas-PA • Documento válido com média ${a.mediaGeral.toFixed(2)}
         </div>
       </div>
     </div>
@@ -490,12 +483,74 @@ function gerarCertificado(){
   <div class="no-print" style="max-width:800px; margin:12px auto; padding:0 12px; display:flex; gap:8px;">
     <button onclick="window.print()" style="flex:1; height:44px; background:#0f2a4a; color:#fff; border:0; border-radius:8px; font-weight:900;">🖨 IMPRIMIR</button>
     <button onclick="enviarZapPDF()" style="flex:1; height:44px; background:#25D366; color:#fff; border:0; border-radius:8px; font-weight:900;">📲 ENVIAR ZAP</button>
-    <button onclick="document.getElementById('boletim').style.display='none'" style="flex:1; height:44px; background:#e5e7eb; color:#111; border:0; border-radius:8px; font-weight:700;">FECHAR</button>
+    <button onclick="document.getElementById('boletim').style.display='none'; var m=document.getElementById('modalCert'); if(m) m.remove();" style="flex:1; height:44px; background:#e5e7eb; color:#111; border:0; border-radius:8px; font-weight:700;">FECHAR</button>
   </div>`;
 
-  document.getElementById('boletim').innerHTML=html;
-  document.getElementById('boletim').style.display='block';
-  document.getElementById('boletim').scrollIntoView({behavior:'smooth'});
+  if(document.getElementById('modalBoletim')) document.getElementById('modalBoletim').remove();
+  if(document.getElementById('modalCert')) document.getElementById('modalCert').remove();
+
+  var modalCert = `
+  <div id="modalCert" style="position:fixed;inset:0;background:rgba(15,23,42,.65);backdrop-filter:blur(3px);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:12px">
+    <div id="modalCertBox" style="background:#fff;width:100%;max-width:1080px;max-height:96vh;overflow:auto;border-radius:16px;padding:14px;box-shadow:0 20px 60px rgba(0,0,0,.35);border:1px solid #e2e8f0;animation:pop .18s ease;scrollbar-width:none;-ms-overflow-style:none">
+      <div id="boletim" style="display:block">${html}</div>
+    </div>
+  </div>
+  <style>
+    @keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+    #modalCertBox::-webkit-scrollbar{display:none;width:0;height:0}
+    #dragHandleCert{cursor:grab} #dragHandleCert:active{cursor:grabbing}
+  </style>`;
+
+  document.body.insertAdjacentHTML('beforeend', modalCert);
+
+  // ARRASTAR COM MOUSE + FECHAR CLICANDO FORA - SÓ ISSO
+  (function(){
+    var box=document.getElementById('modalCertBox');
+    var handle=document.getElementById('dragHandleCert');
+    var overlay=document.getElementById('modalCert');
+    if(!box||!handle||!overlay) return;
+    var sX,sY,iL,iT,d=false;
+    function g(e){var t=e.touches?e.touches[0]:e;return{x:t.clientX,y:t.clientY}}
+    function sd(e){var p=g(e);d=true;sX=p.x;sY=p.y;var r=box.getBoundingClientRect();iL=r.left;iT=r.top;box.style.position='fixed';box.style.left=iL+'px';box.style.top=iT+'px';box.style.margin='0';box.style.width=r.width+'px';box.style.maxWidth='1080px';if(e.cancelable)e.preventDefault()}
+    function md(e){if(!d)return;var p=g(e);box.style.left=(iL+p.x-sX)+'px';box.style.top=(iT+p.y-sY)+'px';if(e.cancelable)e.preventDefault()}
+    function ed(){d=false}
+    handle.addEventListener('mousedown',sd);
+    handle.addEventListener('touchstart',sd,{passive:false});
+    window.addEventListener('mousemove',md);
+    window.addEventListener('touchmove',md,{passive:false});
+    window.addEventListener('mouseup',ed);
+    window.addEventListener('touchend',ed);
+    overlay.addEventListener('click',function(e){if(e.target===overlay) overlay.remove()});
+  })();
+}
+
+function modalCertificado(motivo, nomeAluno){
+  if(document.getElementById('modalCert')) document.getElementById('modalCert').remove();
+  let m = String(motivo||'');
+  m = m.replace(/(\d+)\s*nota\(s\)\s*<\s*70/gi, '$1 Teste(s) com notas insuficiente');
+  m = m.replace(/(\d+)\s*nota\(s\)\s*menor do que 70/gi, '$1 Teste(s) com notas insuficiente');
+  m = m.replace(/nota\(s\)\s*<\s*70/gi, 'Teste(s) com notas insuficiente');
+  m = m.replace(/nota\(s\)\s*menor do que 70/gi, 'Teste(s) com notas insuficiente');
+  document.body.insertAdjacentHTML('beforeend', `
+  <div id="modalCert" style="position:fixed;inset:0;background:rgba(15,23,42,.65);backdrop-filter:blur(3px);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:16px">
+    <div style="background:#fff;width:100%;max-width:420px;border-radius:16px;padding:26px 24px;text-align:left;box-shadow:0 20px 60px rgba(0,0,0,.35);border:1px solid #e2e8f0;animation:pop .18s ease">
+      <div style="color:#dc3545;font-weight:900;font-size:19px;margin-bottom:12px;text-align:center">Atenção</div>
+      <div style="font-weight:800;font-size:15px;color:#111827;margin-bottom:10px;text-align:center">Desculpe, certificado indisponível</div>
+      <div style="background:#fef2f2;border-left:4px solid #dc3545;padding:10px 12px;border-radius:8px;margin-bottom:12px;font-size:13px;color:#7f1d1d">
+        Motivo: <b style="color:#991b1b">${m}</b>
+      </div>
+      <div style="font-size:13.5px;color:#334155;line-height:1.5;text-align:left">
+        Caríssimo aluno, <b style="color:#111827">${String(nomeAluno||'').toUpperCase()}</b>, por gentileza, finalize seu curso.<br><br>
+        Para acesso ao certificado é necessário que todos os dados cadastrais e testes sejam completos.
+      </div>
+      <div style="margin-top:20px;display:flex;justify-content:center;gap:12px">
+        <button onclick="gerarBoletim();document.getElementById('modalCert').remove()" style="background:#1e3a8a;color:#fff;border:0;border-radius:22px;padding:11px 0;width:125px;font-weight:800;font-size:10px;cursor:pointer">Ver Boletim</button>
+        <button onclick="document.getElementById('modalCert').remove(); enviarBoletimZap()" style="background:#059669;color:#fff;border:0;border-radius:22px;padding:11px 0;width:125px;font-weight:800;font-size:12px;cursor:pointer">Gerar Relatorio</button>
+        <button onclick="document.getElementById('modalCert').remove()" style="background:#334155;color:#fff;border:0;border-radius:22px;padding:11px 0;width:125px;font-weight:800;font-size:12px;cursor:pointer">Fechar</button>
+      </div>
+    </div>
+  </div>
+  <style>@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}</style>`);
 }
 
 function enviarZapPDF(){
