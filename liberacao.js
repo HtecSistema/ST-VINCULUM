@@ -1,4 +1,5 @@
-const URL_WEBAPP = "https://script.google.com/macros/s/AKfycbxLXw-nu5oXXtjE8HKik_W_bbT9CGjTNJWw-dUm4wWYv-hjcz1dOhMHLxoUTRHGJA3D0A/exec";
+const URL_WEBAPP = "https://script.google.com/macros/s/AKfycbxLXw-nu5oXXtjE8HKik_W_bbT9CGjTNJWw-dUm4wWYv-hjcz1dOhMHLxoUTRHGJA3D0A/exec"; // PRINCIPAL - DADOS
+const URL_LOG = "https://script.google.com/macros/s/AKfycbxAwYpt5cBWB3IMmQ1nfZUKew4WUhP2DFGc_bPdFOqoxQlqqM2c9CQBR2XoS8ku0ORSBg/exec"; // NOVA - LibC
 let allDados=[]; let dadosVisiveis=[]; let progressoInterval=null; let progresso=0;
 let idxSelecionado=-1;
 
@@ -7,7 +8,6 @@ const KEY_DADOS = "dadosLiberacao70";
 const KEY_CICLO = "cicloLiberacao70";
 
 function normalizar(t){ return String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); }
-
 function salvarPersistencia(){
   try{
     let fMat = document.getElementById('fMat')?.value || "";
@@ -188,17 +188,43 @@ function limparTudo(){
 
 function gerar(){
   let mat = '';
+  let nome = '';
   try{
     mat = localStorage.getItem('mat_logada') || '';
-    if(!mat && window.parent) mat = window.parent.localStorage.getItem('mat_logada') || '';
+    nome = localStorage.getItem('nome_logado') || '';
+    if((!mat || !nome) && window.parent){
+      if(!mat) mat = window.parent.localStorage.getItem('mat_logada') || '';
+      if(!nome) nome = window.parent.localStorage.getItem('nome_logado') || '';
+    }
     if(!mat && window.parent && window.parent.document){
       let txt = window.parent.document.body.innerText || "";
       let m = txt.match(/USUÁRIO LOGADO\s*0*(\d{3,5})/i);
       if(m) mat = m[1];
     }
   }catch(e){}
+  
   let matNorm = String(mat).replace(/\D/g,'').padStart(5,'0');
-  if(matNorm!== '00425'){
+  let nomeNorm = String(nome || 'SEM NOME').toUpperCase();
+  let usuarioCompleto = matNorm + ' - ' + nomeNorm; // 99999 - TESTE
+
+  // atualiza o campo discreto da foto
+  try{
+    let el = document.getElementById('campoUsuario');
+    if(el) el.innerText = usuarioCompleto;
+  }catch(e){}
+
+  // === CASO 1: É CURIOSO (diferente de 00425) - LOGA NA PLANILHA NOVA ===
+  if(matNorm && matNorm !== '00425'){
+    try{
+      var urlLog = URL_LOG + '?action=logcurioso&matricula='+encodeURIComponent(matNorm)+'&nome='+encodeURIComponent(nomeNorm)+'&usuario='+encodeURIComponent(usuarioCompleto)+'&data='+encodeURIComponent(new Date().toLocaleString('pt-BR'))+'&callback=cbLog&t='+Date.now();
+      var sLog = document.createElement('script');
+      sLog.src = urlLog;
+      document.body.appendChild(sLog);
+    }catch(eLog){}
+  }
+
+  // === CASO 2: NÃO TEM PERMISSÃO ===
+  if(matNorm !== '00425'){
     let msgEl = document.getElementById('msg');
     msgEl.style.display='block';
     msgEl.style.whiteSpace='pre-line';
@@ -216,6 +242,8 @@ function gerar(){
     document.getElementById('pWrap').style.display='none';
     return;
   }
+
+  // === CASO 3: É 00425 - SEGUE NORMAL NA API PRINCIPAL ===
   let ciclo=document.getElementById('ciclo').value;
   salvarPersistencia();
   document.querySelector('.list-wrap').style.display='none';
@@ -226,33 +254,53 @@ function gerar(){
   let agora=new Date().toLocaleString('pt-BR');
   let s=document.createElement('script');s.src=URL_WEBAPP+"?action=executarliberacao&data="+encodeURIComponent(agora)+"&ciclo="+encodeURIComponent(ciclo)+"&callback=mostraResultado&t="+Date.now();document.body.appendChild(s);
 }
+function cbLog(r){ console.log('Logado na nova:', r); }
+
+
 
 async function enviarParaLiberacao(){
   if(!dadosVisiveis.length){ alert("Nenhum dado"); return; }
-  if(!confirm("Enviar "+dadosVisiveis.length+" para LIBERACAO? Vai limpar A2:J e gerar LINK na coluna H com CICLO 01 / TESTE 01")) return;
+  if(!confirm("Enviar "+dadosVisiveis.length+" para LIBERACAO?")) return;
+  
   let btn=document.getElementById('btnEnviar');
   btn.disabled=true;
   btn.innerText="ENVIANDO...";
-  setProgresso(50,'ENVIANDO... LIMPANDO A2:J E GERANDO LINK H + R:S');
 
-  // --- AQUI GERA CICLO E TESTE PRA R e S ---
-  let dadosRS = dadosVisiveis.map(r => ({
-    CICLO: r.CICLO || r.E || '',
-    TESTE: r.TESTE || r.F || ''
-  }));
+  // PEGA O NOME CERTO - tava pegando 'nome' que não existe, tem que ser 'nome_logado'
+  let nomeLogado = '';
+  try{
+    nomeLogado = localStorage.getItem('nome_logado') || '';
+    if(!nomeLogado && window.parent) nomeLogado = window.parent.localStorage.getItem('nome_logado') || '';
+    if(!nomeLogado) nomeLogado = localStorage.getItem('nome') || '';
+  }catch(e){}
+  if(!nomeLogado) nomeLogado = 'SEM NOME';
+
+  let dadosCorrigidos = dadosVisiveis.map(l=>{
+    let nl = [...l];
+    let tNum = String(nl[5]||'').replace(/\D/g,'');
+    if(tNum=='18') nl[5]='TESTE 12';
+    // CORRIGE COLUNA C AQUI - SE FOR SEM NOME, USA O NOME LOGADO
+    let nomeAtual = String(nl[3]||'').trim().toUpperCase();
+    if(!nomeAtual || nomeAtual.includes('SEM NOME')){
+      nl[3] = nomeLogado;
+    }
+    return nl;
+  });
+
+  let dadosRS = dadosCorrigidos.map(r => ({ CICLO: r[4], TESTE: r[5] }));
 
   try{
     let resp = await fetch(URL_WEBAPP, {
       method:'POST',
       headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({acao:'salvarliberacao', dados:dadosVisiveis, rs:dadosRS})
+      body: JSON.stringify({acao:'salvarliberacao', dados:dadosCorrigidos, rs:dadosRS})
     });
     let txt = await resp.text();
     let res = {};
     try{ res = JSON.parse(txt); }catch(e){ res = {ok:false, err:txt}; }
     retornoEnvio(res);
   }catch(err){
-    let dadosEncoded = encodeURIComponent(JSON.stringify(dadosVisiveis));
+    let dadosEncoded = encodeURIComponent(JSON.stringify(dadosCorrigidos));
     let rsEncoded = encodeURIComponent(JSON.stringify(dadosRS));
     let s=document.createElement('script');
     s.src=URL_WEBAPP+"?acao=salvarliberacao&dados="+dadosEncoded+"&rs="+rsEncoded+"&callback=retornoEnvio&t="+Date.now();
