@@ -29,11 +29,11 @@ body{background:#0F172A; color:#F1F5F9; min-height:100vh; min-height:100dvh; dis
 
 @media (max-width: 480px), (max-height: 800px) {
   body{
-    height:100dvh;
     min-height:100dvh;
-    padding:12px 14px calc(8px + env(safe-area-inset-bottom)) 14px;
-    justify-content:space-between;
-    overflow:hidden;
+    height:auto;
+    overflow:auto;
+    padding:12px 14px 12px 14px;
+    justify-content:flex-start;
   }
   .center-wrap{
     flex:1;
@@ -48,7 +48,7 @@ body{background:#0F172A; color:#F1F5F9; min-height:100vh; min-height:100dvh; dis
   .footer-wrap{
     margin-top:auto;
     padding-top:8px;
-    padding-bottom:2px;
+    padding-bottom:90px !important;
     flex-shrink:0;
   }
   .footer, .footer2{font-size:10px; line-height:1.35;}
