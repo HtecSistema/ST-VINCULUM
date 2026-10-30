@@ -102,7 +102,7 @@ async function logar(){
       });
       if(emManut){
         if(mat !== '00425'){
-          mostrarErro(`🛠️ SISTEMA EM MANUTENÇÃO<br><b>${emManut.tipo||emManut.TipoCiclo||''}</b><br>Até: ${emManut.dataFinal||emManut.DataFinal||''} ${emManut.horario||emManut.Horario||''}`);
+          mostrarErro(`🛠️ SISTEMA EM MANUTENÇÃO<br>POR GENTILEZA, TENTE MAIS TARDE`);
           return;
         }
       }
@@ -345,7 +345,7 @@ async function gerarRelatorioZap(){
     alert('Busque uma matrícula válida primeiro (com senha master correta)');
     return;
   }
-  let msg = `*STD - SEU RECURSO DE ACESSO*%0A%0AMatrícula: *${mat}*%0ANome: *${encodeURIComponent(nome)}*%0ASenha: *${encodeURIComponent(senha)}*%0AContato: *${encodeURIComponent(cont)}*%0A%0AAcesse: https://htecsistema.github.io/ST-VINCULUM/`;
+  let msg = `*ST - VINCULUM, SEU RECURSO DE ACESSO*%0A%0AMatrícula: *${mat}*%0ANome: *${encodeURIComponent(nome)}*%0ASenha: *${encodeURIComponent(senha)}*%0AContato: *${encodeURIComponent(cont)}*%0A%0AAcesse: https://htecsistema.github.io/ST-VINCULUM/`;
   let zap = String(cont||'').replace(/\D/g,''); if(zap.length>=10&&zap.length<=11) zap='55'+zap;
   window.open(zap.length>=12? 'https://wa.me/'+zap+'?text='+msg : 'https://wa.me/?text='+msg,'_blank');
 }
