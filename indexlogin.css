@@ -10,14 +10,11 @@ body{margin:0; font-family:'Segoe UI', Inter, Arial, sans-serif; height:100vh; b
 .card-login button{width:100%; padding:13px; background:#3B82F6; color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer; margin-top:8px; transition:0.2s;}
 .card-login button:hover{background:#2563EB; transform:translateY(-1px);}
 #erro-login{color:#f87171; font-size:13px; margin-top:12px; display:none; background:rgba(239,68,68,0.1); padding:8px; border-radius:8px; border:1px solid rgba(239,68,68,0.2);}
-
-/* TODOS PADRONIZADOS NO MESMO ESCURO - SEM BRANCO */
 #box-primeiro-acesso{display:none; margin-top:16px; text-align:left; background:#1E293B; border:1px solid #334155; border-radius:12px; padding:14px; color:#F1F5F9;}
 #box-cadastro-novo{display:none; margin-top:16px; text-align:left; background:#1E293B; border:1px solid #334155; border-radius:12px; padding:14px; color:#F1F5F9;}
 #box-novo-aluno{display:none; margin-top:16px; text-align:left; background:#1E293B; border:1px solid #334155; border-radius:12px; padding:14px; color:#F1F5F9;}
 #box-master{display:none; margin-top:16px; text-align:left; background:#1E293B; border:1px solid #334155; border-radius:12px; padding:14px; color:#F1F5F9;}
 #box-masterlista{display:none; margin-top:16px; text-align:left; background:#1E293B; border:1px solid #334155; border-radius:12px; padding:14px; color:#F1F5F9;}
-
 #sistema{display:none; flex-direction:row; height:100vh;}
 #menu-lateral{width:270px; background:#1E293B; border-right:1px solid #334155; display:flex; flex-direction:column; padding:0; box-shadow: 4px 0 24px rgba(0,0,0,0.3); transition: transform 0.3s ease; z-index:1000;}
 .menu-topo{padding:24px 20px; border-bottom:1px solid #334155;}
@@ -61,19 +58,30 @@ button.menu-btn.ativo{background:#3B82F6; color:white; border-color:#3B82F6; box
   .botoes-manut{ grid-template-columns:1fr 1fr; }
   .botoes-manut #btnLancarManut{ grid-column: span 2; padding:16px!important; font-size:14px!important }
 }
-
-/* GARANTIA - SE TIVER ALGUM CARD BRANCO DO ATENÇÃO, VIRA ESCURO */
 #box-primeiro-acesso input, #box-cadastro-novo input, #box-novo-aluno input, #box-master input, #box-masterlista input{
   background:#0F172A; border:1px solid #334155; color:#F1F5F9;
 }
 #box-primeiro-acesso *, #box-cadastro-novo *, #box-novo-aluno *, #box-master *, #box-masterlista *{
   color:#F1F5F9;
 }
-
 .card-login .logo img {
-  width: 140px !important;
+  width: 150px !important;
   height: auto !important;
   background: #1E293B !important;
   display: block;
   margin: 0 auto;
+}
+
+/* ===== ADIÇÃO PARA APARECER TODA A TELA NO CELULAR - SEM APAGAR NADA ACIMA ===== */
+@media (max-width: 480px){
+  #tela-login{height:100dvh; padding:12px; box-sizing:border-box;}
+  .card-login{width:100%; max-width:100%; max-height:calc(100dvh - 24px); padding:14px 14px 10px 14px; display:flex; flex-direction:column;}
+  .card-login h2{font-size:18px; margin-bottom:2px;}
+  .card-login p{font-size:12px; margin-bottom:10px;}
+  .card-login input{padding:10px 12px; margin-bottom:7px; font-size:13px;}
+  .card-login button{padding:10px; margin-top:4px;}
+  .card-login .logo img{width:110px !important;}
+}
+@media (max-height: 800px){
+  .card-login{max-height:calc(100dvh - 16px);}
 }
