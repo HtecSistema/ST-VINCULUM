@@ -36,9 +36,11 @@
     <div class="logo" style="margin-bottom:8px;"><img src="logo-branco.png" style="width:140px; height:auto; display:block; margin:0 auto;"></div>
     <h2 style="margin-top:6px; text-align:center;">Bem-vindo</h2>
     <p style="margin-top:10px; margin-bottom:8px; margin-left:4px; text-align:left; font-size:12px; color:#94A3B8;">Informe sua matrícula e senha</p>
-    <input type="text" id="matricula" placeholder="MATRÍCULA" onblur="formatarMatricula(this); buscarNome()" oninput="formatarMatriculaAoDigitar(this)">
+    <div style="display:flex; gap:8px; margin-bottom:12px;">
+      <input type="text" id="matricula" placeholder="MATRÍCULA" onblur="formatarMatricula(this); buscarNome()" oninput="formatarMatriculaAoDigitar(this)" style="flex:1; margin-bottom:0;">
+      <input type="password" id="senha" placeholder="SENHA" style="text-transform:none; flex:1; margin-bottom:0;">
+    </div>
     <input type="text" id="nome" placeholder="NOME COMPLETO" readonly>
-    <input type="password" id="senha" placeholder="SENHA" style="text-transform:none;">
     <div style="display:flex; gap:8px; margin-top:1px;">
       <button onclick="logar()" style="flex:1; background:#0F172A; padding:13px; border-radius:10px; font-weight:700; border:1px solid #334155; color:#F1F5F9; cursor:pointer;">Entrar no Sistema</button>
       <button onclick="limparCampos()" style="flex:1; background:#1E293B; color:#F1F5F9; border:1px solid #334155; padding:13px; border-radius:10px; font-weight:700; cursor:pointer;">Limpar</button>
@@ -174,10 +176,19 @@
   <button class="menu-btn" onclick="abrir('Relatorio.html', this, 'Certificados')"><span class="icon">📊</span> Certificados</button>
   <button class="menu-btn" onclick="abrir('Liberacao.html', this, 'Liberação')"><span class="icon">🔓</span> Liberação</button>
   <button class="menu-btn" onclick="abrir('Baixar.html', this, 'Lições')"><span class="icon">📖</span> Lições</button>
+  
+  <!-- NOVOS - EM ORDEM ALFABETICA I, S, T -->
+  <button class="menu-btn" onclick="abrir('Informativo.html', this, 'Informativo')"><span class="icon">ℹ️</span> Informativo</button>
+  <button class="menu-btn" onclick="abrir('Sugestoes.html', this, 'Sugestões')"><span class="icon">💡</span> Sugestões</button>
+  <button class="menu-btn" onclick="abrir('testes.html', this, 'Testes')"><span class="icon">📝</span> Testes</button>
+
   <button id="btn-manutencao" class="menu-btn" onclick="fecharMenuLateral(); abrir('Manutencao.html', this, 'Manutenção')"><span class="icon">🛠️</span> Manutenção</button>
   <button id="btn-movimento-adm" class="menu-btn" style="display:none" onclick="abrir('MovimentoAdm.html', this, 'Movimento Adm')"><span class="icon">📊</span> Relatório Administrador</button>
   <button id="btn-acesso-usuario" class="menu-btn" style="display:none" onclick="abrir('AcessoUsuario.html', this, 'Acesso Usuário')"><span class="icon">👤</span> Relatório Usuario</button>
   <button id="btn-sair" class="menu-btn" onclick="sair()"><span class="icon">🚪</span> Sair do Sistema</button>
+
+
+
 </div>
 </div>
 <div id="conteudo-direita">
@@ -192,6 +203,14 @@
   <div id="frame-Manutencao.html" class="tela-frame"><iframe id="tela-Manutencao.html" src="Manutencao.html?v=20261101.1.08"></iframe></div>
   <div id="frame-MovimentoAdm.html" class="tela-frame"><iframe id="tela-MovimentoAdm.html" src="MovimentoAdm.html?v=20261101.1.08"></iframe></div>
   <div id="frame-Relatorio.html" class="tela-frame"><iframe id="tela-Relatorio.html" src="Relatorio.html?v=20261101.1.08"></iframe></div>
+<div id="frame-Informativo.html" class="tela-frame"><iframe id="tela-Informativo.html" src="Informativo.html?v=20261101.1.08"></iframe></div>
+  <div id="frame-Sugestoes.html" class="tela-frame"><iframe id="tela-Sugestoes.html" src="Sugestoes.html?v=20261101.1.08"></iframe></div>
+  <div id="frame-testes.html" class="tela-frame"><iframe id="tela-testes.html" src="testes.html?v=20261101.1.08"></iframe></div>
+
+<div id="frame-teste_1.html" class="tela-frame"><iframe id="tela-teste_1.html" src="teste_1.html?v=20261101.1.08"></iframe></div>
+<div id="frame-teste_2.html" class="tela-frame"><iframe id="tela-teste_2.html" src="teste_2.html?v=20261101.1.08"></iframe></div>
+<div id="frame-teste_3.html" class="tela-frame"><iframe id="tela-teste_3.html" src="teste_3.html?v=20261101.1.08"></iframe></div>
+
 </div>
 </div>
 
@@ -254,15 +273,6 @@ abrirPrimeiroAcesso=function(){
 };
 
 fecharPrimeiroAcesso=function(){_htHide('modal-primeiro'); if(_f1) try{_f1()}catch(e){}};
-
-
-
-
-
-
-
-
-
 
 
 abrirCadastroNovo=function(){
