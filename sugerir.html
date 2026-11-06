@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    * { box-sizing: border-box; }
+  body { font-family: Inter, system-ui, -apple-system, sans-serif; margin: 0; background: #0B1220; padding: 12px; }
+  .caixa-geral { max-width: 800px; margin: 0 auto; background: #1E293B; border: 1px solid #334155; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+  .grid-form { display: grid; grid-template-columns: 0.7fr 2.3fr; gap: 16px; }
+  @media (max-width: 560px){ .grid-form { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 12px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: #CBD5E1; text-align: left; }
+  .field small { font-size: 11px; color: #64748B; text-align: left; }
+  .input-wrap { position: relative; display: flex; align-items: center; }
+  .input-wrap span { position: absolute; left: 12px; font-size: 16px; pointer-events: none; }
+  .input-wrap input { width: 100%; background: #020617; border: 1.5px solid #334155; color: #F1F5F9; border-radius: 12px; padding: 13px 12px 13px 38px; font-size: 15px; outline: none; }
+  .input-wrap input:focus { border-color: #7C3AED; box-shadow: 0 0 0 3px rgba(124,58,237,.25); }
+  .input-wrap input:disabled { background: #0F172A !important; opacity: .6; cursor: not-allowed; }
+  #textoSug { width: 100%; background: #020617; border: 1.5px solid #334155; color: #F1F5F9; border-radius: 12px; padding: 14px; min-height: 150px; text-align: justify; font-family: inherit; font-size: 15px; line-height: 1.7; resize: vertical; outline: none; }
+  #textoSug:focus { border-color: #7C3AED; box-shadow: 0 0 0 3px rgba(124,58,237,.25); }
+  #btnVoz { width: 100%; background: #7C3AED; color: #fff; border: 1.5px solid #5B21B6; border-radius: 12px; padding: 12px; font-weight: 800; cursor: pointer; font-size: 14px; }
+  #btnVoz.gravando { background: #EF4444; animation: pisca 1s infinite; }
+  @keyframes pisca { 0%{opacity:1} 50%{opacity:.6} 100%{opacity:1} }
+  #statusVoz { font-size: 13px; color: #94A3B8; text-align: center; margin-top: 6px; min-height: 18px; }
+</style>
+</head>
+<body>
+
+    <div class="container" style="margin:0 !important;margin-left:0 !important;max-width:800px;width:100%;">
+<div class="caixa-geral">
+
+  <div style="display:flex !important; align-items:flex-start !important; gap:14px !important; padding:20px 20px 16px 20px !important; background:#1E293B !important;">
+    <div style="width:52px !important; height:52px !important; min-width:52px !important; border-radius:50% !important; background:linear-gradient(135deg,#7C3AED,#4F46E5) !important; color:#fff !important; display:flex !important; align-items:center !important; justify-content:center !important; font-size:24px !important; font-weight:900 !important; flex-shrink:0 !important;">S</div>
+    <div style="flex:1 !important; display:flex !important; flex-direction:column !important; gap:4px !important; min-width:0 !important;">
+      <div style="font-size:11px !important; font-weight:800 !important; letter-spacing:1px !important; color:#A78BFA !important; line-height:1.3 !important;">ST-VINCULUM • SUGESTÕES</div>
+      <div style="font-size:22px !important; font-weight:900 !important; color:#fff !important; line-height:1.1 !important;">CAIXA DE SUGESTÕES</div>
+      <div style="font-size:13.5px !important; line-height:1.5 !important; color:#94A3B8 !important; text-align:justify !important;">Sua opinião ajuda a melhorar o sistema. Escreva ou fale sua sugestão, que ela será enviada diretamente no WhatsApp.</div>
+    </div>
+  </div>
+
+  <div style="background:#7C3AED; padding:13px 20px; margin:12px 20px 0 20px; border-radius:12px; border:1.5px solid #5B21B6; color:#fff; font-weight:800; font-size:15px;">💡 SUGESTÃO</div>
+
+  <div style="padding:20px; background:#0F172A; text-align:justify;">
+    <div class="grid-form">
+      <div class="field">
+        <label for="mat">Matrícula</label>
+        <div class="input-wrap"><span>🪪</span><input id="mat" type="text" inputmode="numeric" placeholder="Ex: 00425"></div>
+      </div>
+      <div class="field">
+        <label for="nomeSug">Nome completo</label>
+        <div class="input-wrap"><span>👤</span><input id="nomeSug" type="text" placeholder="Ex: Maria Silva"></div>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:16px;">
+      <label for="textoSug">Sua sugestão</label>
+      <textarea id="textoSug" placeholder="Escreva aqui sua sugestão... ou aperte o botão de voz abaixo e fale."></textarea>
+      <button id="btnVoz" onclick="toggleVoz()" type="button">🎤 Falar sugestão</button>
+      <div id="statusVoz"></div>
+    </div>
+
+    <div style="margin-top:16px; display:flex; gap:10px;">
+      <button onclick="enviarZap()" style="flex:1;background:#22c55e;color:#fff;border:none;border-radius:12px;padding:14px;font-weight:800;cursor:pointer;font-size:15px;">📲 Enviar no Zap</button>
+      <button onclick="limparSugestao()" style="flex:1;background:#1E293B;color:#F1F5F9;border:1px solid #334155;border-radius:12px;padding:14px;font-weight:700;cursor:pointer;">Limpar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbxLXw-nu5oXXtjE8HKik_W_bbT9CGjTNJWw-dUm4wWYv-hjcz1dOhMHLxoUTRHGJA3D0A/exec';
+
+async function puxarETravar(){
+  let mat = '';
+  try{ mat = localStorage.getItem('mat_logada') || window.parent.localStorage.getItem('mat_logada') || ''; }catch(e){}
+  if(!mat) return;
+  mat = mat.trim().padStart(5,'0').toUpperCase();
+  try{
+    let r = await fetch(API+'?action=todos&t='+Date.now(), {cache:'no-store'});
+    let j = await r.json();
+    let dados = j.data || [];
+    let u = dados.find(x=> String(x.Matricula||'').padStart(5,'0').toUpperCase() === mat);
+    if(!u) return;
+    let elMat = document.getElementById('mat');
+    let elNome = document.getElementById('nomeSug');
+    if(elMat) elMat.value = String(u.Matricula||mat).toUpperCase();
+    if(elNome) elNome.value = String(u.Nome||'').toUpperCase();
+    ['mat','nomeSug'].forEach(id=>{
+      let el = document.getElementById(id);
+      if(el){ el.readOnly=true; el.disabled=true; el.style.background='#0F172A'; el.style.opacity='0.6'; el.style.pointerEvents='none'; }
+    });
+  }catch(e){ console.log(e); }
+}
+setTimeout(puxarETravar, 500);
+document.addEventListener('DOMContentLoaded', puxarETravar);
+
+let rec = null;
+let gravando = false;
+let baseTexto = '';
+function toggleVoz(){
+  let btn = document.getElementById('btnVoz');
+  let status = document.getElementById('statusVoz');
+  if(gravando){ rec.stop(); return; }
+  let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ alert('Seu navegador não suporta voz. Use o Chrome no celular.'); return; }
+  rec = new SR(); rec.lang = 'pt-BR'; rec.continuous = true; rec.interimResults = true;
+  baseTexto = document.getElementById('textoSug').value;
+  rec.onstart = function(){ gravando = true; btn.textContent = '⏹️ Parar de falar'; btn.classList.add('gravando'); status.textContent = 'Ouvindo... pode falar sua sugestão.'; };
+  rec.onend = function(){ gravando = false; btn.textContent = '🎤 Falar sugestão'; btn.classList.remove('gravando'); status.textContent = ''; };
+  rec.onresult = function(e){
+    let final=''; let interim='';
+    for(let i=0;i<e.results.length;i++){ if(e.results[i].isFinal) final+=e.results[i][0].transcript; else interim+=e.results[i][0].transcript; }
+    let campo=document.getElementById('textoSug'); let prefixo=baseTexto?baseTexto.trim()+' ':'';
+    campo.value=prefixo+final+interim;
+  };
+  rec.onerror = function(){ gravando=false; btn.textContent='🎤 Falar sugestão'; btn.classList.remove('gravando'); status.textContent='Não consegui ouvir. Tente de novo.'; };
+  rec.start();
+}
+function limparSugestao(){ document.getElementById('textoSug').value=''; }
+let enviando = false;
+function enviarZap(){
+  if(enviando) return;
+  let m=document.getElementById('mat').value.trim(); let n=document.getElementById('nomeSug').value.trim(); let t=document.getElementById('textoSug').value.trim();
+  if(!t) return alert('Digite ou fale a sugestão primeiro');
+  enviando = true;
+  let texto = "*SUGESTÃO ST-VINCULUM*\n\nMat: " + m + "\nNome: " + n + "\n\nSugestão: " + t;
+  let msg = encodeURIComponent(texto);
+  window.open('https://wa.me/5591986032155?text='+msg,'_blank');
+  setTimeout(function(){
+    document.getElementById('textoSug').value = '';
+    enviando = false;
+  }, 2000);
+}
+</script>
+</body>
+</html>
