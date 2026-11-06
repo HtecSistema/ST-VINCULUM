@@ -404,6 +404,9 @@ function gerarCertificado(){
     return; 
   } 
 
+// ==== PASSOU, LANÇA NA PLANILHA ====
+lancarDadosContingente(a);
+
  var meses=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro']; 
   var dataHoje=new Date(); 
   var dataExtenso='Paragominas-PA, '+dataHoje.getDate()+' de '+meses[dataHoje.getMonth()]+' de '+dataHoje.getFullYear();
@@ -720,4 +723,23 @@ function VBoletimZap(){
   }
   var texto = "-- Boletim Informativo --\n---------------------------------------------\nPovo de Deus\nTotal de alunos no curso: " + totalAlunos + "\nTeste Realizado: " + testeRealizado + "\nConcluintes: " + concluintes + " Alunos\nEm conclusao: " + emConclusao + " Alunos\n---------------------------------------------\nSe anime povo!\n---------------------------------------------\nOutros cursos serao disponibilizados por aqui.\nAguardando nosso Pastor deliberar";
   window.open("https://wa.me/?text="+encodeURIComponent(texto),"_blank");
+}
+
+function lancarDadosContingente(aluno){
+  var url = "https://script.google.com/macros/s/AKfycbxLXw-nu5oXXtjE8HKik_W_bbT9CGjTNJWw-dUm4wWYv-hjcz1dOhMHLxoUTRHGJA3D0A/exec";
+
+  var valorAN = "DISCIPULADO REALIZADO";
+
+  fetch(url, {
+    method: "POST",
+    body: JSON.stringify({
+      acao: "lancarDREAL",
+      matricula: aluno.mat,
+      valor: valorAN
+    })
+  }).then(r => r.text()).then(resp => {
+    console.log("Lançado na coluna AN:", resp);
+  }).catch(err => {
+    console.log("Erro ao lançar:", err);
+  });
 }
