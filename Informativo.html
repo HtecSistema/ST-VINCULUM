@@ -120,7 +120,7 @@
     <!-- </div> -->
     <!-- fim de proibido mexer aqui. deixa do jeito que está -->
     <div class="top-mural">
-      <h2 style="margin:0;">🖼️ Mural • Cartazes, Vídeos e Mídias</h2>
+      <h2 style="margin:0;">🖼️ Mural • Avisos, Vídeos e Mídias</h2>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn-adm" id="btnAdm" onclick="entrarAdm()">🔒 Entrar como ADM</button>
         <button class="btn-postar" id="btnPostar" onclick="abrirPostar()" style="display:none">+ POSTAR</button>
@@ -128,7 +128,7 @@
     </div>
     <div class="contador" id="contador"></div>
     <div class="tabs">
-      <button class="tab active" onclick="filtrar('cartaz',this)">Cartazes</button>
+      <button class="tab active" onclick="filtrar('cartaz',this)">Avisos</button>
       <button class="tab" onclick="filtrar('video',this)">Vídeos</button>
       <button class="tab" onclick="filtrar('midia',this)">Mídias</button>
       <button class="tab" onclick="filtrar('todos',this)">Todos</button>
@@ -426,7 +426,7 @@ async function excluirInfo(id){
 function render(){
   const mural = document.getElementById('mural');
   const vazio = document.getElementById('vazio');
-  document.getElementById('contador').innerText = posts.length + ' posts • ' + posts.filter(p=>p.tipo==='cartaz').length + ' cartazes • ' + posts.filter(p=>p.tipo==='video').length + ' vídeos';
+  document.getElementById('contador').innerText = posts.length + ' posts • ' + posts.filter(p=>p.tipo==='cartaz').length + ' avisos • ' + posts.filter(p=>p.tipo==='video').length + ' vídeos';
   mural.innerHTML='';
   if(posts.length===0){ vazio.style.display='block'; renderInformativos(); return; }
   vazio.style.display='none';
