@@ -402,7 +402,7 @@ function abrirFormTop(r){
           <div style="display:flex;justify-content:space-between;align-items:center">
             <label style="font-size:10px;font-weight:700;color:#334155">Congregação</label>
             <label style="display:flex;align-items:center;gap:5px;cursor:pointer;background:#f1f5f9;padding:3px 8px;border-radius:6px;border:1px solid #e2e8f0">
-              <input type="checkbox" id="chkCong" onchange="let i=document.getElementById('mt5'); i.disabled=!this.checked; if(this.checked){ i.style.background='#fff'; i.style.border='1.5px solid #0f172a'; i.style.boxShadow='0 0 0 3px rgba(15,23,42,.12)'; i.focus(); } else { i.style.background='#f1f5f9'; i.style.border='none'; i.style.boxShadow='none'; }" style="width:14px;height:14px;accent-color:#0f172a">
+<input type="checkbox" id="chkCong" onchange="destravarTudo(this.checked)" style="width:14px;height:14px;accent-color:#0f172a">
               <span style="font-size:9px;font-weight:800;color:#0f172a">🔓 DESTRAVAR</span>
             </label>
           </div>
@@ -634,4 +634,28 @@ function atualizarItemNaLista(p){
       DADOS[idx][12] = p.funcaoCong;
     }
   }
+}
+
+function destravarTudo(liberar){
+  var ids = ['mt0','mt8','mt2','mt1','mt3','mt4','mt5'];
+  ids.forEach(function(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.disabled = !liberar;
+    el.readOnly = !liberar;
+    if(liberar){
+      el.style.background = '#fff';
+      el.style.border = '1.5px solid #0f172a';
+      el.style.boxShadow = '0 0 0 3px rgba(15,23,42,.12)';
+      el.style.color = '#0f172a';
+    } else {
+      el.style.background = '#f1f5f9';
+      el.style.border = 'none';
+      el.style.boxShadow = 'none';
+      if(id==='mt3') el.style.background = '#e0e7ff';
+      if(id==='mt4'){ el.style.background = '#fef9c3'; el.style.border = '1px solid #fde68a'; }
+    }
+  });
+  var span = document.getElementById('chkCong')?.parentElement.querySelector('span');
+  if(span) span.innerText = liberar ? '🔓 DESTRAVADO - TUDO LIBERADO' : '🔓 DESTRAVAR';
 }
