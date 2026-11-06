@@ -426,7 +426,7 @@ async function excluirInfo(id){
 function render(){
   const mural = document.getElementById('mural');
   const vazio = document.getElementById('vazio');
-  document.getElementById('contador').innerText = posts.length + ' posts • ' + posts.filter(p=>p.tipo==='cartaz').length + ' avisos • ' + posts.filter(p=>p.tipo==='video').length + ' vídeos';
+  document.getElementById('contador').innerText = posts.length + ' posts • ' + posts.filter(p=>p.tipo==='cartaz').length + ' Avisos • ' + posts.filter(p=>p.tipo==='video').length + ' vídeos';
   mural.innerHTML='';
   if(posts.length===0){ vazio.style.display='block'; renderInformativos(); return; }
   vazio.style.display='none';
