@@ -128,10 +128,10 @@
     </div>
     <div class="contador" id="contador"></div>
     <div class="tabs">
-      <button class="tab active" onclick="filtrar('todos',this)">Todos</button>
-      <button class="tab" onclick="filtrar('cartaz',this)">Cartazes</button>
+      <button class="tab active" onclick="filtrar('cartaz',this)">Cartazes</button>
       <button class="tab" onclick="filtrar('video',this)">Vídeos</button>
       <button class="tab" onclick="filtrar('midia',this)">Mídias</button>
+      <button class="tab" onclick="filtrar('todos',this)">Todos</button>
     </div>
     <div class="mural" id="mural"></div>
     <p id="vazio" style="text-align:center;color:#6B7280;font-size:13px;padding:20px;display:none;">Nenhum post ainda.</p>
@@ -389,6 +389,8 @@ async function carregarTudo(){
 function formatarInfo(txt){
   return txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*([^*]+)\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
 }
+
+
 function renderInformativos(){
   const lista = document.getElementById('listaInformativos');
   if(!lista) return;
@@ -438,7 +440,15 @@ function render(){
     mural.innerHTML += `<div class="post ${i===0?'destaque':''}" data-tipo="${p.tipo}">${btnDel}${midiaHtml}<div class="post-body"><span class="post-data">${p.data} • ${p.tipo.toUpperCase()}</span><b>${p.titulo}</b><span>${p.desc}</span></div></div>`;
   });
   renderInformativos();
+  // COLOCA ISSO AQUI 👇
+  const abaAtiva = document.querySelector('.tab.active');
+  if(abaAtiva){
+    const tipo = abaAtiva.getAttribute('onclick').includes('cartaz') ? 'cartaz' : 'todos';
+    document.querySelectorAll('.post').forEach(p=>{ p.style.display = (tipo==='todos' || p.dataset.tipo===tipo) ? 'block' : 'none'; });
+  }
+  // ATÉ AQUI 👆
 }
+
 async function excluir(id){
   if(!isAdm) return alert('Só ADM pode excluir.');
   if(confirm('Excluir esse post?')){ try{ await sbDelete('mural_posts', id); await carregarTudo(); }catch(e){ alert('Erro: ' + e.message); } }
