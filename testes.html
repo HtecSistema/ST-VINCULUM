@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="teste_1.css?v=20261101.1.08">
+<style>
+.lista-testes{display:flex;flex-direction:column;gap:10px;}
+.card-teste{background:#1E293B;border:1px solid #334155;border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:.15s;}
+.card-teste:hover{border-color:#7c3aed;transform:translateY(-1px);}
+.card-teste .tit{font-weight:900;color:#F1F5F9;font-size:14px;}
+.card-teste .sub{font-size:11px;color:#94A3B8;margin-top:3px;}
+.card-teste .go{background:#0F172A;border:1px solid #334155;color:#22c55e;font-weight:900;font-size:12px;padding:8px 12px;border-radius:8px;}
+.card-teste.bloq{opacity:.5;cursor:not-allowed;}
+.btn-voltar{background:#0F172A;border:1px solid #334155;color:#94A3B8;padding:8px 14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:12px;margin-bottom:12px;}
+.btn-voltar:hover{color:#F1F5F9;border-color:#7c3aed;}
+.caixa-header{background:#0F172A;border:1px solid #1E293B;border-radius:16px;padding:14px 16px;margin-bottom:12px;}
+.caixa-header .header{margin:0;}
+.caixa-header .logo{width:44px;height:44px;background:#fff;color:#7c3aed;border-radius:12px;display:grid;place-items:center;font-size:22px;font-weight:900;flex-shrink:0;}
+.caixa-header .badge{display:block!important;background:transparent!important;border:none!important;color:#94A3B8!important;font-size:10px!important;font-weight:800!important;letter-spacing:.6px!important;padding:0!important;border-radius:0!important;text-transform:uppercase!important;}
+.caixa-header .h-title{color:#fff;font-size:18px;font-weight:900;margin-top:6px;line-height:1.1;}
+.caixa-header .h-sub{color:#94A3B8;font-size:11px;margin-top:3px;}
+.caixa-header .header{margin:0;}
+</style>
+</head>
+<body>
+<div class="container" style="margin:0 !important;margin-left:0 !important;max-width:800px;width:100%;">
+  <div class="caixa-header">
+  <div class="header">
+    <div class="top-left" style="display:flex;align-items:center;gap:12px;">
+      <div class="logo">T</div>
+      <div>
+        <div class="badge">ST-VINCULUM • CENTRAL DE TESTES</div>
+        <div class="h-title">TESTES DISPONÍVEIS</div>
+        <div class="h-sub">Clique no teste para responder - 100 pontos cada</div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <div class="texto-view">
+    <div style="margin-bottom:12px;display:flex;gap:8px;">
+      <input id="buscaTeste" oninput="filtrar()" placeholder="🔍 Buscar teste..." style="flex:1;background:#0F172A;border:1px solid #334155;color:#F1F5F9;border-radius:10px;padding:12px;font-weight:700;">
+      <button onclick="document.getElementById('buscaTeste').value='';filtrar()" style="width:46px;border-radius:10px;border:1px solid #334155;background:#1E293B;color:#F1F5F9;font-weight:900;">X</button>
+    </div>
+
+    <div class="lista-testes" id="lista">
+      <div class="card-teste" data-nome="teste 1 4 leis espirituais" data-teste="1" onclick="abrirTeste('teste_1.html','TESTE 1 - 4 LEIS')">
+        <div><div class="tit">TESTE 1</div><div class="sub">4 LEIS ESPIRITUAIS QUE PODEM BLOQUEAR SUA VIDA - Romanos 12:1-2</div></div>
+        <div class="go">ABRIR →</div>
+      </div>
+      <div class="card-teste" data-nome="teste 2" data-teste="2" onclick="abrirTeste('teste_2.html','TESTE 2')">
+        <div><div class="tit">TESTE 2</div><div class="sub">Teste que vai ser aplicado - Ciclo 2026.1</div></div>
+        <div class="go">ABRIR →</div>
+      </div>
+      <div class="card-teste" data-nome="teste 3" data-teste="3" onclick="abrirTeste('teste_3.html','TESTE 3')">
+        <div><div class="tit">TESTE 3</div><div class="sub">Teste que vai ser aplicado - Ciclo 2026.1</div></div>
+        <div class="go">ABRIR →</div>
+      </div>
+      <div class="card-teste bloq" data-nome="teste 4"><div><div class="tit">TESTE 4</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 5"><div><div class="tit">TESTE 5</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 6"><div><div class="tit">TESTE 6</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 7"><div><div class="tit">TESTE 7</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 8"><div><div class="tit">TESTE 8</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 9"><div><div class="tit">TESTE 9</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 10"><div><div class="tit">TESTE 10</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 11"><div><div class="tit">TESTE 11</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 12"><div><div class="tit">TESTE 12</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 13"><div><div class="tit">TESTE 13</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 14"><div><div class="tit">TESTE 14</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 15"><div><div class="tit">TESTE 15</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 16"><div><div class="tit">TESTE 16</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 17"><div><div class="tit">TESTE 17</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 18"><div><div class="tit">TESTE 18</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 19"><div><div class="tit">TESTE 19</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 20"><div><div class="tit">TESTE 20</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 21"><div><div class="tit">TESTE 21</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 22"><div><div class="tit">TESTE 22</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 23"><div><div class="tit">TESTE 23</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 24"><div><div class="tit">TESTE 24</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+      <div class="card-teste bloq" data-nome="teste 25"><div><div class="tit">TESTE 25</div><div class="sub">Em breve</div></div><div class="go" style="color:#64748B;">BREVE</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function abrirTeste(arquivo, titulo){
+  try{
+    const parentDoc = window.parent.document;
+    const idFrame = 'frame-' + arquivo;
+    parentDoc.querySelectorAll('.tela-frame').forEach(f => f.classList.remove('ativa'));
+    const alvo = parentDoc.getElementById(idFrame);
+    if(alvo){
+      alvo.classList.add('ativa');
+      parentDoc.getElementById('pagina-atual').innerText = titulo;
+      if(window.parent.fecharMenuLateral) window.parent.fecharMenuLateral();
+    }else{
+      alert('Não achei ' + idFrame);
+    }
+  }catch(e){
+    window.location.href = arquivo;
+  }
+}
+
+function filtrar(){
+  let t = document.getElementById('buscaTeste').value.toLowerCase();
+  document.querySelectorAll('.card-teste').forEach(c=>{
+    let texto = (c.getAttribute('data-nome') + ' ' + c.innerText).toLowerCase();
+    c.style.display = texto.includes(t) ? 'flex' : 'none';
+  });
+}
+
+// TRAVA SEQUENCIAL - SÓ ISSO NO FINAL
+var _origem = {};
+function estaFeito(n){
+  try{
+    if(localStorage.getItem('teste_'+n+'_feito')==='1') return true;
+    if(window.parent && window.parent.localStorage.getItem('teste_'+n+'_feito')==='1') return true;
+  }catch(e){}
+  return false;
+}
+function atualizarTravas(){
+  document.querySelectorAll('.card-teste[data-teste]').forEach(card=>{
+    let n = parseInt(card.getAttribute('data-teste'));
+    let go = card.querySelector('.go');
+    if(n === 1){
+      card.classList.remove('bloq');
+      if(go){ go.textContent = 'ABRIR →'; go.style.color = '#22c55e'; }
+      return;
+    }
+    if(estaFeito(n-1)){
+      card.classList.remove('bloq');
+      if(go){ go.textContent = 'ABRIR →'; go.style.color = '#22c55e'; }
+      card.onclick = function(){ abrirTeste('teste_'+n+'.html','TESTE '+n); };
+    }else{
+      card.classList.add('bloq');
+      if(go){ go.textContent = '🔒 BLOQUEADO'; go.style.color = '#64748B'; }
+      card.onclick = function(e){ e.stopPropagation(); mostrarAlerta ? mostrarAlerta('Finalize o TESTE '+(n-1)+' para liberar este.') : alert('Finalize o TESTE '+(n-1)+' para liberar este.'); return false; };
+    }
+  });
+}
+atualizarTravas();
+setInterval(atualizarTravas, 500);
+</script>
+</body>
+</html>

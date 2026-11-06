@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>4 LEIS ESPIRITUAIS - ST-VINCULUM</title>
+  <link rel="stylesheet" href="teste.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <div class="container" style="margin:0 !important;margin-left:0 !important;max-width:800px;width:100%;"> <!-- OBS: traz o bloco todo pra esquerda -->
+    <div class="header">
+      <div class="top-left">
+        <div class="logo">V</div>
+        <div>
+          <div class="badge">ST-VINCULUM • ADMIP PARAGOMINAS</div>
+          <div class="h-title">4 LEIS ESPIRITUAIS QUE PODEM BLOQUEAR SUA VIDA ESPIRITUAL</div>
+          <div class="h-sub">Romanos 12:1-2 • Exercício valendo 100 pontos</div>
+        </div>
+      </div>
+      <div class="progress"><div class="bar" id="bar"></div></div>
+      <div class="score-box">
+        <div class="chips">
+          <div class="chip" id="chipProg">0 / 25 respondidas</div>
+          <div class="chip" id="chipScore">0 / 100</div>
+        </div>
+        <div class="btns">
+          <button class="btn-top active" id="btnTexto" onclick="showView('texto')">Texto</button>
+          <button class="btn-top" id="btnPdf" onclick="gerarPDF()" style="background:#334155;border:1px solid #1E293B;color:#fff;">PDF</button>
+          <button class="btn-top inactive" id="btnTeste" onclick="showView('teste')">Teste</button>
+          <button class="btn-top" id="btnFinalizar" style="background:#22c55e;color:#fff;" disabled>Salvar</button>
+          <button class="btn-top inactive" id="btnBuscar" onclick="buscarDadosAluno()" style="background:#22c55e;border:1px solid #22c55e;color:#fff;">Pesquisar</button>
+          <button class="btn-top" id="btnLimpar" onclick="limparTeste()" style="background:#334155;color:#fff;">Limpar</button>
+          <button class="btn-voltar" onclick="voltarParaTestes()">Voltar</button>
+        </div>
+	<div class="linha-discreta" id="linhaDiscreta">
+ 	<span id="headMatTxt"></span>
+  	<span id="headNomeTxt"></span>
+  	<span id="headCongTxt"></span>
+	</div>
+     	</div>
+    	</div>
+    <div class="dados collapsed" id="blocoDados" style="display:none;">
+      <div class="dados-header" onclick="toggleDados()">
+
+<h3>📋 DADOS DO ALUNO</h3>
+        <div class="seta"><svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg></div>
+      </div>
+      <div class="dados-content">
+        <div class="grid">
+          <div class="field"><label>Matrícula</label><input id="matricula"></div>
+          <div class="field"><label>Tema</label><input id="ciclo" value="4 LEIS ESPIRITUAIS" placeholder=""></div>
+          <div class="field"><label>Congregação</label><input id="congregacao" placeholder="Ex: SEDE"></div>
+          <div class="field"><label>Data</label><input id="data" type="date" readonly></div>
+          <div class="field"><label>Nome Completo</label><input id="nome" placeholder="Nome completo"></div>
+          <div class="field"><label>Sexo</label><input id="sexo"></div>
+          <div class="field"><label>Bat. Água</label><input id="batagua"></div>
+          <div class="field"><label>Função Eclesiástica</label><input id="funcaoEcles"></div>
+          <div class="field"><label>Função Congregação</label><input id="funcaoCong"></div>
+          <div class="field"><label>WhatsApp</label><input id="whatsapp"></div>
+          <div class="field"><label>Situação</label><input id="situacao" readonly></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="viewTexto" class="texto-view" style="text-align:justify;"></div>
+
+    <div id="viewTeste" style="display:none;">
+      <form id="form"></form>
+      <div class="result" id="result">
+        <div style="font-size:32px">🏆</div>
+        <div class="pts" id="pts">0 / 100</div>
+        <p id="msg" style="color:#94A3B8;font-size:13px;"></p>
+        <div id="breakdown" style="margin-top:12px;font-size:12px;text-align:left;color:#CBD5E1;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="txtteste1.js"></script>
+  <script>
+    document.getElementById('viewTexto').innerHTML = texto4LeisHTML;
+  </script>
+  <script src="pergunta_1.js"></script>
+
+  <div id="modalAlerta" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;place-items:center;">
+    <div style="background:#111B2F;border:1px solid #1E293B;border-radius:16px;padding:20px;max-width:320px;width:90%;text-align:center;">
+      <div id="modalTexto" style="color:#F1F5F9;font-size:14px;line-height:1.5;margin-bottom:16px;white-space:pre-line;"></div>
+      <button onclick="document.getElementById('modalAlerta').style.display='none'" style="background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-weight:800;cursor:pointer;width:100%;">OK</button>
+    </div>
+  </div>
+
+<script>
+  function voltarParaTestes(){
+    try{
+      const parentDoc = window.parent.document;
+      parentDoc.querySelectorAll('.tela-frame').forEach(f => f.classList.remove('ativa'));
+      const alvo = parentDoc.getElementById('frame-testes.html');
+      if(alvo){
+        alvo.classList.add('ativa');
+        parentDoc.getElementById('pagina-atual').innerText = 'Testes';
+        if(window.parent.fecharMenuLateral) window.parent.fecharMenuLateral();
+      }
+    }catch(e){
+      window.location.href = 'testes.html';
+    }
+  }
+  </script>
+</body>
+</html>

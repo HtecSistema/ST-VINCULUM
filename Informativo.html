@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="teste_1.css?v=20261101.1.08">
+<style>
+  *{box-sizing:border-box}
+  body{background:#000 !important;color:#fff;margin:0;font-family:Inter,Arial,sans-serif;}
+  .container{margin:0 auto !important;max-width:800px;width:100%;padding:0 14px 30px;background:#000;}
+  .header{background:linear-gradient(135deg,#0F172A,#1E293B 60%,#7C3AED);border-radius:0 0 20px 20px;padding:20px;display:flex;align-items:center;gap:14px;color:#fff;border:1px solid #1E293B;}
+  .logo{width:48px;height:48px;min-width:48px;border-radius:14px;background:#fff;color:#7C3AED;display:grid;place-items:center;font-weight:900;font-size:28px;font-family:Georgia,serif;}
+  .badge{font-size:10px;letter-spacing:1.5px;font-weight:800;color:#C4B5FD;background:rgba(255,255,255,.12);padding:5px 9px;border-radius:20px;display:inline-block;}
+  .h-title{font-size:22px;font-weight:900;line-height:1.1;margin-top:6px;}
+  .h-sub{font-size:12px;opacity:.85;margin-top:3px;}
+  .texto-view{margin-top:18px;}
+  .card-aviso{background:#1A1A1A;border:1px solid #333;border-left:5px solid #F59E0B;border-radius:14px;padding:16px;margin:14px 0;}
+  .card-aviso b{color:#FDE68A;}
+  .card-aviso p{margin:6px 0 0;color:#D1D5DB;font-size:14px;line-height:1.5;}
+  h2{font-size:17px;margin:22px 0 10px;display:flex;align-items:center;gap:8px;color:#fff;}
+  .calendario{display:grid;gap:10px;}
+  .cal-item{display:flex;gap:12px;align-items:center;background:#111827;border:1px solid #1F2937;border-radius:12px;padding:13px 14px;}
+  .cal-dia{min-width:72px;text-align:center;background:#fff;color:#000;border-radius:10px;padding:8px 4px;}
+  .cal-dia b{display:block;font-size:13px;line-height:1;}
+  .cal-dia span{font-size:10px;opacity:.7;}
+  .cal-item p{margin:0;font-size:14px;line-height:1.4;color:#CBD5E1;}
+  .cal-item p b{color:#fff;}
+  .top-mural{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+  .btn-postar{background:#7C3AED;color:#fff;border:none;padding:11px 16px;border-radius:12px;font-weight:900;font-size:13px;cursor:pointer;}
+  .btn-adm{background:#111827;border:1px solid #7C3AED;color:#C4B5FD;padding:9px 12px;border-radius:12px;font-weight:800;font-size:12px;cursor:pointer;}
+  .btn-adm.on{background:#7C3AED;color:#fff;}
+  .contador{font-size:12px;color:#9CA3AF;font-weight:700;}
+  .tabs{display:flex;gap:8px;margin:14px 0 12px;flex-wrap:wrap;}
+  .tab{flex:1;background:#111827;border:1px solid #262626;color:#fff;padding:10px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;text-align:center;}
+  .tab.active{background:#7C3AED;border-color:#7C3AED;}
+  .mural{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .post{background:#111827;border:1px solid #262626;border-radius:16px;overflow:hidden;position:relative;}
+  .post.destaque{grid-column:1/-1;}
+  .post img{width:100%;display:block;aspect-ratio:4/5;object-fit:cover;background:#000;cursor:pointer;}
+  .post.destaque img{aspect-ratio:16/9;}
+  .post video{width:100%;display:block;background:#000;aspect-ratio:16/9;}
+  .post iframe{width:100%;display:block;background:#000;aspect-ratio:16/9;border:none;}
+  .post-body{padding:12px;}
+  .post-body b{font-size:14px;line-height:1.3;display:block;}
+  .post-body span{font-size:12px;color:#9CA3AF;display:block;margin-top:4px;line-height:1.4;}
+  .post-data{font-size:11px;color:#A78BFA;font-weight:800;margin-bottom:6px;display:block;}
+  .btn-del{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:20px;width:28px;height:28px;cursor:pointer;font-size:14px;z-index:2;}
+  .box-duvida{margin-top:22px;background:#111827;border:1px solid #262626;color:#fff;border-radius:14px;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+  .btn-zap{background:#25D366;color:#fff;text-decoration:none;font-weight:800;font-size:13px;padding:10px 14px;border-radius:10px;white-space:nowrap;}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;display:none;place-items:center;padding:14px;}
+  .modal-box{background:#111827;border:1px solid #333;border-radius:18px;padding:18px;width:100%;max-width:460px;max-height:90vh;overflow:auto;}
+  .modal-box h3{margin:0 0 12px;font-size:16px;}
+  .modal-box label{font-size:12px;color:#9CA3AF;display:block;margin:10px 0 4px;font-weight:700;}
+  .modal-box input,.modal-box select,.modal-box textarea{width:100%;background:#000;border:1px solid #333;color:#fff;border-radius:10px;padding:11px;font-size:14px;}
+  .modal-box textarea{resize:none;height:60px;}
+  .preview{width:100%;max-height:220px;object-fit:cover;border-radius:12px;display:none;margin-top:10px;border:1px solid #333;}
+  .dica{font-size:11px;color:#6B7280;line-height:1.4;margin-top:6px;}
+  .row-btn{display:flex;gap:8px;margin-top:14px;}
+  .btn-cancel{flex:1;background:#374151;color:#fff;border:none;padding:12px;border-radius:10px;font-weight:800;cursor:pointer;}
+  .btn-pub{flex:1;background:#7C3AED;color:#fff;border:none;padding:12px;border-radius:10px;font-weight:800;cursor:pointer;}
+  .dropzone{border:2px dashed #7C3AED;background:#0F0F1A;border-radius:14px;padding:18px;text-align:center;margin-top:10px;cursor:pointer;}
+  .dropzone.over{background:#7C3AED;color:#fff;border-style:solid;}
+  .dropzone b{font-size:14px;display:block}
+  .dropzone span{font-size:12px;color:#9CA3AF}
+  .dropzone img,.dropzone video{width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-top:10px;display:none}
+  .ou{ text-align:center;color:#6B7280;font-size:11px;font-weight:800;margin:14px 0 0;letter-spacing:1px }
+  .progresso{height:8px;background:#333;border-radius:20px;overflow:hidden;display:none;margin-top:10px}
+  .progresso div{height:100%;background:#7C3AED;width:0%}
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:10000;display:none;place-items:center;padding:10px;}
+  .lightbox img,.lightbox video{max-width:100%;max-height:90vh;border-radius:12px;}
+  .lightbox button{position:absolute;top:14px;right:14px;background:#fff;color:#000;border:none;border-radius:50%;width:36px;height:36px;font-weight:900;cursor:pointer;}
+  .informativo-card{background:#1A1A1A;border:1px solid #333;border-left:5px solid #7C3AED;border-radius:14px;padding:16px;margin:14px 0;font-size:14px;line-height:1.6;color:#D1D5DB}
+  .informativo-card b{color:#fff}
+  .btn-add-info{background:#7C3AED;color:#fff;border:none;padding:10px 14px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;margin-top:4px}
+  .btn-del-info{background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:20px;width:26px;height:26px;cursor:pointer;float:right}
+  .box-novo-info{display:none;background:#111827;border:1px solid #333;border-radius:14px;padding:14px;margin-top:10px}
+  .box-novo-info textarea{width:100%;background:#000;border:1px solid #333;color:#fff;border-radius:10px;padding:11px;min-height:160px;font-size:14px;line-height:1.5}
+  .btn-voz{width:100%;background:#111827;border:1px solid #7C3AED;color:#C4B5FD;padding:11px;border-radius:10px;font-weight:800;cursor:pointer;margin-top:8px;font-size:13px}
+  .btn-voz.gravando{background:#7C3AED !important;color:#fff !important}
+  .btn-voz-mini{background:#111827;border:1px solid #7C3AED;color:#C4B5FD;padding:8px 10px;border-radius:10px;font-weight:800;cursor:pointer;margin-top:6px;font-size:12px;width:100%}
+  .btn-voz-mini.gravando{background:#7C3AED !important;color:#fff !important}
+  @media(max-width:480px){.mural{grid-template-columns:1fr;}.h-title{font-size:19px;}}
+</style>
+</head>
+<body>
+<div class="container" style="margin:0 !important;margin-left:0 !important;max-width:800px;width:100%;">
+  <div class="header">
+    <div class="logo">i</div>
+    <div>
+      <div class="badge">ST-VINCULUM • INFORMATIVO</div>
+      <div class="h-title">INFORMATIVO GERAL</div>
+      <div class="h-sub">ADMIP PARAGOMINAS • Ciclo 2026.1</div>
+    </div>
+  </div>
+  <div class="texto-view">
+    <h2>📌 Avisos Importantes</h2>
+    <div class="card-aviso"><b>1. Acesso aos Testes:</b><p>Após fazer login, clique em <b>PESQUISE</b> no Cadastro para validar seus dados. Sem isso os testes ficam bloqueados.</p></div>
+    <h2>📋 Informativos</h2>
+    <div id="listaInformativos"></div>
+    <div id="areaAdmInfo" style="display:none">
+      <button class="btn-add-info" onclick="abrirNovoInfo()">+ ESCREVER INFORMATIVO</button>
+      <div class="box-novo-info" id="boxNovoInfo">
+        <label style="font-size:12px;color:#9CA3AF;font-weight:700">Digite o informativo:</label>
+        <textarea id="textoNovoInfo" placeholder="Digite aqui o informativo... Use *palavra* para deixar em negrito."></textarea>
+        <button class="btn-voz" id="btnVozInfo" onclick="falarInfo()">🎤 Falar - ditar informativo</button>
+        <div class="dica">Aperta o microfone, fala, e aperta de novo pra parar. Depois é só publicar.</div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button onclick="fecharNovoInfo()" style="flex:1;background:#374151;color:#fff;border:none;padding:11px;border-radius:10px;font-weight:800;cursor:pointer">Cancelar</button>
+          <button onclick="salvarNovoInfo()" style="flex:1;background:#7C3AED;color:#fff;border:none;padding:11px;border-radius:10px;font-weight:800;cursor:pointer">Publicar Informativo</button>
+        </div>
+      </div>
+    </div>
+    <!-- proibido mexer aqui. deixa do jeito que está -->
+    <!-- <p style="font-size:14px;line-height:1.6;color:#9CA3AF;">Este módulo é para comunicados oficiais da liderança, calendário de aulas, eventos e orientações gerais.</p> -->
+    <!-- <h2>📅 Calendário</h2> -->
+    <!-- <div class="calendario"> -->
+    <!--   <div class="cal-item"><div class="cal-dia"><b>SEG - SEX</b><span>SEMANA</span></div><p><b>Aulas EBD e treinamentos</b><br>Conteúdo, provas e formação.</p></div> -->
+    <!--   <div class="cal-item"><div class="cal-dia"><b>SÁBADO</b><span>MANUTENÇÃO</span></div><p><b>Manutenção e Liberações</b><br>Ajustes no sistema e liberação de acessos.</p></div> -->
+    <!--   <div class="cal-item"><div class="cal-dia"><b>DOMINGO</b><span>CULTOS</span></div><p><b>Cultos e entrega de certificados</b><br>Celebração e reconhecimento.</p></div> -->
+    <!-- </div> -->
+    <!-- fim de proibido mexer aqui. deixa do jeito que está -->
+    <div class="top-mural">
+      <h2 style="margin:0;">🖼️ Mural • Cartazes, Vídeos e Mídias</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-adm" id="btnAdm" onclick="entrarAdm()">🔒 Entrar como ADM</button>
+        <button class="btn-postar" id="btnPostar" onclick="abrirPostar()" style="display:none">+ POSTAR</button>
+      </div>
+    </div>
+    <div class="contador" id="contador"></div>
+    <div class="tabs">
+      <button class="tab active" onclick="filtrar('todos',this)">Todos</button>
+      <button class="tab" onclick="filtrar('cartaz',this)">Cartazes</button>
+      <button class="tab" onclick="filtrar('video',this)">Vídeos</button>
+      <button class="tab" onclick="filtrar('midia',this)">Mídias</button>
+    </div>
+    <div class="mural" id="mural"></div>
+    <p id="vazio" style="text-align:center;color:#6B7280;font-size:13px;padding:20px;display:none;">Nenhum post ainda.</p>
+    <div class="box-duvida">
+      <div><b>Dúvidas?</b><span style="font-size:12px;opacity:.8;">Fale com o suporte HtecSistemas</span></div>
+      <a class="btn-zap" href="https://wa.me/5591986032155" target="_blank">📱 91 98603-2155</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modalPostar">
+  <div class="modal-box">
+    <h3>📤 Novo Post - ADM</h3>
+    <label>Tipo</label>
+    <select id="tipoPost"><option value="cartaz">🖼️ Cartaz</option><option value="video">🎥 Vídeo</option><option value="midia">📸 Mídia / Foto</option></select>
+    <label>Título</label>
+    <input id="tituloPost" placeholder="Ex: Culto de Domingo">
+    <button class="btn-voz-mini" id="btnVozTitulo" onclick="falarPara('tituloPost','btnVozTitulo','🎤 Falar título')">🎤 Falar título</button>
+    <label>Descrição</label>
+    <textarea id="descPost" placeholder="Escreva um recado..."></textarea>
+    <button class="btn-voz-mini" id="btnVozDesc" onclick="falarPara('descPost','btnVozDesc','🎤 Falar descrição')">🎤 Falar descrição</button>
+    <label>1 - Arrastar imagem ou vídeo aqui (até 5 min) - Todo mundo vai ver</label>
+    <div class="dropzone" id="dropzone" onclick="document.getElementById('inputArquivo').click()">
+      <b id="dropTexto">📁 Arraste aqui ou clique para escolher</b>
+      <span>JPG, PNG, MP4 - até 5 minutos / 50MB - sobe pra nuvem</span>
+      <img id="dropPreviewImg">
+      <video id="dropPreviewVideo" controls></video>
+      <input type="file" id="inputArquivo" accept="image/*,video/*" style="display:none" onchange="lerArquivo(this.files[0])">
+    </div>
+    <div class="progresso" id="progresso"><div id="progressoBar"></div></div>
+    <p id="infoArquivo" style="font-size:12px;color:#9CA3AF;margin:6px 0 0"></p>
+    <button onclick="limparArquivo()" style="background:none;border:none;color:#F87171;font-size:12px;cursor:pointer;margin-top:6px;display:none" id="btnLimparArq">✕ Remover arquivo</button>
+    <div class="ou">— OU —</div>
+    <label>2 - Colar link</label>
+    <input id="linkPost" placeholder="Drive, OneDrive, Canva, YouTube, Imgur..." oninput="previewLink(this.value)">
+    <div class="dica">Se arrastar o arquivo, ele sobe pra nuvem e todo mundo vê. Se colar link, também.</div>
+    <img id="previewImg" class="preview">
+    <div class="row-btn">
+      <button class="btn-cancel" onclick="fecharPostar()">Cancelar</button>
+      <button class="btn-pub" id="btnPub" onclick="publicar()">Publicar</button>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox"><button onclick="fecharLight()">✕</button><img id="lightImg"><video id="lightVideo" controls style="display:none"></video></div>
+
+<script>
+const SUPABASE_URL = 'https://ivgtsmgzmpgoxqixyjgd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_AzJS42GiUyEUCPlp8FPuyA_b17Qhl5q';
+const SENHA_ADM = 'adm2026';
+const MAX_VIDEO_SEG = 300;
+const MAX_TAMANHO = 50 * 1024 * 1024;
+
+function sbHeaders(json=true){
+  const h = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
+  if(json) h['Content-Type'] = 'application/json';
+  if(json) h['Prefer'] = 'return=representation';
+  return h;
+}
+async function sbGet(tabela){
+  const r = await fetch(SUPABASE_URL + '/rest/v1/' + tabela + '?select=*&order=created_at.desc', { headers: sbHeaders(false) });
+  if(!r.ok) throw new Error('Erro ao carregar ' + tabela + ': ' + await r.text());
+  return await r.json();
+}
+async function sbInsert(tabela, obj){
+  const r = await fetch(SUPABASE_URL + '/rest/v1/' + tabela, { method:'POST', headers: sbHeaders(true), body: JSON.stringify(obj) });
+  if(!r.ok) throw new Error(await r.text());
+  return await r.json();
+}
+async function sbDelete(tabela, id){
+  const r = await fetch(SUPABASE_URL + '/rest/v1/' + tabela + '?id=eq.' + id, { method:'DELETE', headers: sbHeaders(false) });
+  if(!r.ok) throw new Error(await r.text());
+}
+async function subirArquivo(file){
+  const nome = Date.now() + '_' + (file.name || 'arquivo.jpg').replace(/[^a-zA-Z0-9._-]/g,'_');
+  const r = await fetch(SUPABASE_URL + '/storage/v1/object/mural/' + nome, {
+    method:'POST',
+    headers:{ 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': file.type || 'application/octet-stream', 'x-upsert': 'true' },
+    body: file
+  });
+  if(!r.ok) throw new Error('Erro ao subir arquivo: ' + await r.text());
+  return SUPABASE_URL + '/storage/v1/object/public/mural/' + nome;
+}
+
+let isAdm = sessionStorage.getItem('isAdm') === '1';
+let arquivoBlob = null, arquivoTipo = null, arquivoNome = '';
+let posts = [];
+let informativos = [];
+
+let recAtual = null;
+let gravandoAtual = null;
+let textoBaseVoz = '';
+function iniciarVoz(campoId, btnId, textoBotao){
+  const campo = document.getElementById(campoId);
+  const btn = document.getElementById(btnId);
+  const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!Rec){ alert('Seu navegador não tem ditado por voz. Usa o Google Chrome no celular.'); return; }
+  if(gravandoAtual === btnId && recAtual){ recAtual.stop(); return; }
+  if(recAtual){ try{ recAtual.stop(); }catch(e){} }
+  recAtual = new Rec();
+  recAtual.lang = 'pt-BR';
+  recAtual.continuous = true;
+  recAtual.interimResults = true;
+  textoBaseVoz = campo.value ? campo.value + ' ' : '';
+  gravandoAtual = btnId;
+  recAtual.onstart = ()=>{ btn.classList.add('gravando'); btn.innerText = '🔴 Ouvindo... clique pra parar'; };
+  recAtual.onresult = (e)=>{
+    let final = '';
+    for(let i=0;i<e.results.length;i++){ if(e.results[i].isFinal) final += e.results[i][0].transcript + ' '; }
+    if(final) campo.value = textoBaseVoz + final;
+    campo.focus();
+  };
+  recAtual.onend = ()=>{ btn.classList.remove('gravando'); btn.innerText = textoBotao; gravandoAtual = null; recAtual = null; };
+  recAtual.onerror = ()=>{ btn.classList.remove('gravando'); btn.innerText = textoBotao; gravandoAtual = null; recAtual = null; };
+  recAtual.start();
+}
+function falarInfo(){ iniciarVoz('textoNovoInfo','btnVozInfo','🎤 Falar - ditar informativo'); }
+function falarPara(campoId, btnId, textoBotao){ iniciarVoz(campoId, btnId, textoBotao); }
+
+function atualizarBotoesAdm(){
+  document.getElementById('btnPostar').style.display = isAdm ? 'block' : 'none';
+  const b = document.getElementById('btnAdm');
+  b.innerText = isAdm ? '✅ ADM logado - Sair' : '🔒 Entrar como ADM';
+  b.classList.toggle('on', isAdm);
+}
+function entrarAdm(){
+  if(isAdm){ if(confirm('Sair do modo ADM?')){ isAdm=false; sessionStorage.removeItem('isAdm'); atualizarBotoesAdm(); render(); } return; }
+  const s = prompt('Senha do ADM:');
+  if(s === SENHA_ADM){ isAdm=true; sessionStorage.setItem('isAdm','1'); atualizarBotoesAdm(); render(); alert('✅ Bem-vindo, ADM!'); }
+  else if(s !== null) alert('Senha errada!');
+}
+function abrirPostar(){ if(!isAdm) return alert('Só ADM pode postar. Clica em Entrar como ADM.'); document.getElementById('modalPostar').style.display='grid'; }
+function fecharPostar(){ document.getElementById('modalPostar').style.display='none'; }
+
+const dz = document.getElementById('dropzone');
+dz.addEventListener('dragover', e=>{ e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', ()=> dz.classList.remove('over'));
+dz.addEventListener('drop', e=>{ e.preventDefault(); dz.classList.remove('over'); const f = e.dataTransfer.files[0]; if(f) lerArquivo(f); });
+function formatarMB(b){ return (b/1024/1024).toFixed(1) + ' MB'; }
+async function lerArquivo(file){
+  if(!file) return;
+  if(file.size > MAX_TAMANHO){ alert('Arquivo muito grande! Máximo 50MB.'); return; }
+  if(file.type.startsWith('video/')){
+    const dur = await new Promise(res=>{
+      const v = document.createElement('video');
+      v.preload = 'metadata';
+      v.onloadedmetadata = ()=>{ URL.revokeObjectURL(v.src); res(v.duration); };
+      v.onerror = ()=> res(0);
+      v.src = URL.createObjectURL(file);
+    });
+    if(dur > MAX_VIDEO_SEG){ alert('Vídeo maior que 5 minutos.'); return; }
+    document.getElementById('infoArquivo').innerText = '🎥 Vídeo: ' + Math.round(dur) + 's • ' + formatarMB(file.size);
+  } else {
+    document.getElementById('infoArquivo').innerText = '🖼️ Imagem: ' + formatarMB(file.size);
+  }
+  arquivoBlob = file; arquivoTipo = file.type.startsWith('video/') ? 'video' : 'image'; arquivoNome = file.name;
+  document.getElementById('dropTexto').innerText = '✅ Pronto! ' + arquivoNome;
+  document.getElementById('btnLimparArq').style.display = 'block';
+  const url = URL.createObjectURL(file);
+  const pi = document.getElementById('dropPreviewImg'); const pv = document.getElementById('dropPreviewVideo');
+  if(arquivoTipo === 'image'){ pi.src = url; pi.style.display='block'; pv.style.display='none'; }
+  else { pv.src = url; pv.style.display='block'; pi.style.display='none'; }
+  document.getElementById('linkPost').value = ''; document.getElementById('previewImg').style.display='none';
+}
+function limparArquivo(){
+  arquivoBlob = null; arquivoTipo = null; arquivoNome = '';
+  document.getElementById('inputArquivo').value = '';
+  document.getElementById('dropTexto').innerText = '📁 Arraste aqui ou clique para escolher';
+  document.getElementById('infoArquivo').innerText = '';
+  document.getElementById('btnLimparArq').style.display = 'none';
+  document.getElementById('dropPreviewImg').style.display='none';
+  document.getElementById('dropPreviewVideo').style.display='none';
+}
+function previewLink(v){
+  const img = document.getElementById('previewImg');
+  if(v.startsWith('http') && !v.includes('youtube') && !v.includes('youtu.be')){ img.src=v; img.style.display='block'; }
+  else img.style.display='none';
+}
+function converterDrive(link){
+  const m = link.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if(m) return 'https://drive.google.com/thumbnail?id='+m[1]+'&sz=w1000';
+  return link;
+}
+async function publicar(){
+  if(!isAdm) return alert('Só ADM pode postar.');
+  const titulo = document.getElementById('tituloPost').value.trim();
+  const desc = document.getElementById('descPost').value.trim();
+  const tipo = document.getElementById('tipoPost').value;
+  let link = document.getElementById('linkPost').value.trim();
+  if(!titulo){ alert('Coloca o título'); return; }
+  const btn = document.getElementById('btnPub');
+  btn.innerText = 'Enviando pra nuvem...'; btn.disabled = true;
+  document.getElementById('progresso').style.display = 'block';
+  document.getElementById('progressoBar').style.width = '30%';
+  try{
+    let midia = '', isYoutube = false, youtubeId = '', tipoArquivo = 'image';
+    if(arquivoBlob){
+      document.getElementById('progressoBar').style.width = '60%';
+      let fileParaSubir = arquivoBlob;
+      if(arquivoTipo === 'image'){
+        const img = new Image();
+        const dataUrl = await new Promise(res=>{ const r = new FileReader(); r.onload = ()=> res(r.result); r.readAsDataURL(arquivoBlob); });
+        const bmp = await new Promise(res=>{ img.onload = ()=> res(img); img.onerror = ()=> res(null); img.src = dataUrl; });
+        if(bmp){
+          const canvas = document.createElement('canvas');
+          const max = 1200; let w = bmp.width, h = bmp.height;
+          if(w > max){ h = h * max / w; w = max; }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(bmp, 0, 0, w, h);
+          const blob = await new Promise(res=> canvas.toBlob(res, 'image/jpeg', 0.82));
+          if(blob) fileParaSubir = new File([blob], arquivoNome, {type:'image/jpeg'});
+        }
+      }
+      midia = await subirArquivo(fileParaSubir);
+      tipoArquivo = arquivoTipo;
+    } else {
+      if(!link){ alert('Arraste um arquivo OU cole o link'); throw new Error('sem-midia'); }
+      if(link.includes('drive.google.com') && tipo !== 'video') link = converterDrive(link);
+      if(link.includes('drive.google.com') && tipo === 'video'){
+        const m2 = link.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if(m2) link = 'https://drive.google.com/file/d/'+m2[1]+'/preview';
+      }
+      isYoutube = link.includes('youtube') || link.includes('youtu.be');
+      if(isYoutube){
+        const m = link.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([a-zA-Z0-9_-]{11})/);
+        if(m) youtubeId = m[1];
+      }
+      midia = link;
+      tipoArquivo = tipo==='video' && !isYoutube ? 'video' : 'image';
+      if(link.includes('1drv.ms') || link.includes('onedrive') || link.includes('sharepoint') || link.includes('canva')) tipoArquivo = 'iframe';
+    }
+    document.getElementById('progressoBar').style.width = '90%';
+    await sbInsert('mural_posts', { id: Date.now(), titulo, descricao: desc, tipo, midia, arquivo_tipo: tipoArquivo, is_youtube: isYoutube, youtube_id: youtubeId, data: new Date().toLocaleDateString('pt-BR') });
+    await carregarTudo();
+    fecharPostar();
+    document.getElementById('tituloPost').value=''; document.getElementById('descPost').value=''; document.getElementById('linkPost').value=''; document.getElementById('previewImg').style.display='none';
+    limparArquivo();
+    alert('✅ Publicado! Todo mundo vai ver.');
+  }catch(e){
+    if(e.message !== 'sem-midia') alert('Erro: ' + e.message);
+  }
+  btn.innerText = 'Publicar'; btn.disabled = false;
+  document.getElementById('progresso').style.display = 'none';
+  document.getElementById('progressoBar').style.width = '0%';
+}
+async function carregarTudo(){
+  try{
+    posts = (await sbGet('mural_posts')).map(p=>({ id:p.id, titulo:p.titulo, desc:p.descricao||'', tipo:p.tipo, midia:p.midia, arquivoTipo:p.arquivo_tipo, isYoutube:p.is_youtube, youtubeId:p.youtube_id, data:p.data }));
+    informativos = (await sbGet('informativos')).map(i=>({ id:i.id, texto:i.texto }));
+    render();
+  }catch(e){
+    document.getElementById('mural').innerHTML = '<p style="color:#F87171;padding:16px">⚠️ Erro: ' + e.message + '</p>';
+  }
+}
+function formatarInfo(txt){
+  return txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*([^*]+)\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+}
+function renderInformativos(){
+  const lista = document.getElementById('listaInformativos');
+  if(!lista) return;
+  const areaAdm = document.getElementById('areaAdmInfo');
+  if(areaAdm) areaAdm.style.display = isAdm ? 'block' : 'none';
+  lista.innerHTML = '';
+  informativos.forEach(info=>{
+    const btnDel = isAdm ? `<button class="btn-del-info" onclick="excluirInfo(${info.id})">✕</button>` : '';
+    const div = document.createElement('div');
+    div.className = 'informativo-card';
+    div.innerHTML = btnDel + formatarInfo(info.texto);
+    lista.appendChild(div);
+  });
+}
+function abrirNovoInfo(){ document.getElementById('boxNovoInfo').style.display='block'; document.getElementById('textoNovoInfo').focus(); }
+function fecharNovoInfo(){ document.getElementById('boxNovoInfo').style.display='none'; document.getElementById('textoNovoInfo').value=''; }
+async function salvarNovoInfo(){
+  const t = document.getElementById('textoNovoInfo').value.trim();
+  if(!t) return alert('Digite o informativo');
+  try{
+    await sbInsert('informativos', { id: Date.now(), texto: t });
+    fecharNovoInfo();
+    await carregarTudo();
+    alert('✅ Informativo publicado pra todo mundo!');
+  }catch(e){
+    alert('Erro ao publicar informativo: ' + e.message);
+  }
+}
+async function excluirInfo(id){
+  if(!confirm('Excluir esse informativo?')) return;
+  try{ await sbDelete('informativos', id); await carregarTudo(); }catch(e){ alert('Erro ao excluir: ' + e.message); }
+}
+function render(){
+  const mural = document.getElementById('mural');
+  const vazio = document.getElementById('vazio');
+  document.getElementById('contador').innerText = posts.length + ' posts • ' + posts.filter(p=>p.tipo==='cartaz').length + ' cartazes • ' + posts.filter(p=>p.tipo==='video').length + ' vídeos';
+  mural.innerHTML='';
+  if(posts.length===0){ vazio.style.display='block'; renderInformativos(); return; }
+  vazio.style.display='none';
+  posts.forEach((p,i)=>{
+    let midiaHtml='';
+    if(p.isYoutube){ midiaHtml = `<iframe src="https://www.youtube.com/embed/${p.youtubeId}" allowfullscreen></iframe>`; }
+    else if(p.arquivoTipo==='iframe'){ midiaHtml = `<iframe src="${p.midia}"></iframe>`; }
+    else if(p.arquivoTipo==='video'){ midiaHtml = `<video controls preload="metadata" src="${p.midia}"></video>`; }
+    else { midiaHtml = `<img src="${p.midia}" onclick="ampliarPost(${p.id})">`; }
+    const btnDel = isAdm ? `<button class="btn-del" onclick="excluir(${p.id})">✕</button>` : '';
+    mural.innerHTML += `<div class="post ${i===0?'destaque':''}" data-tipo="${p.tipo}">${btnDel}${midiaHtml}<div class="post-body"><span class="post-data">${p.data} • ${p.tipo.toUpperCase()}</span><b>${p.titulo}</b><span>${p.desc}</span></div></div>`;
+  });
+  renderInformativos();
+}
+async function excluir(id){
+  if(!isAdm) return alert('Só ADM pode excluir.');
+  if(confirm('Excluir esse post?')){ try{ await sbDelete('mural_posts', id); await carregarTudo(); }catch(e){ alert('Erro: ' + e.message); } }
+}
+function filtrar(tipo, btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  document.querySelectorAll('.post').forEach(p=>{ p.style.display = (tipo==='todos' || p.dataset.tipo===tipo) ? 'block' : 'none'; });
+}
+function ampliarPost(id){
+  const p = posts.find(x=>x.id===id); if(!p) return;
+  const li = document.getElementById('lightImg'); const lv = document.getElementById('lightVideo');
+  if(p.arquivoTipo==='video'){ li.style.display='none'; lv.src=p.midia; lv.style.display='block'; }
+  else { lv.style.display='none'; li.src=p.midia; li.style.display='block'; }
+  document.getElementById('lightbox').style.display='grid';
+}
+function fecharLight(){
+  document.getElementById('lightbox').style.display='none';
+  const lv = document.getElementById('lightVideo'); lv.pause(); lv.src='';
+}
+atualizarBotoesAdm();
+carregarTudo();
+setInterval(carregarTudo, 30000);
+</script>
+</body>
+</html>
