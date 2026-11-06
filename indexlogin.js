@@ -130,6 +130,7 @@ async function logar(){
   }catch(e){}
   try{
     if(cacheDados.length===0){ let res = await apiGet('todos'); cacheDados = res.data||[]; }
+    window.cacheDados = cacheDados; // <--- ESSENCIAL
     let achado = cacheDados.find(x=>{
       let m = String(x.Matricula||x.MATRICULA||x.G||x.B||'').toUpperCase().trim().padStart(5,'0');
       let s = String(x.Senha||x.senha||x.SENHA||x.AL||x.al||'').toUpperCase().trim();
@@ -137,6 +138,7 @@ async function logar(){
     });
     if(achado){
       usuarioLogado = achado;
+      window.usuarioLogado = achado; // <--- ESSENCIAL
       sessionStorage.setItem("logado", "true");
       localStorage.setItem("logado", "true");
       localStorage.setItem('mat_logada', mat);
@@ -154,15 +156,54 @@ async function logar(){
 }
 
 function mostrarErro(msg){ let el=document.getElementById('erro-login'); el.innerHTML=msg; el.style.display='block'; }
-function limparCampos_ORIG(){ document.getElementById('matricula').value=''; document.getElementById('nome').value=''; document.getElementById('senha').value=''; document.getElementById('senha').type='password'; document.getElementById('senha').style.background='#0F172A'; document.getElementById('senha').style.color='#F1F5F9'; document.getElementById('senha').style.border='1px solid #334155'; document.getElementById('senha').style.fontWeight='400'; document.getElementById('senha').style.fontSize='14px'; document.getElementById('erro-login').style.display='none'; document.getElementById('box-primeiro-acesso').style.display='none'; document.getElementById('box-cadastro-novo').style.display='none'; document.getElementById('box-novo-aluno').style.display='none'; document.getElementById('link-primeiro').style.display='flex'; document.getElementById('link-cadastro-novo').style.display='flex'; document.getElementById('link-novo-aluno').style.display='flex'; document.getElementById('nome').readOnly = true; document.getElementById('nome').style.background = "#0F172A"; document.getElementById('nome').style.color = "#F1F5F9"; document.getElementById('nome').style.border = "1px solid #334155"; modoPreCadastro = false; modoNovoAluno = false; document.getElementById('matricula').placeholder = "MATRÍCULA"; document.getElementById('matricula').focus(); }
+
+function limparCampos_ORIG(){ 
+document.getElementById('matricula').value=''; 
+document.getElementById('nome').value=''; 
+document.getElementById('senha').value=''; 
+document.getElementById('senha').type='password'; 
+document.getElementById('senha').style.background='#0F172A'; 
+document.getElementById('senha').style.color='#F1F5F9'; 
+document.getElementById('senha').style.border='1px solid #334155'; 
+document.getElementById('senha').style.fontWeight='400'; 
+document.getElementById('senha').style.fontSize='14px'; 
+document.getElementById('erro-login').style.display='none'; 
+document.getElementById('box-primeiro-acesso').style.display='none'; 
+document.getElementById('box-cadastro-novo').style.display='none'; 
+document.getElementById('box-novo-aluno').style.display='none'; 
+document.getElementById('link-primeiro').style.display='flex'; 
+document.getElementById('link-cadastro-novo').style.display='flex'; 
+document.getElementById('link-novo-aluno').style.display='flex'; 
+document.getElementById('nome').readOnly = true; 
+document.getElementById('nome').style.background = "#1E293B"; 
+document.getElementById('nome').style.color = "#94A3B8"; 
+document.getElementById('nome').style.border = "1px solid #334155"; 
+modoPreCadastro = false; 
+modoNovoAluno = false; 
+document.getElementById('matricula').placeholder = "MATRÍCULA"; 
+document.getElementById('matricula').focus(); 
+}
+
 function limparCampos(){ limparCampos_ORIG(); document.getElementById('box-master').style.display='none'; document.getElementById('box-masterlista').style.display='none'; document.getElementById('link-master').style.display='none'; document.getElementById('link-masterlista').style.display='none'; document.getElementById('sep-master').style.display='none'; document.getElementById('sep-masterlista').style.display='none'; document.getElementById('senhamaster').value=''; document.getElementById('senhaMasterLista').value=''; document.getElementById('matriculanova').value=''; document.getElementById('novonomenovo').value=''; document.getElementById('senhanova').value=''; document.getElementById('contato').value=''; document.getElementById('statusMaster5').innerHTML=''; document.getElementById('statusMasterLista').innerHTML=''; let v = document.getElementById('matricula').value.replace(/\D/g,'').padStart(5,'0'); if(["00425","00001","05722"].includes(v)){ document.getElementById('link-master').style.display='flex'; document.getElementById('sep-master').style.display='block'; } if(["00425","00001","05722","05891"].includes(v)){ document.getElementById('link-masterlista').style.display='flex'; document.getElementById('sep-masterlista').style.display='block'; } }
 
 function enviarParaForm(){ 
   let mat = localStorage.getItem('mat_logada')||''; 
-  let nome = localStorage.getItem('nome_logado')||''; 
   if(!mat) return;
-  document.querySelectorAll('iframe[id^="tela-"]').forEach(f=>{
-    try{ f.contentWindow.postMessage({tipo:'LOGIN_DADOS', matricula:mat, nome:nome}, '*'); }catch(e){}
+  let u = window.usuarioLogado || usuarioLogado || null;
+  let dados = u ? {
+    matricula: String(u.Matricula||mat).toUpperCase(),
+    nome: String(u.Nome||u.NOME||'').toUpperCase(),
+    congregacao: String(u.Congregacao||u.CONGREGACAO||'').toUpperCase(),
+    sexo: String(u.Sexo||'').toUpperCase(),
+    batagua: String(u.BatAgua||u.Batismo||u.BATISMO||'').toUpperCase(),
+    funcaoEcles: String(u.Funcao||u.FuncaoEclesiastica||'').toUpperCase(),
+    funcaoCong: String(u.FuncaoCong||u.FuncaoCongregacao||'').toUpperCase(),
+    whatsapp: String(u.WhatsApp||u.Zap||''),
+    ciclo: String(u.Ciclo||'4 LEIS ESPIRITUAIS').toUpperCase()
+  } : {matricula:mat, nome: localStorage.getItem('nome_logado')||''};
+
+  document.querySelectorAll('iframe[id^="frame-"]').forEach(f=>{
+    try{ f.contentWindow.postMessage({tipo:'LOGIN_DADOS', dados:dados}, '*'); }catch(e){}
   });
   jaEnviou = true; 
 }
