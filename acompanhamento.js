@@ -659,3 +659,140 @@ function destravarTudo(liberar){
   var span = document.getElementById('chkCong')?.parentElement.querySelector('span');
   if(span) span.innerText = liberar ? '🔓 DESTRAVADO - TUDO LIBERADO' : '🔓 DESTRAVAR';
 }
+
+
+
+// ===== GRAFICOS DENTRO DO ACOMPANHAMENTO - SO ACRESCENTADO =====
+const G_BASE = "https://script.google.com/macros/s/AKfycbz2phEY97FZOsloQriNH9i0cWQ0Qex0PAr02jbL18qZHjHwnTtOB4tRcwJRIQbHjMYC/exec?action=getRelTodosRaw";
+let G_ALUNOS=[], G_MAP={}, G_TOTAL_LANC=0, G_TOTAL_API=0, G_BUSCANDO=false, G_ULTIMA='', G_CACHE_CONG=[], G_CACHE_CIDADE=[], G_JA_CARREGOU=false;
+function gNormMat(v){ return String(v||'').replace(/\D/g,'').replace(/^0+/,'') || '0'; }
+function gPadMat(v){ return String(v||'').replace(/\D/g,'').padStart(5,'0'); }
+function gSemAcento(s){ return (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase(); }
+function gFormatDataBR(v){ if(!v) return v; const s=String(v).trim(); const m=s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/); if(m) return `${m[3]}/${m[2]}/${m[1]} - ${m[4]}:${m[5]}`; return v; }
+function gParseCong(raw){
+  const original = String(raw||'').trim() || 'SEM CONGREGAÇÃO';
+  let estado='', cidade='', congNome=''; let resto = original;
+  if(original.includes('|')){ const partes = original.split('|'); estado = partes[0].trim(); resto = partes.slice(1).join('|').trim(); }
+  if(resto.includes(' - ')){ const p = resto.split(' - '); cidade = p[0].trim(); congNome = p.slice(1).join(' - ').trim(); }
+  else if(resto.includes('-')){ const p = resto.split('-'); cidade = p[0].trim(); congNome = p.slice(1).join('-').trim(); }
+  else { cidade = resto; congNome = resto; }
+  const cidadeKey = gSemAcento(cidade||'SEM CIDADE').replace(/\s+/g,' ').trim();
+  const congKey = gSemAcento(original).replace(/\s+/g,' ').trim();
+  return { original, estado: estado||'SEM ESTADO', cidade: cidade||'SEM CIDADE', cidadeKey, congNome: congNome||original, congKey, cidadeExibir: cidade||'SEM CIDADE' };
+}
+function gBarra(label, valor, max, cor){
+  const pct=max?Math.round(valor/max*100):0;
+  return '<div style="display:flex;justify-content:space-between;font-size:11px"><b>'+label+'</b><span>'+valor+'</span></div><div style="background:#e5e7eb;border-radius:99px;height:10px;overflow:hidden;margin:2px 0 8px"><div style="width:'+pct+'%;background:'+cor+';height:100%"></div></div>';
+}
+function abrirGraficos(){
+  const m=document.getElementById('modalGraficos'); if(!m) return;
+  m.style.display='flex'; document.body.style.overflow='hidden';
+  if(!G_JA_CARREGOU) gLoadAll();
+}
+function fecharGraficos(){
+  const m=document.getElementById('modalGraficos'); if(m) m.style.display='none';
+  document.body.style.overflow='';
+}
+async function gLoadAll(){
+  document.getElementById('gStatus').textContent="Buscando todos...";
+  let start=1, limit=1000, ALL=[], TOTAL=0, tentativas=0;
+  G_MAP={}; G_TOTAL_LANC=0;
+  while(true){
+    const url=`${G_BASE}&start=${start}&limit=${limit}&_=${Date.now()}`;
+    const res=await fetch(url); const j=await res.json();
+    TOTAL=j.total || TOTAL; G_TOTAL_API=TOTAL;
+    let dados=(j.data||[]);
+    dados=dados.filter(r=> String(r[0]||'').toLowerCase().trim()!=='item' && String(r[8]||'').toLowerCase().trim()!=='matricula');
+    if(dados.length===0) break;
+    ALL=ALL.concat(dados); G_TOTAL_LANC=ALL.length;
+    const pct=TOTAL?Math.round(ALL.length/TOTAL*100):0;
+    document.getElementById('gPbar').style.width=Math.min(pct,100)+"%";
+    document.getElementById('gStatus').textContent=`Carregando ${ALL.length} / ${TOTAL||'?'}`;
+    if(TOTAL && ALL.length >= TOTAL) break;
+    if(!TOTAL && dados.length < limit) break;
+    start = start + dados.length; tentativas++; if(tentativas>50) break;
+  }
+  G_JA_CARREGOU=true;
+  gAgrupar(ALL, true); gAtualizar();
+}
+function gAgrupar(ALL, reset){
+  if(reset) G_MAP={};
+  ALL.forEach(r=>{
+    const matKey = gNormMat(r[8]); if(!matKey || matKey==='0') return;
+    if(!G_MAP[matKey]){
+      const p = gParseCong(r[5]);
+      G_MAP[matKey]={ mat: gPadMat(r[8]), matKey, nome: r[6], cong: p.original, estado: p.estado, cidade: p.cidadeExibir, cidadeKey: p.cidadeKey, congNome: p.congNome, congKey: p.congKey, whats: r[7], sexo: r[9], bat: r[10], funcEcles: r[11], funcCong: r[12], testes: [], itens: new Set() };
+    }
+    const item = String(r[0]);
+    if(!G_MAP[matKey].itens.has(item)){ G_MAP[matKey].itens.add(item); G_MAP[matKey].testes.push({ item, ciclo: r[1], teste: r[2], data: r[3], pont: r[4] }); }
+  });
+  G_ALUNOS = Object.values(G_MAP).map(a=>{
+    const notas = a.testes.map(t=> parseFloat(String(t.pont||'').replace(',','.'))).filter(n=>!isNaN(n));
+    const menor = notas.length? Math.min(...notas): null;
+    const temMenor70 = menor!==null && menor < 70; const qtd = a.testes.length;
+    let status='EM CURSO'; if(qtd>=52 && !temMenor70) status='APROVADO'; else if(qtd>=52 && temMenor70) status='PENDENTE';
+    const c1=a.testes.filter(t=> gSemAcento(t.ciclo).includes('CICLO1')).length;
+    const c2=a.testes.filter(t=> gSemAcento(t.ciclo).includes('CICLO2')).length;
+    const c3=a.testes.filter(t=> gSemAcento(t.ciclo).includes('CICLO3')).length;
+    const c4=a.testes.filter(t=> gSemAcento(t.ciclo).includes('CICLO4')).length;
+    return {...a, qtd, menor, temMenor70, status, c1,c2,c3,c4, media: notas.length? (notas.reduce((s,n)=>s+n,0)/notas.length):0 };
+  });
+  G_ALUNOS.sort((a,b)=> gSemAcento(a.nome).localeCompare(gSemAcento(b.nome)));
+}
+function gAtualizar(){
+  document.getElementById('gCount').textContent = G_ALUNOS.length + " alunos únicos";
+  document.getElementById('gFoot').textContent = `Última atualização: ${new Date().toLocaleString()} | Lançamentos: ${G_TOTAL_LANC} | API total: ${G_TOTAL_API}`;
+  const aprov = G_ALUNOS.filter(a=>a.status==='APROVADO').length;
+  const pend = G_ALUNOS.filter(a=>a.status==='PENDENTE').length;
+  const curso = G_ALUNOS.filter(a=>a.status==='EM CURSO').length;
+  document.getElementById('gDebug').innerHTML = `<b>CONFERÊNCIA:</b> Lançamentos: <b>${G_TOTAL_LANC}</b> | Matrículas únicas: <b>${G_ALUNOS.length}</b> | Aprovado: <b>${aprov}</b> + Pendente: <b>${pend}</b> + Em curso: <b>${curso}</b> = <b>${aprov+pend+curso}</b> | Regra: Aprovado = 52 testes e todas >=70`;
+  gDesenhar();
+  if(G_ULTIMA) gRender(G_ULTIMA, true);
+}
+async function gChecarNovos(){
+  if(G_BUSCANDO) return; if(!G_JA_CARREGOU) return;
+  if(document.getElementById('modalGraficos').style.display==='none') return;
+  G_BUSCANDO=true;
+  try{
+    const start = G_TOTAL_LANC + 1;
+    const url=`${G_BASE}&start=${start}&limit=1000&_=${Date.now()}`;
+    const res=await fetch(url); const j=await res.json(); G_TOTAL_API = j.total || G_TOTAL_API;
+    let dados=(j.data||[]).filter(r=> String(r[0]||'').toLowerCase().trim()!=='item' && String(r[8]||'').toLowerCase().trim()!=='matricula');
+    if(dados.length>0){ G_TOTAL_LANC += dados.length; gAgrupar(dados, false); document.getElementById('gStatus').textContent=`+${dados.length} novo(s) - ${G_TOTAL_LANC} lançamentos`; gAtualizar(); }
+    else document.getElementById('gStatus').textContent=`Ao vivo - ${G_TOTAL_LANC} lançamentos`;
+  }catch(e){}
+  G_BUSCANDO=false;
+}
+setInterval(gChecarNovos, 2000);
+function gBuscar(){ const d=document.getElementById('gMat').value.trim(); if(!d){ document.getElementById('gInfo').textContent='Digite a matrícula'; return; } G_ULTIMA=gNormMat(d); gRender(G_ULTIMA,false); }
+function gRender(matKey, silencioso){
+  const a = G_ALUNOS.find(x=> x.matKey===matKey); const box=document.getElementById('gDetalhe');
+  if(!a){ if(!silencioso){ document.getElementById('gInfo').textContent='Matrícula não encontrada'; box.innerHTML=`<div style="background:#fff;border:1px solid #fecaca;border-radius:12px;padding:14px"><b>Matrícula ${gPadMat(matKey)} não encontrada.</b></div>`; } return; }
+  document.getElementById('gInfo').textContent=`${a.nome} - ${a.qtd} testes - ${a.status}`;
+  let cor='#16a34a', bg='#f0fdf4'; if(a.status==='PENDENTE'){ cor='#dc2626'; bg='#fef2f2'; } if(a.status==='EM CURSO'){ cor='#d97706'; bg='#fffbeb'; }
+  const ord=[...a.testes].sort((x,y)=> String(x.ciclo).localeCompare(String(y.ciclo)) || String(x.teste).localeCompare(String(y.teste)));
+  let msg=''; if(a.status==='APROVADO') msg=`APROVADO porque fez 52 testes e todas as notas >= 70. Menor nota: ${a.menor}`; if(a.status==='PENDENTE') msg=`PENDENTE porque já fez 52 e tem nota abaixo de 70. Menor nota: ${a.menor}`; if(a.status==='EM CURSO') msg=`EM CURSO porque ainda não fez os 52 testes. Faltam ${52-a.qtd} teste(s).`;
+  box.innerHTML=`<div style="background:${bg};border:1px solid ${cor};border-radius:12px;padding:14px"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><div><div style="font-size:11px;font-weight:800;color:#64748b">ALUNO</div><div style="font-size:20px;font-weight:900">${a.nome}</div><div style="font-size:12px">${a.cong} | Mat: <b>${a.mat}</b> | Whats: ${a.whats||'-'} | ${a.sexo||''} | ${a.funcEcles||''}</div><div style="font-size:11px;color:#64748b">Estado: ${a.estado} | Cidade: ${a.cidade} | Congregação: ${a.congNome}</div></div><div style="text-align:right"><div style="font-size:11px;font-weight:800">STATUS</div><div style="font-size:22px;font-weight:900;color:${cor}">${a.status}</div><div style="font-size:11px">Testes: <b>${a.qtd} / 52</b> | Menor nota: <b>${a.menor!==null?a.menor:'-'}</b> | Média: <b>${a.media.toFixed(2)}</b></div><div style="font-size:11px">C1: ${a.c1} | C2: ${a.c2} | C3: ${a.c3} | C4: ${a.c4}</div></div></div><div style="margin-top:10px;font-size:11px;font-weight:800">TODOS OS TESTES DESSA MATRÍCULA (${a.qtd})</div><div style="max-height:320px;overflow:auto;margin-top:6px"><table style="width:100%;border-collapse:collapse"><thead><tr><th style="background:#f8fafc;padding:6px 10px;font-size:10px;text-align:left"> #</th><th style="background:#f8fafc;padding:6px 10px;font-size:10px;text-align:left">Ciclo</th><th style="background:#f8fafc;padding:6px 10px;font-size:10px;text-align:left">Teste</th><th style="background:#f8fafc;padding:6px 10px;font-size:10px;text-align:right">Pontuação</th><th style="background:#f8fafc;padding:6px 10px;font-size:10px;text-align:left">Data</th></tr></thead><tbody>${ord.map((t,i)=> `<tr><td style="padding:5px 10px;font-size:12px;border-bottom:1px solid #eef2f7">${i+1}</td><td style="padding:5px 10px;font-size:12px;border-bottom:1px solid #eef2f7">${t.ciclo}</td><td style="padding:5px 10px;font-size:12px;border-bottom:1px solid #eef2f7">${t.teste}</td><td style="padding:5px 10px;font-size:12px;border-bottom:1px solid #eef2f7;text-align:right;font-weight:700;color:${parseFloat(String(t.pont||'').replace(',','.'))<70?'#dc2626':'#0f172a'}">${t.pont}</td><td style="padding:5px 10px;font-size:12px;border-bottom:1px solid #eef2f7">${gFormatDataBR(t.data)}</td></tr>`).join('')}</tbody></table></div><div style="margin-top:8px;font-size:12px;font-weight:800;color:${cor}">${msg}</div></div>`;
+}
+function gLimpar(){ document.getElementById('gMat').value=''; G_ULTIMA=''; document.getElementById('gDetalhe').innerHTML=''; document.getElementById('gInfo').textContent=''; }
+function gFiltrarCong(){ const termo=gSemAcento(document.getElementById('gBuscaCong').value); const box=document.getElementById('gListaCong'); const f=G_CACHE_CONG.filter(([n])=> gSemAcento(n).includes(termo)); if(!f.length){ box.innerHTML='<div style="font-size:12px;color:#64748b">Nenhuma congregação encontrada</div>'; return; } box.innerHTML=f.map(([n,q])=> gBarra(n,q,G_CACHE_CONG[0][1],'#0f172a')).join(''); }
+function gFiltrarCidade(){ const termo=gSemAcento(document.getElementById('gBuscaCidade').value); const box=document.getElementById('gListaCidade'); const f=G_CACHE_CIDADE.filter(([n])=> gSemAcento(n).includes(termo)); if(!f.length){ box.innerHTML='<div style="font-size:12px;color:#64748b">Nenhuma cidade encontrada</div>'; return; } box.innerHTML=f.map(([n,q])=> gBarra(n,q,G_CACHE_CIDADE[0][1],'#1e4a7a')).join(''); }
+function gDesenhar(){
+  const wrap=document.getElementById('gWrap'); if(!wrap) return; if(!G_ALUNOS.length){ wrap.innerHTML=''; return; }
+  const total=G_ALUNOS.length; const aprov=G_ALUNOS.filter(a=>a.status==='APROVADO').length; const pend=G_ALUNOS.filter(a=>a.status==='PENDENTE').length; const emCurso=G_ALUNOS.filter(a=>a.status==='EM CURSO').length; const concluidos52=G_ALUNOS.filter(a=>a.qtd>=52).length;
+  const porCong={}; const nomeCong={}; G_ALUNOS.forEach(a=>{ porCong[a.congKey]=(porCong[a.congKey]||0)+1; if(!nomeCong[a.congKey]) nomeCong[a.congKey]=a.cong; });
+  const todasCong=Object.entries(porCong).map(([k,q])=>[nomeCong[k],q]).sort((a,b)=>b[1]-a[1]); G_CACHE_CONG=todasCong;
+  const porCidade={}; const nomeCidade={}; G_ALUNOS.forEach(a=>{ porCidade[a.cidadeKey]=(porCidade[a.cidadeKey]||0)+1; if(!nomeCidade[a.cidadeKey]) nomeCidade[a.cidadeKey]=a.cidade; });
+  const todasCidades=Object.entries(porCidade).map(([k,q])=>[nomeCidade[k],q]).sort((a,b)=>b[1]-a[1]); G_CACHE_CIDADE=todasCidades;
+  const temC1=G_ALUNOS.filter(a=>a.c1>0).length; const temC2=G_ALUNOS.filter(a=>a.c2>0).length; const temC3=G_ALUNOS.filter(a=>a.c3>0).length; const temC4=G_ALUNOS.filter(a=>a.c4>0).length;
+  const masc=G_ALUNOS.filter(a=> gSemAcento(a.sexo).includes('MASC')).length; const fem=G_ALUNOS.filter(a=> gSemAcento(a.sexo).includes('FEM')).length;
+  const fCong=document.getElementById('gBuscaCong')?document.getElementById('gBuscaCong').value:''; const fCidade=document.getElementById('gBuscaCidade')?document.getElementById('gBuscaCidade').value:'';
+  const card='background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px';
+  const mini='width:100%;border:1px solid #e2e8f0;background:#f8fafc;border-radius:8px;padding:7px 10px;font-size:12px;outline:0;margin:8px 0';
+  wrap.innerHTML=`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">QUEM ESTÁ FAZENDO O CURSO</div><div style="font-size:32px;font-weight:900">${total} <span style="font-size:12px;color:#64748b">matrículas únicas</span></div>${gBarra('Já fez 52 testes',concluidos52,total,'#0f172a')}${gBarra('Ainda fazendo (<52)',emCurso,total,'#c9a86a')}</div><div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">APROVADO x PENDENTE x EM CURSO</div><div style="font-size:11px;color:#64748b">APROVADO = 52 testes e todas >= 70</div>${gBarra('Aprovado',aprov,total,'#16a34a')}${gBarra('Pendente',pend,total,'#dc2626')}${gBarra('Em curso',emCurso,total,'#d97706')}</div><div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR CICLO</div>${gBarra('Ciclo 01',temC1,total,'#0f172a')}${gBarra('Ciclo 02',temC2,total,'#1e4a7a')}${gBarra('Ciclo 03',temC3,total,'#c9a86a')}${gBarra('Ciclo 04',temC4,total,'#059669')}</div><div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR CIDADE - TODAS</div><div style="font-size:11px;color:#64748b">${todasCidades.length} cidades</div><input id="gBuscaCidade" style="${mini}" placeholder="🔍 Pesquisar cidade ex: PARAGOMINAS" oninput="gFiltrarCidade()"><div id="gListaCidade" style="max-height:320px;overflow:auto">${todasCidades.map(([n,q])=> gBarra(n,q,todasCidades[0][1],'#1e4a7a')).join('')}</div></div><div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR CONGREGAÇÃO - TODAS</div><div style="font-size:11px;color:#64748b">${todasCong.length} congregações</div><input id="gBuscaCong" style="${mini}" placeholder="🔍 Pesquisar congregação ex: SEDE" oninput="gFiltrarCong()"><div id="gListaCong" style="max-height:320px;overflow:auto">${todasCong.map(([n,q])=> gBarra(n,q,todasCong[0][1],'#0f172a')).join('')}</div></div><div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR SEXO</div>${gBarra('Masculino',masc,total,'#0f172a')}${gBarra('Feminino',fem,total,'#c9a86a')}</div>`;
+  if(fCong){ document.getElementById('gBuscaCong').value=fCong; gFiltrarCong(); } if(fCidade){ document.getElementById('gBuscaCidade').value=fCidade; gFiltrarCidade(); }
+}
+document.addEventListener('input', e=>{ if(e.target && e.target.id==='gMat'){ clearTimeout(window._gDeb); window._gDeb=setTimeout(()=>{ const v=e.target.value.trim(); if(v.length>=2){ G_ULTIMA=gNormMat(v); gRender(G_ULTIMA,false); } if(!v) gLimpar(); },150); } });
+document.addEventListener('keydown', e=>{ if(e.target && e.target.id==='gMat' && e.key==='Enter') gBuscar(); });
+document.addEventListener('click', e=>{ if(e.target && e.target.id==='modalGraficos') fecharGraficos(); });
+// ===== FIM GRAFICOS =====
