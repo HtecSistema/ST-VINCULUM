@@ -19,6 +19,7 @@
     <label style="display:flex;gap:6px;align-items:center;font-size:12px"><input type="checkbox" id="auto" checked> Auto - só novos</label>
     <button onclick="loadAll(true)">↻ Recarregar tudo</button>
 <button id="btnRelatorio" style="background:#7c3aed;border-color:#7c3aed">📄 Relatório (<span id="selCount">0</span>)</button>
+<button id="btnGraficos" onclick="abrirGraficos()" style="background:#059669;border-color:#059669">📊 Gráficos</button>
   </div>
 </div>
 
@@ -78,5 +79,35 @@
 <div class="foot"><span>HtecSistemas</span><span class="mono" id="foot">aguardando</span></div>
 </div>
 <script src="acompanhamento.js"></script>
+
+<!-- INICIO GRAFICOS - SO ACRESCENTADO, NAO MEXER NO RESTO -->
+
+<div id="modalGraficos" style="display:none;position:fixed;inset:0;background:#f8f9fb;z-index:99998;overflow:auto;padding:0">
+  <div style="background:#f8f9fb;width:100%;max-width:none;border-radius:0;overflow:hidden;margin:0;min-height:100vh">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#fff;border-bottom:1px solid #e2e8f0">
+      <b style="font-size:16px">📊 Gráficos - Acompanhamento ao VIVO</b>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="background:#fff;border:1px solid #e2e8f0;padding:6px 10px;border-radius:999px;font-size:12px"><b id="gStatus">Conectando...</b></span>
+        <span style="background:#fff;border:1px solid #e2e8f0;padding:6px 10px;border-radius:999px;font-size:12px" id="gCount">0 alunos</span>
+        <button onclick="fecharGraficos()" style="background:#0f172a;color:#fff;border:none;padding:7px 12px;border-radius:8px;cursor:pointer;font-weight:800">✕ Fechar</button>
+      </div>
+    </div>
+    <div style="background:#fff;padding:12px;border-bottom:1px solid #eef2f7;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <label style="font-size:12px;font-weight:800">BUSCA POR MATRÍCULA:</label>
+      <input id="gMat" placeholder="Digite a matrícula ex: 00001" inputmode="numeric" autocomplete="off" style="border:1px solid #e2e8f0;background:#f8fafc;border-radius:8px;padding:8px 10px;font-size:13px;min-width:160px">
+      <button onclick="gBuscar()" style="background:#0f172a;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:800">🔍 BUSCAR</button>
+      <button onclick="gLimpar()" style="background:#fff;border:1px solid #e2e8f0;padding:8px 12px;border-radius:8px;cursor:pointer">Limpar busca</button>
+      <b id="gInfo" style="color:#64748b;font-size:12px"></b>
+    </div>
+    <div style="height:4px;background:#eef2f7"><i id="gPbar" style="display:block;height:100%;background:#0f172a;width:0"></i></div>
+    <div id="gDebug" style="margin:12px;padding:10px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:10px;font-size:12px"></div>
+    <div id="gWrap" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:12px"></div>
+    <div id="gDetalhe" style="margin:12px"></div>
+    <div style="padding:8px 12px;display:flex;justify-content:space-between;font-size:11px;color:#64748b"><span>HtecSistemas</span><span id="gFoot">aguardando</span></div>
+  </div>
+</div>
+<!-- FIM GRAFICOS -->
+
 </body>
 </html>
