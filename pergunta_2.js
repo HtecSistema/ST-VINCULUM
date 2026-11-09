@@ -12,15 +12,12 @@ function setDataAutomatica(){
   const el = document.getElementById('data');
   if(!el) return;
   const hoje = new Date();
-  el.valueAsDate = hoje; // preenche automático
-  
-  // se quiser salvar como dd/mm/aaaa na planilha também:
-  el.dataset.br = hoje.toLocaleDateString('pt-BR'); // 04/11/2026
+  el.valueAsDate = hoje;
+  el.dataset.br = hoje.toLocaleDateString('pt-BR');
 }
 document.addEventListener('DOMContentLoaded', setDataAutomatica);
-setDataAutomatica(); // chama na hora também
+setDataAutomatica();
 
-// MATA QUALQUER alert/prompt PERDIDO QUE DÁ "Essa página diz"
 window.alert = mostrarAlerta;
 window.prompt = () => { mostrarAlerta('Função bloqueada. Use o modal.'); return null; };
 
@@ -64,7 +61,7 @@ async function buscarDadosAluno(){
   try{
     const resp = await fetch(SHEET_URL + '?matricula=' + encodeURIComponent(mat));
     const json = await resp.json();
-    if(json.erro){ mostrarAlerta('Matrícula não encontrada na planilha Dados'); btn.innerText = 'Salvar'; return; }
+    if(json.erro){ mostrarAlerta('Matrícula não encontrada na planilha Dados2'); btn.innerText = 'Salvar'; return; }
     document.getElementById('congregacao').value = json.Congregacao || '';
     document.getElementById('ciclo').value = json.Ciclo || '2026.1';
     document.getElementById('nome').value = json.Nome || '';
@@ -101,14 +98,12 @@ function showView(view){
   document.getElementById('btnTexto').className = view==='texto' ? 'btn-top active' : 'btn-top inactive';
   document.getElementById('btnTeste').className = view==='teste' ? 'btn-top active' : 'btn-top inactive';
   btnSalvar.style.display = 'grid'; btnPdf.style.display = 'grid';
-
   function travar(btn, travar){
     if(!btn) return;
     btn.disabled = travar;
     btn.style.opacity = travar ? '0.4' : '1';
     btn.style.pointerEvents = travar ? 'none' : 'auto';
   }
-
   if(view==='texto'){
     travar(btnSalvar, true);
     travar(btnBuscar, true);
@@ -122,7 +117,6 @@ function showView(view){
   }
   window.scrollTo({top:0,behavior:'smooth'});
 }
-
 
 function toggleDados(){document.getElementById('blocoDados').classList.toggle('collapsed');}
 
@@ -173,7 +167,6 @@ document.getElementById('btnFinalizar').onclick = async (e)=>{
   const btnSalvar = document.getElementById('btnFinalizar');
   if(btnSalvar.disabled) return;
   if(!document.getElementById('nome').value){mostrarAlerta('Digite o Nome completo!');return;}
-
   let faltando = [];
   perguntas.forEach((_,i)=>{
     if(!document.querySelector(`input[name="q${i}"]:checked`)){
@@ -188,7 +181,6 @@ document.getElementById('btnFinalizar').onclick = async (e)=>{
     setTimeout(()=>{ document.getElementById(`card${primeira}`).style.outline = ''; }, 2000);
     return;
   }
-
   btnSalvar.innerText = 'Salvando...';
   let acertos=0;
   let respostasLetras = [];
@@ -240,7 +232,7 @@ document.getElementById('btnFinalizar').onclick = async (e)=>{
   };
   try{
     await fetch(SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-    document.getElementById('msg').innerText = 'Salvo na planilha Dados!';
+    document.getElementById('msg').innerText = 'Salvo na planilha Dados2!';
   }catch(err){ document.getElementById('msg').innerText = 'Erro ao salvar: ' + err; }
   window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
   btnSalvar.innerText = 'Salvar'; btnSalvar.disabled = true;
@@ -249,24 +241,18 @@ document.getElementById('matricula').addEventListener('input',function(){documen
 document.getElementById('nome').addEventListener('input',function(){document.getElementById('headNomeTxt').textContent = this.value ? '• ' + this.value : '';});
 document.getElementById('congregacao').addEventListener('input',function(){document.getElementById('headCongTxt').textContent = this.value ? '• ' + this.value.toUpperCase() : '';});
 showView('texto');
-
-// quando carregar a página
 const API = 'https://script.google.com/macros/s/AKfycbxLXw-nu5oXXtjE8HKik_W_bbT9CGjTNJWw-dUm4wWYv-hjcz1dOhMHLxoUTRHGJA3D0A/exec';
-
 async function puxarETravar(){
   let mat = '';
   try{ mat = localStorage.getItem('mat_logada') || window.parent.localStorage.getItem('mat_logada') || ''; }catch(e){}
   if(!mat) return;
   mat = mat.trim().padStart(5,'0').toUpperCase();
-
   try{
     let r = await fetch(API+'?action=todos&t='+Date.now(), {cache:'no-store'});
     let j = await r.json();
     let dados = j.data || [];
     let u = dados.find(x=> String(x.Matricula||'').padStart(5,'0').toUpperCase() === mat);
     if(!u) return;
-
-    // AGORA COM SUAS COLUNAS
     document.getElementById('matricula').value = String(u.Matricula||mat).toUpperCase();
     document.getElementById('nome').value = String(u.Nome||'').toUpperCase();
     document.getElementById('congregacao').value = String(u.congregacao||'').toUpperCase();
@@ -275,32 +261,21 @@ async function puxarETravar(){
     document.getElementById('funcaoEcles').value = String(u['Qual Funcao']||'').toUpperCase();
     document.getElementById('funcaoCong').value = String(u.fcongregacao||'').toUpperCase();
     document.getElementById('whatsapp').value = String(u.WhatsApp||'');
-
-    // TRAVA OS 9
     ['ciclo','matricula','nome','congregacao','sexo','batagua','funcaoEcles','funcaoCong','whatsapp'].forEach(id=>{
       let el = document.getElementById(id);
       if(el){ el.readOnly=true; el.disabled=true; el.style.background='#0F172A'; el.style.opacity='0.6'; el.style.pointerEvents='none'; }
     });
-
-    // cabeçalho
     try{
       document.getElementById('headMatTxt').textContent = '• ' + mat;
       document.getElementById('headNomeTxt').textContent = '• ' + (u.Nome||'');
       document.getElementById('headCongTxt').textContent = '• ' + (u.congregacao||'');
     }catch(e){}
-
   }catch(e){ console.log(e); }
 }
-
 setTimeout(puxarETravar, 500);
 document.addEventListener('DOMContentLoaded', puxarETravar);
-
-// ===== SEPARADO - SÓ SITUAÇÃO - NÃO MEXER NO DE CIMA =====
-// Lê Cadastro_Total: procura matrícula, pega resultado na coluna AN, joga no campo situação
 async function puxarSituacao(){
   let elSit = document.getElementById('situacao');
-
-  // 1. LER A MATRÍCULA QUE ESTÁ NA TELA - 00425 na foto
   let mat = '';
   try{
     mat = document.getElementById('matricula').value || localStorage.getItem('mat_logada') || window.parent.localStorage.getItem('mat_logada') || '';
@@ -310,18 +285,14 @@ async function puxarSituacao(){
     return;
   }
   mat = mat.trim().padStart(5,'0').toUpperCase();
-
   try{
-    // 2. BUSCAR NA GUIA Dados
     let url = "https://script.google.com/macros/s/AKfycbxLXw-nu5oXXtjE8HKik_W_bbT9CGjTNJWw-dUm4wWYv-hjcz1dOhMHLxoUTRHGJA3D0A/exec";
     let r2 = await fetch(url + '?action=todos&t=' + Date.now(), {cache:'no-store'});
     let j2 = await r2.json();
     let dados2 = j2.data || [];
-
-    // 3. ACHAR PELA COLUNA B = Matrícula
     let u2 = dados2.find(x=>{
       if(Array.isArray(x)){
-        return String(x[1] || '').trim().padStart(5,'0').toUpperCase() === mat; // x[1] = coluna B
+        return String(x[1] || '').trim().padStart(5,'0').toUpperCase() === mat;
       } else {
         return String(x.Matricula || x.matricula || '').trim().padStart(5,'0').toUpperCase() === mat;
       }
@@ -330,33 +301,23 @@ async function puxarSituacao(){
       if(elSit) elSit.value = 'PENDENTE';
       return;
     }
-
-    // 4. PEGAR COLUNA AN = Situação Final
     let status = '';
     if(Array.isArray(u2)){
-      status = String(u2[39] || '').trim(); // 39 = coluna AN
+      status = String(u2[39] || '').trim();
     } else {
       status = String(u2['Situação Final'] || u2['Situacao Final'] || u2['Situaçao Final'] || u2.AN || '').trim();
     }
-
-    // 5. SE NÃO FOR DISCIPULADO REALIZADO, COLOCA PENDENTE
     if(status.toUpperCase() !== 'DISCIPULADO REALIZADO'){
       status = 'PENDENTE';
     }
-
-    // 6. LANÇAR NO CAMPO SITUAÇÃO
     if(elSit){ elSit.value = status; }
-
   }catch(e){
     console.log('Erro Situacao AN:', e);
     if(elSit) elSit.value = 'PENDENTE';
   }
 }
-
 setTimeout(puxarSituacao, 600);
 document.addEventListener('DOMContentLoaded', puxarSituacao);
-
-// COLAR NO FINAL DO JS
 setInterval(()=>{
   let sit = document.getElementById('situacao');
   if(!sit) return;
@@ -365,7 +326,7 @@ setInterval(()=>{
   if(!msg && linha){
     msg = document.createElement('span');
     msg.id = 'msgPendente';
-    msg.style.color = '#FFD700'; // '#f87171' VERMELHO
+    msg.style.color = '#FFD700';
     msg.style.fontWeight = '800';
     msg.style.fontSize = '11px';
     linha.appendChild(msg);
@@ -376,16 +337,12 @@ setInterval(()=>{
     if(salvar) salvar.disabled = true;
     if(pesq) pesq.disabled = true;
     if(msg) msg.textContent = '• NÃO HÁ COMO PROSSEGUIR - FALTA FINALIZAR O DISCIPULADO';
-
-} else {
-    // só libera Pesquisar se estiver no Teste, se estiver no Texto continua travado
+  } else {
     let noTeste = document.getElementById('viewTeste') && document.getElementById('viewTeste').style.display !== 'none';
     if(pesq){ pesq.disabled = !noTeste; pesq.style.opacity = noTeste ? '1' : '0.4'; pesq.style.pointerEvents = noTeste ? 'auto' : 'none'; }
     if(msg) msg.textContent = '';
   }
 }, 500);
-
-// COLAR NO FINAL DO JS DO TESTE - MARCA COMO FEITO AO SALVAR
 (function(){
   let m = (window.location.pathname || '').match(/teste_(\d+)\.html/i);
   let num = m ? parseInt(m[1]) : 0;
@@ -400,8 +357,6 @@ setInterval(()=>{
     }
   }, 500);
 })();
-
-// COLAR NO FINAL - MATRICULA SEMPRE 5 DIGITOS - COLUNA I
 (function(){
   function fmt(v){ v = String(v||'').replace(/\D/g,''); if(!v) return v; return v.padStart(5,'0'); }
   setInterval(()=>{
@@ -412,7 +367,6 @@ setInterval(()=>{
     }
   }, 500);
 })();
-
 function pedirConfirmarLimpar(msg){
   return new Promise((resolve)=>{
     let box = document.getElementById('modalConfirmLimpar');
@@ -433,11 +387,9 @@ function pedirConfirmarLimpar(msg){
     document.getElementById('btnConfirmLimparSim').onclick = ()=> fechar(true);
   });
 }
-
 async function limparTeste(){
   const quer = await pedirConfirmarLimpar('Quer limpar mesmo?\nTodas as 25 respostas serão apagadas.');
   if(!quer) return;
-  // se estiver no Texto, não faz nada
   if(document.getElementById('viewTexto') && document.getElementById('viewTexto').style.display !== 'none') return;
   document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
   document.querySelectorAll('.card').forEach(c => c.classList.remove('correct','wrong'));
@@ -452,32 +404,25 @@ async function limparTeste(){
   if(btnSalvar){ btnSalvar.innerText = 'Salvar'; btnSalvar.disabled = false; }
   window.scrollTo({top:0, behavior:'smooth'});
 }
-
-// PDF - SÓ O TEXTO, NO MESMO FORMATO DO FORMULÁRIO
 document.getElementById('btnPdf').onclick = function(e){
   e.preventDefault();
   const btnPdf = document.getElementById('btnPdf');
   if(btnPdf.disabled) return;
-
   const textoEl = document.getElementById('viewTexto');
   if(!textoEl || !textoEl.innerHTML.trim()){
     mostrarAlerta('Não há texto para gerar o PDF.');
     return;
   }
-
-  // Pega o estilo que já está na página para manter o mesmo formato
   let estilos = '';
   document.querySelectorAll('style, link[rel="stylesheet"]').forEach(el=>{
     if(el.tagName === 'STYLE') estilos += el.outerHTML;
   });
-
   const win = window.open('', '_blank');
   win.document.write(`
     <html><head><title>Texto - 4 Leis Espirituais</title>
     ${estilos}
     <style>
       body{ background:#fff !important; color:#000 !important; padding:20px; }
-      /* esconde tudo que não é texto */
       #viewTeste, #blocoDados, #form, .btn-top, #btnFinalizar, #btnPdf, #btnBuscar, #btnLimpar, button, .top-bar, .header, .progress, #result, #msg { display:none !important; }
       #viewTexto{ display:block !important; background:#fff !important; color:#000 !important; box-shadow:none !important; border:none !important; width:100% !important; max-width:100% !important; }
       #viewTexto *{ color:#000 !important; background:transparent !important; }
@@ -489,8 +434,6 @@ document.getElementById('btnPdf').onclick = function(e){
   win.focus();
   setTimeout(()=>{ win.print(); }, 400);
 };
-
-// BAIXA DIRETO O PDF - SEM JANELA DE IMPRIMIR
 document.getElementById('btnPdf').onclick = function(e){
   e.preventDefault();
   const el = document.getElementById('viewTexto');
@@ -501,23 +444,15 @@ document.getElementById('btnPdf').onclick = function(e){
   a.download = 'Texto-4-Leis-Espirituais.pdf';
   a.click();
 };
-
 function criarPdf(el){
   const ctx = document.createElement('canvas').getContext('2d');
   const esc = s => s.replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/—/g,'-').replace(/–/g,'-').replace(/…/g,'...').replace(/\u00A0/g,' ')
     .split('').map(c=>{ const k=c.charCodeAt(0); return c==='\\'?'\\\\':c==='('?'\\(':c===')'?'\\\\)':(k<32||k>126)?'\\'+k.toString(8).padStart(3,'0'):c; }).join('');
-  // CORREÇÃO 1: mede negrito como negrito, senão estoura a direita
   const medir = (t,s,bold=false)=>{ ctx.font = (bold?'bold ':'')+s+'px Helvetica'; return ctx.measureText(t).width; };
-
-  // CORREÇÃO 2: pega o <p> inteiro, não o <strong> sozinho
-  // Por isso "Verdade central:" ficava vazio e "Romanos 12:1-2" sumia
   let blocos = [...el.querySelectorAll('p, h1, h2, h3, h4, blockquote, li')];
-  // Se tem <p> dentro de <blockquote>, fica só com o <blockquote> pra não duplicar
   blocos = blocos.filter(b => !blocos.some(o => o !== b && o.contains(b) && o.tagName === 'BLOCKQUOTE'));
   if(!blocos.length) blocos = [...el.querySelectorAll('div')].filter(d => d.innerText?.trim() && !d.querySelector('p, blockquote'));
   if(!blocos.length) blocos = [el];
-
-  // 2. QUEBRA POR LARGURA REAL
   let paragrafos = [];
   blocos.forEach(n=>{
     const txt = n.innerText.trim().replace(/\s+/g,' ');
@@ -526,12 +461,11 @@ function criarPdf(el){
     let tipo = 'normal';
     if(txt.startsWith('4 LEIS')) tipo='titulo';
     else if(n.tagName==='BLOCKQUOTE' || txt.startsWith('Verdade central:') || txt.startsWith('Precisamos, porém')) tipo='citacao';
-    else if(/^(\d+\.|[A-D]\.)\s/.test(txt)) tipo='secao'; // sem limite de 140, pega "1. Introdução..." inteiro
+    else if(/^(\d+\.|[A-D]\.)\s/.test(txt)) tipo='secao';
     else if(txt.startsWith('Texto base:') || txt.startsWith('Objetivo:')) tipo='sub';
     else if(st.fontStyle==='italic') tipo='italico';
-
     const size = tipo==='titulo'?18:tipo==='secao'?13:11.5;
-    const largMax = tipo==='citacao'?465:515; // 515 = 595 - 40 - 40, usa a página toda
+    const largMax = tipo==='citacao'?465:515;
     const isBold = tipo==='titulo' || tipo==='secao' || tipo==='sub';
     const palavras = txt.split(' ');
     let linhas = [], atual = '';
@@ -543,9 +477,7 @@ function criarPdf(el){
     if(atual) linhas.push(atual);
     paragrafos.push({tipo, linhas, size, isBold});
   });
-
-  // 3. PAGINAÇÃO - RODAPÉ MÍNIMO
-  const TOPO = 785, LIMITE = 55; // texto vai até 55, rodapé só em 28
+  const TOPO = 785, LIMITE = 55;
   let pags = [], pagAtual = [], y = TOPO;
   paragrafos.forEach(p=>{
     const altura = p.linhas.length * 17 + 14;
@@ -561,18 +493,14 @@ function criarPdf(el){
     y -= p.tipo==='citacao'?12:8;
   });
   if(pagAtual.length) pags.push(pagAtual);
-
-  // 4. DESENHA
   let objs = []; objs[1]='<< /Type /Catalog /Pages 2 0 R >>';
   objs[3]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
   objs[4]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
   objs[5]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >>';
   let kids=[], num=6;
-
   pags.forEach((pg,pi)=>{
     const idC=num++, idP=num++; kids.push(idP+' 0 R');
     let s='1 1 1 rg 0 0 595 842 re f\n';
-
     let cit = null;
     pg.forEach(it=>{
       if(it.tipo==='citacao'){
@@ -585,7 +513,6 @@ function criarPdf(el){
         }
       }
     });
-
     pg.forEach(it=>{
       const c = it.tipo==='citacao';
       const x = c?58:40, larg = c?465:515;
@@ -594,7 +521,6 @@ function criarPdf(el){
       else if(it.tipo==='secao'){ f='F2'; cor='0.15 0.17 0.36 rg'; }
       else if(it.tipo==='sub'){ f='F2'; }
       else if(c || it.tipo==='italico'){ f='F3'; cor='0.22 0.22 0.22 rg'; }
-
       let tw=0;
       if((it.tipo==='normal'||c||it.tipo==='italico') && !it.ultima){
         const esp=(it.t.match(/ /g)||[]).length||1;
@@ -602,14 +528,10 @@ function criarPdf(el){
       }
       s+=`${tw.toFixed(2)} Tw\nBT /${f} ${it.size} Tf ${cor} ${x} ${it.y} Td (${esc(it.t)}) Tj ET\n0 Tw\n`;
     });
-
-    // CORREÇÃO 3: RODAPÉ MÍNIMO - sem linha grossa, sem "4 Leis", só o número
     s+=`BT /F1 7.5 Tf 0.65 0.65 0.65 rg 275 28 Td (${pi+1} / ${pags.length}) Tj ET\n`;
-
     objs[idC]=`<< /Length ${s.length} >>\nstream\n${s}\nendstream`;
     objs[idP]=`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents ${idC} 0 R >>`;
   });
-
   objs[2]=`<< /Type /Pages /Kids [${kids.join(' ')}] /Count ${pags.length} >>`;
   let pdf='%PDF-1.4\n', off=[];
   for(let i=1;i<num;i++){ off[i]=pdf.length; pdf+=i+' 0 obj\n'+objs[i]+'\nendobj\n'; }
