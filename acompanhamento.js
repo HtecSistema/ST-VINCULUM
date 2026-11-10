@@ -757,14 +757,29 @@ function gAtualizar(){
   // 4 - COLUNA 2 em cima
   +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR CICLO</div>${gBarra('Ciclo 01',temC1,total,'#0f172a')}${gBarra('Ciclo 02',temC2,total,'#1e4a7a')}${gBarra('Ciclo 03',temC3,total,'#c9a86a')}${gBarra('Ciclo 04',temC4,total,'#059669')}</div>`
   // 5 - COLUNA 2 embaixo, alto
-  +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR FUNÇÃO - TODAS</div><div style="font-size:11px;color:#64748b">${todasFuncao.length} funções | TOTAL: <b>${total}</b> alunos</div>${todasFuncao.map(([n,q])=> gBarra(n,q,todasFuncao[0][1],'#059669')).join('')}</div>`
+  +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR FUNÇÃO</div><div style="font-size:11px;color:#64748b">${todasFuncao.length} funções | TOTAL: <b>${total}</b> alunos</div>${todasFuncao.map(([n,q])=> gBarra(n,q,todasFuncao[0][1],'#059669')).join('')}</div>`
   // 6 - COLUNA 3 sozinho, alto até embaixo
-  +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR CIDADE - TODAS</div><div style="font-size:11px;color:#64748b">${todasCidades.length} cidades</div><input id="gBuscaCidade" style="${mini}" placeholder="🔍 Pesquisar cidade ex: PARAGOMINAS" oninput="gFiltrarCidade()"><div id="gListaCidade" style="max-height:none;overflow:visible">${todasCidades.map(([n,q])=> gBarra(n,q,todasCidades[0][1],'#1e4a7a')).join('')}</div></div>`
+  +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR CIDADE</div><div style="font-size:11px;color:#64748b">${todasCidades.length} cidades</div><input id="gBuscaCidade" style="${mini}" placeholder="🔍 Informe a cidade..." oninput="gFiltrarCidade()"><div id="gListaCidade" style="max-height:none;overflow:visible">${todasCidades.map(([n,q])=> gBarra(n,q,todasCidades[0][1],'#1e4a7a')).join('')}</div></div>`
   // 7 - COLUNA 4 sozinho, alto até embaixo
-  +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR CONGREGAÇÃO - TODAS</div><div style="font-size:11px;color:#64748b">${todasCong.length} congregações</div><input id="gBuscaCong" style="${mini}" placeholder="🔍 Pesquisar congregação ex: SEDE" oninput="gFiltrarCong()"><div id="gListaCong" style="max-height:none;overflow:visible">${todasCong.map(([n,q])=> gBarra(n,q,todasCong[0][1],'#0f172a')).join('')}</div></div>`;
+  +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR CONGREGAÇÃO</div><div style="font-size:11px;color:#64748b">${todasCong.length} congregações</div><input id="gBuscaCong" style="${mini}" placeholder="🔍Informe a congregaçao..." oninput="gFiltrarCong()"><div id="gListaCong" style="max-height:none;overflow:visible">${todasCong.map(([n,q])=> gBarra(n,q,todasCong[0][1],'#0f172a')).join('')}</div></div>`;
 }
 
-function gLimpar(){ document.getElementById('gMat').value=''; G_ULTIMA=''; document.getElementById('gDetalhe').innerHTML=''; document.getElementById('gInfo').textContent=''; }
+function gLimpar(){
+  document.getElementById('gMat').value='';
+  G_ULTIMA='';
+  document.getElementById('gDetalhe').innerHTML='';
+  document.getElementById('gInfo').textContent='';
+
+  // LIMPA A BUSCA DA CIDADE E DA CONGREGAÇÃO
+  const bc = document.getElementById('gBuscaCidade');
+  if(bc) bc.value = '';
+  const bg = document.getElementById('gBuscaCong');
+  if(bg) bg.value = '';
+
+  // VOLTA A LISTA COMPLETA
+  gDesenhar();
+}
+
 function gFiltrarCong(){ const termo=gSemAcento(document.getElementById('gBuscaCong').value); const box=document.getElementById('gListaCong'); const f=G_CACHE_CONG.filter(([n])=> gSemAcento(n).includes(termo)); if(!f.length){ box.innerHTML='<div style="font-size:12px;color:#64748b">Nenhuma congregação encontrada</div>'; return; } box.innerHTML=f.map(([n,q])=> gBarra(n,q,G_CACHE_CONG[0][1],'#0f172a')).join(''); }
 function gFiltrarCidade(){ const termo=gSemAcento(document.getElementById('gBuscaCidade').value); const box=document.getElementById('gListaCidade'); const f=G_CACHE_CIDADE.filter(([n])=> gSemAcento(n).includes(termo)); if(!f.length){ box.innerHTML='<div style="font-size:12px;color:#64748b">Nenhuma cidade encontrada</div>'; return; } box.innerHTML=f.map(([n,q])=> gBarra(n,q,G_CACHE_CIDADE[0][1],'#1e4a7a')).join(''); }
 function gDesenhar(){
@@ -793,13 +808,9 @@ function gDesenhar(){
   +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR CICLO</div>${gBarra('Ciclo 01',temC1,total,'#0f172a')}${gBarra('Ciclo 02',temC2,total,'#1e4a7a')}${gBarra('Ciclo 03',temC3,total,'#c9a86a')}${gBarra('Ciclo 04',temC4,total,'#059669')}</div>`
   +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">APROVADO x PENDENTE x EM CURSO</div><div style="font-size:11px;color:#64748b">APROVADO = 52 testes e todas >= 70</div>${gBarra('Aprovado',aprov,total,'#16a34a')}${gBarra('Pendente',pend,total,'#dc2626')}${gBarra('Em curso',emCurso,total,'#d97706')}</div>`
   +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR SEXO</div>${gBarra('Masculino',masc,total,'#0f172a')}${gBarra('Feminino',fem,total,'#c9a86a')}</div>`
-  +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR FUNÇÃO - TODAS</div><div style="font-size:11px;color:#64748b">${todasFuncao.length} funções | TOTAL: <b>${total}</b> alunos</div>${todasFuncao.map(([n,q])=> gBarra(n,q,todasFuncao[0][1],'#059669')).join('')}</div>`
- +`<div id="cardCidade" style="${card}"><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:11px;font-weight:800;color:#64748b">POR CIDADE - TODAS</div><button onclick="baixarPNGCidade(event)" style="background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8">#Imp</button></div><div style="font-size:11px;color:#64748b">${todasCidades.length} cidades</div><input id="gBuscaCidade" style="${mini}" placeholder="🔍 Pesquisar cidade ex: PARAGOMINAS" oninput="gFiltrarCidade()"><div id="gListaCidade" style="max-height:150px;overflow:auto">${todasCidades.map(([n,q])=> gBarra(n,q,todasCidades[0][1],'#1e4a7a')).join('')}</div></div>`
-
-+`<div id="cardCong" style="${card}"><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:11px;font-weight:800;color:#64748b">POR CONGREGAÇÃO - TODAS</div><button onclick="baixarPNGCongregacao(event)" style="background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8">#Imp</button></div><div style="font-size:11px;color:#64748b">${todasCong.length} congregações</div><input id="gBuscaCong" style="${mini}" placeholder="🔍 Pesquisar congregação ex: SEDE" oninput="gFiltrarCong()"><div id="gListaCong" style="max-height:150px;overflow:auto">${todasCong.map(([n,q])=> gBarra(n,q,todasCong[0][1],'#0f172a')).join('')}</div></div>`
-
-
-
+  +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR FUNÇÃO</div><div style="font-size:11px;color:#64748b">${todasFuncao.length} funções | TOTAL: <b>${total}</b> alunos</div>${todasFuncao.map(([n,q])=> gBarra(n,q,todasFuncao[0][1],'#059669')).join('')}</div>`
+ +`<div id="cardCidade" style="${card}"><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:11px;font-weight:800;color:#64748b">POR CIDADE</div><button onclick="baixarPNGCidade(event)" style="background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8">#Imp</button></div><div style="font-size:11px;color:#64748b">${todasCidades.length} cidades</div><input id="gBuscaCidade" style="${mini}" placeholder="🔍 Informe a cidade" oninput="gFiltrarCidade()"><div id="gListaCidade" style="max-height:150px;overflow:auto">${todasCidades.map(([n,q])=> gBarra(n,q,todasCidades[0][1],'#1e4a7a')).join('')}</div></div>`
++`<div id="cardCong" style="${card}"><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:11px;font-weight:800;color:#64748b">POR CONGREGAÇÃO</div><button onclick="baixarPNGCongregacao(event)" style="background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8">#Imp</button></div><div style="font-size:11px;color:#64748b">${todasCong.length} congregações</div><input id="gBuscaCong" style="${mini}" placeholder="🔍 Informe a congregação" oninput="gFiltrarCong()"><div id="gListaCong" style="max-height:150px;overflow:auto">${todasCong.map(([n,q])=> gBarra(n,q,todasCong[0][1],'#0f172a')).join('')}</div></div>`
   if(fCong){ document.getElementById('gBuscaCong').value=fCong; gFiltrarCong(); } if(fCidade){ document.getElementById('gBuscaCidade').value=fCidade; gFiltrarCidade(); }
 }
 
@@ -811,6 +822,30 @@ function gRecarregarTudo(){
   G_JA_CARREGOU = false;
   document.getElementById('gPbar').style.width = "0%";
   gLoadAll();
+}
+
+function gBuscar(){
+  const v = document.getElementById('gMat').value.trim();
+  if(!v) return gLimpar();
+  G_ULTIMA = gNormMat(v);
+  gRender(G_ULTIMA, false);
+}
+
+function gRender(matKey, sozinho){
+  const a = G_ALUNOS.find(x => x.matKey === matKey);
+  const box = document.getElementById('gDetalhe');
+  const info = document.getElementById('gInfo');
+  if(!a){
+    if(box) box.innerHTML = '<div style="font-size:12px;color:#dc2626">Matrícula não encontrada</div>';
+    if(info) info.textContent = '';
+    return;
+  }
+  if(info) info.textContent = a.nome + ' - ' + a.cong + ' | ' + a.qtd + ' testes';
+  if(box) box.innerHTML = `
+    <div style="font-size:13px"><b>${a.nome}</b> (${a.mat})</div>
+    <div style="font-size:12px;color:#64748b">${a.cong} | ${a.cidade}</div>
+    <div style="font-size:12px">Testes: <b>${a.qtd}</b> | Status: <b>${a.status}</b> | Média: <b>${a.media.toFixed(1)}</b></div>
+  `;
 }
 
 function imprimirTabela(){
