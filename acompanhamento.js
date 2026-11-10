@@ -749,7 +749,7 @@ function gAtualizar(){
   gDesenhar();
     wrap.innerHTML=
   // 1 - COLUNA 1 em cima
-  `<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">QUEM ESTÁ FAZENDO O CURSO</div><div style="font-size:32px;font-weight:900">${total} <span style="font-size:12px;color:#64748b">matrículas únicas</span></div>${gBarra('Já fez 52 testes',concluidos52,total,'#0f172a')}${gBarra('Ainda fazendo (<52)',emCurso,total,'#c9a86a')}</div>`
+  `<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">INSCRITOS</div><div style="font-size:32px;font-weight:900">${total} <span style="font-size:12px;color:#64748b">matrículas únicas</span></div>${gBarra('Já fez 52 testes',concluidos52,total,'#0f172a')}${gBarra('Ainda fazendo (<52)',emCurso,total,'#c9a86a')}</div>`
   // 2 - COLUNA 1 no meio
   +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">APROVADO x PENDENTE x EM CURSO</div><div style="font-size:11px;color:#64748b">APROVADO = 52 testes e todas >= 70</div>${gBarra('Aprovado',aprov,total,'#16a34a')}${gBarra('Pendente',pend,total,'#dc2626')}${gBarra('Em curso',emCurso,total,'#d97706')}</div>`
   // 3 - COLUNA 1 embaixo
@@ -804,7 +804,7 @@ function gDesenhar(){
   const mini='width:100%;border:1px solid #e2e8f0;background:#f8fafc;border-radius:8px;padding:7px 10px;font-size:12px;outline:0;margin:8px 0';
 
   wrap.innerHTML=
-  `<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">QUEM ESTÁ FAZENDO O CURSO</div><div style="font-size:32px;font-weight:900">${total} <span style="font-size:12px;color:#64748b">matrículas únicas</span></div>${gBarra('Já fez 52 testes',concluidos52,total,'#0f172a')}${gBarra('Ainda fazendo (<52)',emCurso,total,'#c9a86a')}</div>`
+  `<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">INSCRITOS</div><div style="font-size:32px;font-weight:900">${total} <span style="font-size:12px;color:#64748b">matrículas únicas</span></div>${gBarra('Já fez 52 testes',concluidos52,total,'#0f172a')}${gBarra('Ainda fazendo (<52)',emCurso,total,'#c9a86a')}</div>`
   +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR CICLO</div>${gBarra('Ciclo 01',temC1,total,'#0f172a')}${gBarra('Ciclo 02',temC2,total,'#1e4a7a')}${gBarra('Ciclo 03',temC3,total,'#c9a86a')}${gBarra('Ciclo 04',temC4,total,'#059669')}</div>`
   +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">APROVADO x PENDENTE x EM CURSO</div><div style="font-size:11px;color:#64748b">APROVADO = 52 testes e todas >= 70</div>${gBarra('Aprovado',aprov,total,'#16a34a')}${gBarra('Pendente',pend,total,'#dc2626')}${gBarra('Em curso',emCurso,total,'#d97706')}</div>`
   +`<div style="${card}"><div style="font-size:11px;font-weight:800;color:#64748b">POR SEXO</div>${gBarra('Masculino',masc,total,'#0f172a')}${gBarra('Feminino',fem,total,'#c9a86a')}</div>`
