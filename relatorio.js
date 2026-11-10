@@ -151,7 +151,7 @@ function selecionar(idx){
     try{
       var parsed = JSON.parse(detalhesJson);
       DETALHE = { cong: row[1], congOrig: row[1], nome: nome, mat: mat, zap: row[3], c1: parsed.c1||{}, c2: parsed.c2||{}, c3: parsed.c3||{}, c4: parsed.c4||{}, r1: parsed.r1||{media:0,nas:0,qtd:parseInt(row[6]||0),soma:0}, r2: parsed.r2||{media:0,nas:0,qtd:parseInt(row[8]||0),soma:0}, r3: parsed.r3||{media:0,nas:0,qtd:parseInt(row[10]||0),soma:0}, r4: parsed.r4||{media:0,nas:0,qtd:parseInt(row[12]||0),soma:0}, totalFeitos: parsed.totalFeitos||qtd, totalPend: parsed.totalPend||(52-qtd), mediaGeral: parsed.mediaGeral||0, totalNA: parsed.totalNA||0, totalSoma: parsed.totalSoma||0, status: parsed.status||row[15]||'', daPlanilha: true };
-      document.getElementById('msg').innerText='✅ REAL DA PLANILHA - Selecionado: '+nome+' | Mat: '+mat+' | Média: '+sf(DETALHE.mediaGeral)+' | Feitos: '+DETALHE.totalFeitos+'/52';
+      document.getElementById('msg').innerText='✅ Aluno Selecionado: '+nome+' | Mat: '+mat+' | Média: '+sf(DETALHE.mediaGeral)+' | Feitos: '+DETALHE.totalFeitos+'/52';
       document.getElementById('acoes-extra').style.display='flex'; document.getElementById('boletim').style.display='none';
       window.CACHE_DETALHES[mat]=DETALHE; window.CACHE_DETALHES[nome]=DETALHE; return;
     }catch(eJson){}
