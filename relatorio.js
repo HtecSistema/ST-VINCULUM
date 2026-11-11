@@ -347,7 +347,7 @@ function gerarBoletim(){
   var BORDA = '#d1d5db';
   var html='<div id="boletimPrint" style="background:#fff; padding:0; font-family:Arial, sans-serif; font-size:11px; color:#000; border:1px solid '+BORDA+'">'
   +'<div id="dragHandle" style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px solid '+BORDA+'; cursor:move; touch-action:none; user-select:none">'
-  +'<img src="https://i.postimg.cc/KKy4nMGY/igreja.jpg" style="width:auto; height:58px; object-fit:contain; display:block; object-fit:contain">'
+  +'<img src="https://i.postimg.cc/8C9VmrJF/46974a30-df1e-42ae-92c4-1039e377e482.jpg" style="width:auto; height:58px; object-fit:contain; display:block; object-fit:contain">'
   +'<div style="text-align:left; line-height:1.15"><b style="font-size:11px">Igreja Evangélica Assembleia de Deus Missões</b><br><span style="font-size:14px; font-weight:900">Curso <i>Discipulado</i></span><br><span style="font-size:10px">Pr. Eliezer Miranda Barbosa – Presidente</span></div></div>'
   +'<div style="background:'+AZUL_CLARINHO+'; color:#000; font-weight:900; padding:6px; font-size:13px; text-align:center;">BOLETIM DO ALUNO</div>'
   +'<div style="padding:10px">'
@@ -432,7 +432,7 @@ var assinatura = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEQAAAAkCAYAAAAw
         <div style="height:8px; background: linear-gradient(90deg, #0f2a4a 0%, #1e4a7a 50%, #c9a86a 100%);"></div>
         <div id="dragHandleCert" style="display:flex; justify-content:space-between; align-items:center; padding:18px 28px 10px 28px; cursor:move; touch-action:none; user-select:none;">
           <div style="display:flex; align-items:center; gap:12px;">
-            <img src="https://i.postimg.cc/KKy4nMGY/igreja.jpg" style="width:auto; height:58px; object-fit:contain; display:block;">
+            <img src="https://i.postimg.cc/8C9VmrJF/46974a30-df1e-42ae-92c4-1039e377e482.jpg" style="width:auto; height:58px; object-fit:contain; display:block;">
             <div style="line-height:1.2;">
               <div style="font-size:11px; font-weight:900; color:#0f2a4a; letter-spacing:1px;">ADEMIP</div>
               <div style="font-size:8px; color:#555; max-width:180px;">Igreja Evangélica Assembleia de Deus Missões</div>
