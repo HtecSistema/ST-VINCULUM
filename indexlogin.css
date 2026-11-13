@@ -95,3 +95,25 @@ button.menu-btn.ativo{background:#3B82F6; color:white; border-color:#3B82F6; box
   animation:piscarAlerta 0.7s infinite;
   display:block !important;
 }
+
+/* OCULTA OPÇÃO 1 e 2 - CÓDIGOS MANTIDOS */
+#link-primeiro,
+#link-cadastro-novo {
+  display: none !important;
+}
+
+/* LISTA PESQUISA - SOMBREAMENTO IGUAL VIDEO */
+#listaPesquisa .item-consulta{
+  padding:10px;
+  border-bottom:1px solid #1E293B;
+  cursor:pointer;
+  text-align:left;
+  font-size:11px;
+  transition:background 0.15s;
+}
+#listaPesquisa .item-consulta:hover{
+  background:#1E293B !important;
+}
+#listaPesquisa .item-consulta b{
+  color:#22c55e;
+}
