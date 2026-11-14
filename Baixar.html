@@ -13,7 +13,9 @@ h2{margin:0 0 6px 0; font-size:20px; font-weight:900; text-align:left; display:f
 .grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; justify-content:start;}
 @media(max-width:700px){.grid{grid-template-columns:1fr}}
 .card{background:#fff; border:1px solid #e9e8f0; border-radius:16px; padding:18px; box-shadow:0 8px 24px rgba(0,0,0,0.06); display:flex; flex-direction:column; gap:10px; text-align:left;}
-.icon{width:40px; height:40px; border-radius:10px; display:grid; place-items:center; font-size:18px; background:#ede9fe}
+.top{display:flex; align-items:center; gap:10px;}
+.top-text{display:flex; flex-direction:column; line-height:1.2;}
+.icon{width:40px; height:40px; border-radius:10px; display:grid; place-items:center; font-size:18px; background:#ede9fe; flex-shrink:0;}
 .card b{font-size:13px; font-weight:800; text-align:left;}
 .card span{font-size:12px; color:#6b7280; text-align:left;}
 .btn{margin-top:8px; width:100%; padding:12px; border:none; border-radius:10px; font-weight:800; background:#111; color:#fff; text-decoration:none; text-align:center; display:block; cursor:pointer; font-size:13px;}
@@ -27,30 +29,46 @@ h2{margin:0 0 6px 0; font-size:20px; font-weight:900; text-align:left; display:f
 
   <div class="grid">
     <div class="card">
-      <div class="icon">📄</div>
-      <b>CICLO 01</b>
-      <span>Lição 01 a 13</span>
+      <div class="top">
+        <div class="icon">📄</div>
+        <div class="top-text">
+          <b>CICLO 01</b>
+          <span>Lição 01 a 13</span>
+        </div>
+      </div>
       <a class="btn" href="https://drive.google.com/file/d/1pL7XWxjLFTVnH1DiIypmPPjkrQ-l1q_M/view" target="_blank">ACESSAR A LIÇÃO</a>
     </div>
 
     <div class="card">
-      <div class="icon">📄</div>
-      <b>CICLO 02</b>
-      <span>Lição 01 a 13</span>
+      <div class="top">
+        <div class="icon">📄</div>
+        <div class="top-text">
+          <b>CICLO 02</b>
+          <span>Lição 01 a 13</span>
+        </div>
+      </div>
       <a class="btn" href="https://drive.google.com/file/d/1pBBO-1HS_5YJsf3eHJDuq52TTdEss3Xh/view" target="_blank">ACESSAR A LIÇÃO</a>
     </div>
 
     <div class="card">
-      <div class="icon">📄</div>
-      <b>CICLO 03</b>
-      <span>Lição 01 a 13</span>
+      <div class="top">
+        <div class="icon">📄</div>
+        <div class="top-text">
+          <b>CICLO 03</b>
+          <span>Lição 01 a 13</span>
+        </div>
+      </div>
       <a class="btn" href="https://drive.google.com/file/d/1m-3n5Gk_99S9fjzi3bI1QEh47n5BObb8/view" target="_blank">ACESSAR A LIÇÃO</a>
     </div>
 
     <div class="card">
-      <div class="icon">📄</div>
-      <b>CICLO 04</b>
-      <span>Lição 01 a 13</span>
+      <div class="top">
+        <div class="icon">📄</div>
+        <div class="top-text">
+          <b>CICLO 04</b>
+          <span>Lição 01 a 13</span>
+        </div>
+      </div>
       <a class="btn" href="https://drive.google.com/file/d/1Jt5c4byD0VUGAZI4MbGuOPUGnDY4gjU0/view" target="_blank">ACESSAR A LIÇÃO</a>
     </div>
   </div>
