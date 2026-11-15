@@ -1,4 +1,4 @@
-*{box-sizing:border-box}body{margin:0;background:#f1f5f9;font-family:Inter,sans-serif;display:flex;justify-content:flex-start;align-items:flex-start;width:100%;padding-bottom:70px}
+*{box-sizing:border-box}html{overflow-y:scroll !important}body{margin:0;background:#f1f5f9;font-family:Inter,sans-serif;display:block !important;width:100%;padding-bottom:120px !important;overflow-y:auto !important}
 .container{max-width:880px;width:100%;margin:0;margin-left:0;padding:4px}
 .header{background:#9ca3af;color:#111;padding:8px;border-radius:8px;text-align:center;margin-bottom:8px}
 .header h1{margin:0;font-size:15px;font-weight:900}
