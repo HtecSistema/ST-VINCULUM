@@ -228,7 +228,7 @@ function atualizarStatusDados(){
   var box=document.getElementById('statusDados');
   if(!box) return false;
   var ok=verificarDadosCompletos();
-  box.textContent = ok? '✅ 1Dados completos' : '⚠️ Dados incompletos';
+  box.textContent = ok? '✅ Dados completos' : '⚠️ Dados incompletos';
   box.className = ok? 'status-completo' : 'status-incompleto';
   return ok;
 }
