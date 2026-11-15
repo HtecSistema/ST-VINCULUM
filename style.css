@@ -2,9 +2,9 @@
 .container{max-width:880px;width:100%;margin:0;margin-left:0;padding:4px}
 .header{background:#9ca3af;color:#111;padding:8px;border-radius:8px;text-align:center;margin-bottom:8px}
 .header h1{margin:0;font-size:15px;font-weight:900}
-/* BOTÕES FIXOS EMBAIXO - IGUAL ZÃO DIESEL */
+/* BOTÕES FIXOS EMBAIXO */
 .actions{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:flex;flex-wrap:nowrap;gap:6px;padding:8px;background:#f3f4f6;border-top:1px solid #d1d5db}
-.actions .btn{flex:1 1 0;min-width:0;padding:10px 2px;font-size:11px;white-space:nowrap;background:#d1d5db !important;color:#111 !important;border:1px solid #d1d5db !important}
+#barraFixa .actions .btn{flex:1 1 0 !important;min-width:0 !important;padding:7px 2px !important;font-size:11px !important;white-space:nowrap !important;overflow:hidden !important;text-overflow:ellipsis !important;background:linear-gradient(135deg,#6366f1,#4f46e5) !important;color:#ffffff !important;border:none !important}
 .btn{padding:8px;border:none;border-radius:6px;font-weight:800;font-size:11px;cursor:pointer;background:#d1d5db;color:#111}
 .btn-save{background:#d1d5db;color:#111}.btn-clear{background:#d1d5db;color:#111;border:1px solid #d1d5db}
 .btn-search{background:#d1d5db;color:#111}.btn-list{background:#d1d5db;color:#111}
@@ -12,7 +12,7 @@
 .section-title{font-size:10px;font-weight:900;color:#111;margin-bottom:8px;text-transform:uppercase}
 .grid{display:grid;gap:8px}.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:1fr 1fr 1fr}.grid-4{grid-template-columns:1fr 1fr 1fr 1fr}
 label{font-size:9px;font-weight:700;color:#334155;margin-bottom:2px;display:block;text-transform:uppercase}
-input,.combo-input{width:100%;padding:7px 8px;border:1px solid #9ca3af;border-radius:6px;background:#f9fafb;font-size:11px;font-weight:600;text-transform:uppercase}
+input,.combo-input{width:100%;padding:7px 8px;border:1.5px solid #D3D5D9;border-radius:6px;background:#ffffff;font-size:11px;font-weight:800;text-transform:uppercase;color:#1A45A5}
 .combo-wrap{position:relative;display:flex}.combo-input{padding-right:40px}
 .combo-arrow{position:absolute;right:1px;top:1px;bottom:1px;width:36px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-left:1px solid #9ca3af;border-radius:0 8px 8px 0;cursor:pointer}
 .combo-list{position:absolute;top:100%;left:0;right:0;z-index:9999;background:white;border:1px solid #9ca3af;max-height:220px;overflow-y:auto;display:none;box-shadow:0 8px 20px rgba(0,0,0,0.15)}
@@ -29,6 +29,6 @@ input,.combo-input{width:100%;padding:7px 8px;border:1px solid #9ca3af;border-ra
 @media(max-width:768px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr!important}}
 
 /* UNICA MUDANCA - FRASE DADOS COMPLETOS/INCOMPLETOS */
-#statusDados{text-align:center;padding:10px;margin:0 auto 8px;max-width:880px;width:calc(100% - 8px);border-radius:8px;font-weight:900;font-size:12px;border:1px dashed #cbd5e1}
-.status-completo{background:#e5e7eb !important;color:#111 !important;border-color:#9ca3af !important}
-.status-incompleto{background:#fef9c3;color:#854d0e;border-color:#f59e0b}
+#statusDados{text-align:left;padding:8px 10px;margin:0;max-width:190px;width:auto;flex:0 0 auto;border-radius:8px;font-weight:900;font-size:11px;border:1px solid #a7e8bd;white-space:nowrap}
+.status-completo{background:#e6f7ec !important;color:#14532d !important;border-color:#a7e8bd !important}
+.status-incompleto{background:#fef9c3;color:#854d0e;border-color:#fde68a}
