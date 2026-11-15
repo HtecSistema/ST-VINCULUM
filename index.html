@@ -105,8 +105,13 @@
   <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:#fbbf24;cursor:pointer;font-weight:700">
     <input type="checkbox" id="chkNaoLocalizei" onchange="toggleNaoLocalizei()" style="width:16px;height:16px;accent-color:#f59e0b">Cadastro Provisório</label>
 </div>
-<input type="text" id="pesquisaNome" placeholder="DIGITE PARA PESQUISAR..." autocomplete="off"
-  style="margin-bottom:12px;background:#0F172A;color:#F1F5F9;border:1px solid #334155;border-radius:10px;padding:12px;width:100%">
+
+<div style="display:flex;gap:6px;align-items:center;margin-bottom:12px;">
+  <input type="text" id="pesquisaNome" placeholder="DIGITE PARA PESQUISAR..." autocomplete="off"
+    style="flex:1;background:#0F172A;color:#F1F5F9;border:1px solid #334155;border-radius:10px;padding:12px;">
+  <button type="button" onclick="atualizarListaPesquisa()" id="btnAtualizarLista" title="Atualizar lista" style="background:#7c3aed;color:#fff;border:0;border-radius:8px;padding:10px 12px;font-weight:800;cursor:pointer;white-space:nowrap;">🔄</button>
+</div>
+<div id="statusAtualizarLista" style="font-size:11px;color:#c4b5fd;margin-top:-8px;margin-bottom:8px;min-height:14px;"></div>
 <div id="listaPesquisa"></div>
 
     <!-- 2 - ZAPFONE LADO A LADO COM CPF -->
@@ -131,19 +136,21 @@
           style="background:#1E293B;color:#94A3B8;border:1px solid #334155;border-radius:10px;padding:12px;width:100%;text-align:center">
       </div>
       <div style="flex:1; min-width:0;">
-        <label style="font-size:11px;font-weight:700;color:#F1F5F9;display:block;margin-bottom:6px">NOME DO ALUNO</label>
-        <input type="text" id="novoNome" placeholder="NOME DO ALUNO" readonly
+        <label style="font-size:11px;font-weight:700;color:#F1F5F9;display:block;margin-bottom:6px">ALUNO</label>
+        <input type="text" id="novoNome" placeholder="ALUNO" readonly
           style="background:#1E293B;color:#94A3B8;border:1px solid #334155;border-radius:10px;padding:12px;width:100%">
       </div>
     </div>
 
 
-    <div id="resultado-novo-aluno" style="margin-top:10px"></div>
+<div id="resultado-novo-aluno" style="margin-top:10px"></div>
     <div style="display:flex; gap:8px; margin-top:12px;">
       <!-- BOTÃO VERDE - MODO NORMAL -->
-      <button id="btnSalvarVerde" onclick="salvarNovoAluno()" style="flex:1;background:#16a34a;color:white;border:none;border-radius:10px;padding:13px;font-weight:800;cursor:pointer">✅ SALVAR DADOS</button>
+      <button id="btnSalvarVerde" onclick="salvarNovoAluno()" style="flex:1;background:#16a34a;color:white;border:none;border-radius:10px;padding:13px;font-weight:800;cursor:pointer">✅ Salvar</button>
       <!-- BOTÃO NOVO - COR DO FECHAR - COMEÇA ESCONDIDO -->
-      <button id="btnSalvarProvisorio" onclick="salvarAlunoProvisorio()" style="display:none;flex:1;background:#1E293B;color:#F1F5F9;border:1px solid #334155;border-radius:10px;padding:13px;font-weight:800;cursor:pointer">✅ SALVAR DADOS</button>
+      <button id="btnSalvarProvisorio" onclick="salvarAlunoProvisorio()" style="display:none;flex:1;background:#1E293B;color:#F1F5F9;border:1px solid #334155;border-radius:10px;padding:13px;font-weight:800;cursor:pointer">✅ Salvar</button>
+      <!-- BOTÃO LIMPAR - NO MEIO -->
+      <button onclick="limparNovoAluno()" style="background:#475569;color:white;border:1px solid #64748b;border-radius:10px;padding:13px 16px;font-weight:800;cursor:pointer;white-space:nowrap">🧹 Limpar</button>
       <button onclick="fecharNovoAluno()" style="flex:1;background:#1E293B;color:#F1F5F9;border:1px solid #334155;border-radius:10px;padding:13px;font-weight:700;cursor:pointer">Fechar</button>
     </div>
   </div>
