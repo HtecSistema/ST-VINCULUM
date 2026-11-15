@@ -138,8 +138,8 @@ async function logar(){
       let s = String(x.Senha||x.senha||x.SENHA||x.AL||x.al||'').toUpperCase().trim();
       let codigoAO = String(x.Temporario||x.temporario||x.TEMPORARIO||'').toUpperCase().trim();
       if(sen === s) return true;
-      if(codigoAO !== '' && codigoAO !== 'ACESSO REALIZADO' && sen === codigoAO){
-        entrouComCodigo = true;
+      if(codigoAO !== '' && sen === codigoAO){
+      entrouComCodigo = true;
         return true;
       }
       return false;
@@ -535,13 +535,14 @@ async function salvarNovoAluno(){
           });
         }
         if(btnSalvar){
-          btnSalvar.innerText = '🔑 GERAR ACESSO';
+          btnSalvar.innerText = '🔑 Ver Codigo';
           btnSalvar.style.background = '#f59e0b';
           btnSalvar.style.color = '#000';
           btnSalvar.style.fontWeight = '800';
           btnSalvar.setAttribute('onclick', `gerarAcesso('${mat}')`);
         }
-        resDiv.innerHTML += `<div style='margin-top:8px;color:#fbbf24;font-size:13px'>Voce ja esta cadastrado.<br>Clique em <b>GERAR ACESSO</b> para receber o codigo temporario no seu Zap.</div>`;
+
+resDiv.innerHTML += `<div style='margin-top:8px;color:#fbbf24;font-size:13px'>Voce ja esta cadastrado.<br>Clique em <b>Ver Codigo</b>para receber o codigo temporario no seu WhatsApp.<b>Em seguida, volte no login e digite a sua matricula + codigo temporario em senha.<b>Vai em cadastro e click no olho da senha no formulario.</div>`;
       }
       // === FIM NOVO ===
     }
@@ -659,13 +660,13 @@ resDiv.innerHTML=`<div style='padding:12px;background:#0F172A;border:1px solid #
           });
         }
         if(btnSalvar){
-          btnSalvar.innerText = '🔑 GERAR ACESSO';
+          btnSalvar.innerText = '🔑 Ver Codigo';
           btnSalvar.style.background = '#f59e0b';
           btnSalvar.style.color = '#000';
           btnSalvar.style.fontWeight = '800';
           btnSalvar.setAttribute('onclick', `gerarAcesso('${mat}')`);
         }
-        resDiv.innerHTML += `<div style='margin-top:8px;color:#fbbf24;font-size:13px'>Voce ja esta cadastrado.<br>Clique em <b>GERAR ACESSO</b> para receber o codigo temporario no seu Zap.</div>`;
+        resDiv.innerHTML += `<div style='margin-top:8px;color:#fbbf24;font-size:13px'>Voce ja esta cadastrado.<br>Clique em <b>Ver Codigo</b>para receber o codigo temporario no seu WhatsApp.<b>Em seguida, volte no login e digite a sua matricula + codigo temporario em senha.<b>Vai em cadastro e click no olho da senha no formulario.</div>`;
       }
       // === FIM ===
     }
@@ -822,6 +823,26 @@ function ativarEnter(){
 }
 ativarEnter();
 
+
+async function atualizarListaPesquisa(){
+  var st = document.getElementById('statusAtualizarLista');
+  var btn = document.getElementById('btnAtualizarLista');
+  if(st) st.innerHTML = '⏳ Atualizando lista...';
+  if(btn){ btn.disabled = true; btn.innerText = '⏳...'; }
+  try{
+    var r = await fetch('https://script.google.com/macros/s/AKfycbwUIspP7xB_InyXoNNDLchbqe3JcVcxObtTxZkd8ho9a6oH0CXPwwY8vvk4Ymofp_gg/exec?t='+Date.now());
+    var d = await r.json();
+    cacheConsultaFull = d.map(x=>({mat:String(x[1]).trim(), mat5:String(x[1]).trim().padStart(5,'0'), nome:String(x[2]).trim(), nomeU:String(x[2]).trim().toUpperCase()}));
+    if(st) st.innerHTML = '✅ Lista atualizada! '+cacheConsultaFull.length+' nomes. Pode pesquisar de novo.';
+    // se já tinha algo digitado, pesquisa de novo na hora
+    var inp = document.getElementById('pesquisaNome');
+    if(inp && inp.value.trim().length >= 2){ inp.dispatchEvent(new Event('input')); }
+  }catch(e){
+    if(st) st.innerHTML = '❌ Erro ao atualizar: '+e.message;
+  }
+  if(btn){ btn.disabled = false; btn.innerText = '🔄'; }
+}
+
 // LISTA ABAIXO DO NOME - CONSULTA COLUNA C - IGUAL VIDEO - ATUALIZADO PESQUISA / RESULTADO TRAVADO
 let cacheConsultaFull = [];
 fetch('https://script.google.com/macros/s/AKfycbwUIspP7xB_InyXoNNDLchbqe3JcVcxObtTxZkd8ho9a6oH0CXPwwY8vvk4Ymofp_gg/exec?t='+Date.now())
@@ -893,16 +914,22 @@ function toggleNaoLocalizei(){
     campoNome.value = "";
     campoNome.placeholder = "SERÁ PREENCHIDO AUTOMÁTICO";
     document.getElementById('listaPesquisa').innerHTML = "";
-    document.getElementById('resultado-novo-aluno').innerHTML = "<div style='color:#fbbf24;padding:8px;background:#0F172A;border:1px solid #f59e0b;border-radius:6px;text-align:center'>⚠️ Modo cadastro provisório ativo.<br>Digite seu nome completo, ZAP e CPF.</div>";
+document.getElementById('resultado-novo-aluno').innerHTML = "<div style='color:#fbbf24;padding:10px 12px;background:#0F172A;border:1px solid #f59e0b;border-radius:6px;text-align:justify;line-height:1.5;font-size:12px'>⚠️ Modo cadastro provisório ATIVO<br>Digite NOME COMPLETO e informe WhatsApp e CPF.<br>-----------------------------------------------<br>LEMBRANDO que sua matricula é temporária<br>A não regularização junto a secrectaria de sua igreja, promoverá impecilios para gerar o certificado</div>";
     campoBusca.focus();
+    // SÓ ACRESCENTADO - TRAVA O ATUALIZAR QUANDO MARCA
+    var btnAtu = document.getElementById('btnAtualizarLista');
+    if(btnAtu){ btnAtu.disabled = true; btnAtu.style.opacity = "0.4"; }
   } else {
     campoBusca.value = "";
     campoBusca.placeholder = "DIGITE PARA PESQUISAR...";
     campoMat.disabled = false;
     campoMat.placeholder = "EX: 00123";
     campoMat.style.opacity = "1";
-    campoNome.placeholder = "NOME DO ALUNO";
+    campoNome.placeholder = "ALUNO";
     document.getElementById('resultado-novo-aluno').innerHTML = "";
+    // SÓ ACRESCENTADO - DESTRAVA O ATUALIZAR QUANDO DESMARCA
+    var btnAtu2 = document.getElementById('btnAtualizarLista');
+    if(btnAtu2){ btnAtu2.disabled = false; btnAtu2.style.opacity = "1"; }
   }
 }
 
@@ -911,3 +938,27 @@ document.getElementById('pesquisaNome').addEventListener('input', function(){
   this.value = this.value.toUpperCase();
 });
 
+
+function limparNovoAluno(){
+  ['pesquisaNome','novoNome','novaMatricula','novoZap','novoCpf'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){ el.value=''; el.style.borderColor=''; }
+  });
+  if(document.getElementById('listaPesquisa')) document.getElementById('listaPesquisa').innerHTML='';
+  if(document.getElementById('resultado-novo-aluno')) document.getElementById('resultado-novo-aluno').innerHTML='';
+  if(document.getElementById('statusAtualizarLista')) document.getElementById('statusAtualizarLista').innerHTML='';
+  var chk = document.getElementById('chkNaoLocalizei');
+  if(chk && chk.checked){ chk.checked=false; toggleNaoLocalizei(); }
+  var btn = document.getElementById('btnSalvarVerde');
+  if(btn){
+    btn.innerText='✅ Salvar';
+    btn.style.background='#16a34a';
+    btn.style.color='white';
+    btn.setAttribute('onclick',"salvarNovoAluno()");
+    btn.style.display='block';
+  }
+  var btnP = document.getElementById('btnSalvarProvisorio');
+  if(btnP) btnP.style.display='none';
+  var inp = document.getElementById('pesquisaNome');
+  if(inp) inp.focus();
+}
