@@ -300,5 +300,25 @@ document.getElementById('meuModal')?.addEventListener('click', function(e){
   </div>
 </div>
 <script src="script.js?v=2"></script>
+
+  <script>
+// SOBE A BARRA PRA CIMA DA BARRA PRETA DO ANDROID - NAO MEXER
+function subirBarra(){
+  var b=document.getElementById('barraFixa');
+  if(!b) return;
+  var vv=window.visualViewport;
+  var diff = vv ? (window.innerHeight - vv.height + (vv.offsetTop||0)) : 0;
+  if(diff > 0){ b.style.bottom = diff + 'px'; }
+  else if(/Android/i.test(navigator.userAgent)){ b.style.bottom = '48px'; }
+  else { b.style.bottom = '0px'; }
+}
+window.addEventListener('resize', subirBarra);
+window.addEventListener('scroll', subirBarra);
+if(window.visualViewport){ window.visualViewport.addEventListener('resize', subirBarra); window.visualViewport.addEventListener('scroll', subirBarra); }
+setInterval(subirBarra, 1000);
+subirBarra();
+</script>
+
+
 </body>
 </html>
