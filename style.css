@@ -3,7 +3,9 @@
 .header{background:#9ca3af;color:#111;padding:8px;border-radius:8px;text-align:center;margin-bottom:8px}
 .header h1{margin:0;font-size:15px;font-weight:900}
 /* BOTÕES FIXOS EMBAIXO - IGUAL ZÃO DIESEL */
-.actions{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:flex;flex-wrap:nowrap;gap:6px;padding:8px;background:#f3f4f6;border-top:1px solid #d1d5db}
+#barraFixa{position:fixed;left:0;bottom:0;z-index:9999;max-width:880px;width:100%;background:#f3f4f6;border-top:1px solid #d1d5db;padding:8px 4px}
+.actions{position:static;display:flex;flex-wrap:nowrap;gap:6px;padding:0;background:transparent;border:none}
+
 #barraFixa .actions .btn{flex:1 1 0 !important;min-width:0 !important;padding:7px 2px !important;font-size:11px !important;white-space:nowrap !important;overflow:hidden !important;text-overflow:ellipsis !important;background:linear-gradient(135deg,#6366f1,#4f46e5) !important;color:#ffffff !important;border:none !important}
 .btn{padding:8px;border:none;border-radius:6px;font-weight:800;font-size:11px;cursor:pointer;background:#d1d5db;color:#111}
 .btn-save{background:#d1d5db;color:#111}.btn-clear{background:#d1d5db;color:#111;border:1px solid #d1d5db}
@@ -37,11 +39,4 @@ input,.combo-input{width:100%;padding:7px 8px;border:1.5px solid #D3D5D9;border-
 @supports (-webkit-touch-callout: none) {
   /* iPhone - deixa como tá, já abre normal */
   body{padding-bottom:78px !important}
-}
-@supports not (-webkit-touch-callout: none) {
-  /* Android - empurra mais pra cima */
-  body{padding-bottom:90px !important}
-  .actions, #barraFixa, #barraFixa .actions{
-    padding-bottom:12px !important;
-  }
 }
