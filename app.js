@@ -191,7 +191,7 @@ async function salvar(){
   if(faltando.length){toast('OBRIGATORIO: '+faltando.map(f=>f.nome).join(', '),'err');return;}
   if(!dados.Codigo)dados.Codigo=String(Date.now()).slice(-6);
   if(tipoListaAtual==='ALTERAR')modoEdicao=true;else modoEdicao=false;
-  if(btn){btn.innerHTML=modoEdicao?'⏳ ALTERANDOx...':'⏳ SALVANDO...';btn.disabled=true;}
+  if(btn){btn.innerHTML=modoEdicao?'⏳ Alterando...':'⏳ Salvando...';btn.disabled=true;}
   try{
     if(!modoEdicao){
       if(cacheTodos.length===0){const r=await apiGet('todos');cacheTodos=r.data||[];}
