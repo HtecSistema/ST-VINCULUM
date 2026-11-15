@@ -55,10 +55,11 @@ fetch('version.json?v='+Date.now(), {cache:'no-store'})
     <span onclick="let i=document.getElementById('Senha'); i.type=i.type==='password'?'text':'password'; this.innerText=i.type==='password'?'👁️':'🙈'" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer">👁️</span>
   </div>
 </div>
-  <div><label>CODIGO</label><input id="Codigo" readonly></div>
+
+ <div><label>CODIGO</label><input id="Codigo" readonly></div>
   <div><label>LOGIN MAT</label><input id="MatriculaLogin" readonly style="background:#e2e8f0;font-weight:900;text-align:center"></div>
 </div>
-<div class="grid" style="grid-template-columns:1.2fr 0.6fr 1fr;margin-top:10px;align-items:end">
+<div class="grid" style="grid-template-columns:0.7fr 0.45fr 1fr;margin-top:10px;align-items:end">
   <div><label>MATRICULA * PESQUISE</label><input id="Matricula" autocomplete="off"></div>
   <div><label style="opacity:0">.</label><button id="btnPesquiseMat" onclick="buscarMatriculaBD1()" style="width:100%;height:30px;background:#0f766e;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer">Localizar</button></div>
   <div><label>CPF *</label><input id="CPF" maxlength="11" autocomplete="off"></div>
@@ -66,18 +67,20 @@ fetch('version.json?v='+Date.now(), {cache:'no-store'})
 <div class="grid" style="grid-template-columns:1fr;margin-top:10px">
   <div><label>NOME COMPLETO *</label><input id="Nome" autocomplete="off"></div>
 </div>
-<div class="grid" style="grid-template-columns:0.6fr 1fr 0.8fr;margin-top:10px">
+<div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
   <div><label>SEXO *</label><div class="combo-wrap" id="wrap_Sexo"><input id="Sexo" class="combo-input"><div class="combo-arrow">▼</div><div class="combo-list" id="list_Sexo"></div></div></div>
   <div><label>WHATSAPP *</label><input id="WhatsApp" maxlength="11"></div>
-  <div><label>NASCIMENTO * <span id="idadeDisplay"></span></label><input id="Nascimento" type="date"></div>
 </div>
 <div style="display:none"><input id="FaixaEtaria"></div>
 <div class="grid" style="grid-template-columns:1fr;margin-top:10px">
   <div><label>NOME DA CONGREGAÇAO *</label><div class="combo-wrap" id="wrap_Congregacao"><input id="Congregacao" class="combo-input"><div class="combo-arrow">▼</div><div class="combo-list" id="list_Congregacao"></div></div></div>
 </div>
-<div class="grid" style="grid-template-columns:1fr;margin-top:10px"><div style="display:none"></div><div><label>NOME DA MAE</label><input id="Mae"></div></div>
+<div class="grid" style="grid-template-columns:0.8fr 1.6fr;margin-top:10px">
+  <div><label>NASCIMENTO * <span id="idadeDisplay"></span></label><input id="Nascimento" type="date"></div>
+  <div><label>NOME DA MAE</label><input id="Mae"></div>
 </div>
 <div class="form-section"><div class="section-title">DADOS PESSOAIS E ECLESIASTICOS</div>
+
 <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px"><div><label>SITUACAO CONJUGAL *</label><div class="combo-wrap" id="wrap_SitConjugal"><input id="SitConjugal" class="combo-input"><div class="combo-arrow">▼</div><div class="combo-list" id="list_SitConjugal"></div></div></div><div><label>CURSO TEOLOGICO *</label><div class="combo-wrap" id="wrap_Cteologico"><input id="Cteologico" class="combo-input"><div class="combo-arrow">▼</div><div class="combo-list" id="list_Cteologico"></div></div></div></div>
 <div class="grid" style="grid-template-columns:1.3fr 1.3fr;margin-top:10px"><div><label>GRAU</label><div class="combo-wrap" id="wrap_GrauCurso"><input id="GrauCurso" class="combo-input"><div class="combo-arrow">▼</div><div class="combo-list" id="list_GrauCurso"></div></div></div><div><label>ANDAMENTO DO CURSO</label><div class="combo-wrap" id="wrap_Andamento"><input id="Andamento" class="combo-input"><div class="combo-arrow">▼</div><div class="combo-list" id="list_Andamento"></div></div></div></div>
 <div style="display:none"><input id="RG"><input id="DataCasamento" type="date"><input id="Conjuge"><input id="DataTermino" type="date"></div>
