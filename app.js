@@ -561,14 +561,13 @@ async function abrirTeste52(){
     }else{
       let rFeitos = await apiGet('tfeitos',{matricula: matriculaBusca});
       listaFeitos = rFeitos.data || rFeitos || [];
-      document.getElementById('tituloTeste').innerText = '📝 TESTES - '+listaTestes.length+' | FEITOS: '+listaFeitos.length+' | MAT: '+matriculaBusca;
+      document.getElementById('tituloTeste').innerText = '📝 TESTES - '+listaTestes.length+' | FEITOS: ' + listaFeitos.filter(f => f.feito === true).length+' | MAT: '+matriculaBusca;
     }
     
     renderTestes(listaTestes);
 
   }catch(e){ document.getElementById('listaTestes').innerHTML='ERRO: '+e.message; }
 }
-
 
 
 function renderTestes(lista){
