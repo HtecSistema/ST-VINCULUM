@@ -55,8 +55,7 @@ fetch('version.json?v='+Date.now(), {cache:'no-store'})
     <span onclick="let i=document.getElementById('Senha'); i.type=i.type==='password'?'text':'password'; this.innerText=i.type==='password'?'👁️':'🙈'" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer">👁️</span>
   </div>
 </div>
-
- <div><label>CODIGO</label><input id="Codigo" readonly></div>
+  <div><label>CODIGO</label><input id="Codigo" readonly></div>
   <div><label>LOGIN MAT</label><input id="MatriculaLogin" readonly style="background:#e2e8f0;font-weight:900;text-align:center"></div>
 </div>
 <div class="grid" style="grid-template-columns:0.7fr 0.45fr 1fr;margin-top:10px;align-items:end">
@@ -79,6 +78,7 @@ fetch('version.json?v='+Date.now(), {cache:'no-store'})
   <div><label>NASCIMENTO * <span id="idadeDisplay"></span></label><input id="Nascimento" type="date"></div>
   <div><label>NOME DA MAE</label><input id="Mae"></div>
 </div>
+
 <div class="form-section"><div class="section-title">DADOS PESSOAIS E ECLESIASTICOS</div>
 
 <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px"><div><label>SITUACAO CONJUGAL *</label><div class="combo-wrap" id="wrap_SitConjugal"><input id="SitConjugal" class="combo-input"><div class="combo-arrow">▼</div><div class="combo-list" id="list_SitConjugal"></div></div></div><div><label>CURSO TEOLOGICO *</label><div class="combo-wrap" id="wrap_Cteologico"><input id="Cteologico" class="combo-input"><div class="combo-arrow">▼</div><div class="combo-list" id="list_Cteologico"></div></div></div></div>
