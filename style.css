@@ -1,9 +1,10 @@
-*{box-sizing:border-box}html{overflow-y:scroll !important}body{margin:0;background:#f1f5f9;font-family:Inter,sans-serif;display:block !important;width:100%;padding-bottom:120px !important;overflow-y:auto !important}
+*{box-sizing:border-box}html{overflow-y:scroll !important}
+body{margin:0;background:#f1f5f9;font-family:Inter,sans-serif;display:block !important;width:100%;padding-bottom:190px !important;overflow-y:auto !important}
 .container{max-width:880px;width:100%;margin:0;margin-left:0;padding:4px}
 .header{background:#9ca3af;color:#111;padding:8px;border-radius:8px;text-align:center;margin-bottom:8px}
 .header h1{margin:0;font-size:15px;font-weight:900}
 /* BOTÕES FIXOS EMBAIXO - IGUAL ZÃO DIESEL */
-#barraFixa{position:fixed;left:0;bottom:0;z-index:9999;max-width:880px;width:100%;background:#f3f4f6;border-top:1px solid #d1d5db;padding:8px 4px}
+#barraFixa{position:fixed;left:0;right:0;bottom:55px !important;z-index:9999;max-width:880px;width:100%;background:#f3f4f6;border-top:1px solid #d1d5db;padding:8px 4px}
 .actions{position:static;display:flex;flex-wrap:nowrap;gap:6px;padding:0;background:transparent;border:none}
 
 #barraFixa .actions .btn{flex:1 1 0 !important;min-width:0 !important;padding:7px 2px !important;font-size:11px !important;white-space:nowrap !important;overflow:hidden !important;text-overflow:ellipsis !important;background:linear-gradient(135deg,#6366f1,#4f46e5) !important;color:#ffffff !important;border:none !important}
@@ -38,5 +39,5 @@ input,.combo-input{width:100%;padding:7px 8px;border:1.5px solid #D3D5D9;border-
 /* FIX ANDROID SEM QUEBRAR IPHONE */
 @supports (-webkit-touch-callout: none) {
   /* iPhone - deixa como tá, já abre normal */
-  body{padding-bottom:78px !important}
+  body{padding-bottom:190px !important}
 }
