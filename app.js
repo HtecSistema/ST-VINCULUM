@@ -191,17 +191,17 @@ async function salvar(){
   if(faltando.length){toast('OBRIGATORIO: '+faltando.map(f=>f.nome).join(', '),'err');return;}
   if(!dados.Codigo)dados.Codigo=String(Date.now()).slice(-6);
   if(tipoListaAtual==='ALTERAR')modoEdicao=true;else modoEdicao=false;
-  if(btn){btn.innerHTML=modoEdicao?'⏳ ALTERANDO...':'⏳ SALVANDO...';btn.disabled=true;}
+  if(btn){btn.innerHTML=modoEdicao?'⏳ ALTERANDOx...':'⏳ SALVANDO...';btn.disabled=true;}
   try{
     if(!modoEdicao){
       if(cacheTodos.length===0){const r=await apiGet('todos');cacheTodos=r.data||[];}
       let matNorm=normaliza5Dig(dados.Matricula);
       let cpfNorm=dados.CPF.replace(/\D/g,'');
       if(cacheTodos.find(x=>{let m=normaliza5Dig((x.Matricula||x.MATRICULA||'').toString());return m&&m===matNorm;})){
-        toast('MATRICULA '+matNorm+' JA EXISTE','err');if(btn){btn.innerHTML='💾 SALVAR';btn.disabled=false;}return;
+        toast('MATRICULA '+matNorm+' JA EXISTE','err');if(btn){btn.innerHTML='💾 Salvar';btn.disabled=false;}return;
       }
       if(cpfNorm.length>=11&&cacheTodos.find(x=>{let c=(x.CPF||'').toString().replace(/\D/g,'');return c&&c===cpfNorm;})){
-        toast('CPF JA EXISTE','err');if(btn){btn.innerHTML='💾 SALVAR';btn.disabled=false;}return;
+        toast('CPF JA EXISTE','err');if(btn){btn.innerHTML='💾 Salvar';btn.disabled=false;}return;
       }
     }
   }catch(e){}
@@ -215,11 +215,11 @@ async function salvar(){
       try{const r=await apiGet('todos');cacheTodos=r.data||[];}catch{}
     }else{
       toast('ERRO: '+(res.message||''),'err');
-      if(btn){btn.disabled=false;btn.innerHTML=modoEdicao?'💾 ALTERAR':'💾 SALVAR';}
+      if(btn){btn.disabled=false;btn.innerHTML=modoEdicao?'💾 Alterar':'💾 Salvar';}
     }
   }catch(e){
     toast('Erro: '+e.message,'err');
-    if(btn){btn.disabled=false;btn.innerHTML=modoEdicao?'💾 ALTERAR':'💾 SALVAR';}
+    if(btn){btn.disabled=false;btn.innerHTML=modoEdicao?'💾 Alterar':'💾 Salvar';}
   }
 }
 function limpar(){
@@ -257,11 +257,11 @@ function limpar(){
   }
   matriculaOriginal='';codigoOriginal='';modoEdicao=false;tipoListaAtual='NOVO';indiceSelecionado=-1;window.dadosBuscaSelecionado=null;
   const btn=document.getElementById('btnSalvar')||document.querySelector('.btn-save');
-  if(btn){btn.innerHTML='💾 SALVAR';btn.disabled=false;}
+  if(btn){btn.innerHTML='💾 Salvar';btn.disabled=false;}
   document.getElementById('idadeDisplay').innerText='';
   organizarLayout();
 }
-function carregarSelecionado(){if(indiceSelecionado<0){toast('Selecione um nome!','err');return}let it=dadosFiltrados[indiceSelecionado];matriculaOriginal=getMat(it);codigoOriginal=String(it.Codigo||it.codigo||it.CODIGO||document.getElementById('Codigo').value||'').trim();let norm={};Object.keys(it).forEach(k=>{let nk=String(k).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');norm[nk]=it[k];norm[String(k).toLowerCase()]=it[k];});function pega(...nomes){for(let n of nomes){let nn=String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');if(norm[nn]!==undefined&&String(norm[nn]).trim()!=='')return String(norm[nn]);if(it[n]!==undefined&&String(it[n]).trim()!=='')return String(it[n]);let lower=String(n).toLowerCase();if(it[lower]!==undefined&&String(it[lower]).trim()!=='')return String(it[lower]);}return'';}const mapa={Codigo:['Codigo','codigo'],Matricula:['Matricula','matricula'],Congregacao:['Congregacao','congregacao','Origem','origem'],Fcongregacao:['Fcongregacao','fcongregacao'],Nome:['Nome','nome'],WhatsApp:['WhatsApp','whatsapp','Contato','contato'],Mae:['Mae','mae'],Sexo:['Sexo','sexo'],RG:['RG','rg'],CPF:['CPF','cpf'],FaixaEtaria:['FaixaEtaria','faixaetaria'],SitConjugal:['SitConjugal','sitconjugal'],Conjuge:['Conjuge','conjuge'],Cteologico:['Cteologico','cteologico'],GrauCurso:['GrauCurso','graucurso'],Andamento:['Andamento','andamento'],BatizadoAgua:['BatizadoAgua','batizadoagua'],EspSanto:['EspSanto','espsanto','BEspSanto'],TFunEclesiastica:['TFunEclesiastica','tfuneclesiastica'],QualFuncao:['QualFuncao','qualfuncao'],Departamentoinserido:['Departamentoinserido','departamentoinserido'],FuncaoDepartamento:['FuncaoDepartamento','funcaodepartamento'],OFuncoes:['OFuncoes','ofuncoes'],CEP:['CEP','cep'],end:['end','endereco'],Numero:['Numero','numero'],Bairro:['Bairro','bairro'],Complemento:['Complemento','complemento'],Observacao:['Observacao','observacao'],UfEndereco:['UfEndereco','uff','UFF','uf','UFENDERECO'],CidadeEndereco:['CidadeEndereco','yCid','YCID','ycid','yCID','cidadeendereco'],Estado:['Estado','estado'],CidadeNascimento:['CidadeNascimento','cidadenascimento'],Senha:['Senha','senha']};Object.keys(mapa).forEach(id=>{let el=document.getElementById(id);if(!el)return;let v=pega(...mapa[id]);if(v)el.value=v.toUpperCase();});let nasc=pega('Nascimento','nascimento');let cas=pega('DtCasamento','dtcasamento','DataCasamento');let term=pega('DataTermino','datatermino');if(nasc)document.getElementById('Nascimento').value=dataParaISO(nasc);if(cas)document.getElementById('DataCasamento').value=dataParaISO(cas);if(term)document.getElementById('DataTermino').value=dataParaISO(term);if(!document.getElementById('UfEndereco').value){let uf=it.uff||it.UFF||it.uf||it.Uf||'';if(uf)document.getElementById('UfEndereco').value=String(uf).toUpperCase();}if(!document.getElementById('CidadeEndereco').value){let cid=it.yCid||it.YCID||it.ycid||it.yCID||'';if(cid)document.getElementById('CidadeEndereco').value=String(cid).toUpperCase();}window.dadosBuscaSelecionado={...it};fecharListView();const btn=document.getElementById('btnSalvar')||document.querySelector('.btn-save');if(tipoListaAtual==='ALTERAR'){modoEdicao=true;if(btn)btn.innerHTML='💾 ALTERAR';toast('MODO ALTERAR - '+getMat(it),'ok');}else{modoEdicao=false;document.getElementById('Codigo').value=String(Date.now()).slice(-6);const ch='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=ch.charAt(Math.floor(Math.random()*ch.length));document.getElementById('Senha').value=s;if(btn)btn.innerHTML='💾 SALVAR';toast('MODO NOVO','ok');}calcularIdadeFaixa();try{ salvarEstadoCadastro(); }catch(e){} window.scrollTo({top:0,behavior:'smooth'});}
+function carregarSelecionado(){if(indiceSelecionado<0){toast('Selecione um nome!','err');return}let it=dadosFiltrados[indiceSelecionado];matriculaOriginal=getMat(it);codigoOriginal=String(it.Codigo||it.codigo||it.CODIGO||document.getElementById('Codigo').value||'').trim();let norm={};Object.keys(it).forEach(k=>{let nk=String(k).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');norm[nk]=it[k];norm[String(k).toLowerCase()]=it[k];});function pega(...nomes){for(let n of nomes){let nn=String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');if(norm[nn]!==undefined&&String(norm[nn]).trim()!=='')return String(norm[nn]);if(it[n]!==undefined&&String(it[n]).trim()!=='')return String(it[n]);let lower=String(n).toLowerCase();if(it[lower]!==undefined&&String(it[lower]).trim()!=='')return String(it[lower]);}return'';}const mapa={Codigo:['Codigo','codigo'],Matricula:['Matricula','matricula'],Congregacao:['Congregacao','congregacao','Origem','origem'],Fcongregacao:['Fcongregacao','fcongregacao'],Nome:['Nome','nome'],WhatsApp:['WhatsApp','whatsapp','Contato','contato'],Mae:['Mae','mae'],Sexo:['Sexo','sexo'],RG:['RG','rg'],CPF:['CPF','cpf'],FaixaEtaria:['FaixaEtaria','faixaetaria'],SitConjugal:['SitConjugal','sitconjugal'],Conjuge:['Conjuge','conjuge'],Cteologico:['Cteologico','cteologico'],GrauCurso:['GrauCurso','graucurso'],Andamento:['Andamento','andamento'],BatizadoAgua:['BatizadoAgua','batizadoagua'],EspSanto:['EspSanto','espsanto','BEspSanto'],TFunEclesiastica:['TFunEclesiastica','tfuneclesiastica'],QualFuncao:['QualFuncao','qualfuncao'],Departamentoinserido:['Departamentoinserido','departamentoinserido'],FuncaoDepartamento:['FuncaoDepartamento','funcaodepartamento'],OFuncoes:['OFuncoes','ofuncoes'],CEP:['CEP','cep'],end:['end','endereco'],Numero:['Numero','numero'],Bairro:['Bairro','bairro'],Complemento:['Complemento','complemento'],Observacao:['Observacao','observacao'],UfEndereco:['UfEndereco','uff','UFF','uf','UFENDERECO'],CidadeEndereco:['CidadeEndereco','yCid','YCID','ycid','yCID','cidadeendereco'],Estado:['Estado','estado'],CidadeNascimento:['CidadeNascimento','cidadenascimento'],Senha:['Senha','senha']};Object.keys(mapa).forEach(id=>{let el=document.getElementById(id);if(!el)return;let v=pega(...mapa[id]);if(v)el.value=v.toUpperCase();});let nasc=pega('Nascimento','nascimento');let cas=pega('DtCasamento','dtcasamento','DataCasamento');let term=pega('DataTermino','datatermino');if(nasc)document.getElementById('Nascimento').value=dataParaISO(nasc);if(cas)document.getElementById('DataCasamento').value=dataParaISO(cas);if(term)document.getElementById('DataTermino').value=dataParaISO(term);if(!document.getElementById('UfEndereco').value){let uf=it.uff||it.UFF||it.uf||it.Uf||'';if(uf)document.getElementById('UfEndereco').value=String(uf).toUpperCase();}if(!document.getElementById('CidadeEndereco').value){let cid=it.yCid||it.YCID||it.ycid||it.yCID||'';if(cid)document.getElementById('CidadeEndereco').value=String(cid).toUpperCase();}window.dadosBuscaSelecionado={...it};fecharListView();const btn=document.getElementById('btnSalvar')||document.querySelector('.btn-save');if(tipoListaAtual==='ALTERAR'){modoEdicao=true;if(btn)btn.innerHTML='💾 Alterar';toast('MODO ALTERAR - '+getMat(it),'ok');}else{modoEdicao=false;document.getElementById('Codigo').value=String(Date.now()).slice(-6);const ch='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=ch.charAt(Math.floor(Math.random()*ch.length));document.getElementById('Senha').value=s;if(btn)btn.innerHTML='💾 Salvar';toast('MODO NOVO','ok');}calcularIdadeFaixa();try{ salvarEstadoCadastro(); }catch(e){} window.scrollTo({top:0,behavior:'smooth'});}
 function salvarEstadoCadastro(){
   try{
     let estado={};
@@ -313,7 +313,7 @@ window.addEventListener('load',async()=>{
     let ml=getMatriculaLogin();
     if(ml==='00425') destravarMatricula(); else if(ml && ml!=='00000') travarMatricula(ml);
     const btn=document.getElementById('btnSalvar')||document.querySelector('.btn-save');
-    if(btn) btn.innerHTML='💾 ALTERAR';
+    if(btn) btn.innerHTML='💾 Alterar';
     tipoListaAtual='ALTERAR'; modoEdicao=true;
     document.querySelectorAll('.form-section input').forEach(el=>{
       el.addEventListener('change', ()=>{ try{ salvarEstadoCadastro(); }catch(e){} });
@@ -1038,3 +1038,64 @@ if(window.abrirTeste &&!window.abrirTeste._travadoStatus){
   };
   window.abrirTeste._travadoStatus = true;
 }
+
+
+// ===== BOTAO AP SOZINHO - INDEPENDENTE, ACIONADO NO CLIQUE DO TESTE =====
+(function(){
+  if(window.__TRAVA_TESTE_AP) return;
+  window.__TRAVA_TESTE_AP = true;
+
+  var _abrirTeste52Original = window.abrirTeste52;
+  var _apiPostOriginal = window.apiPost; // so usa como correio, nao mexe nele
+
+  function getMat5(){
+    try{ var v = (document.getElementById('Matricula')?.value || localStorage.getItem('mat_logada') || '').toString().replace(/\D/g,'').padStart(5,'0').slice(-5); return v; }catch(e){ return ''; }
+  }
+
+  function jaEstaOK(mat){
+    try{ if(localStorage.getItem('IEADMI_AP_'+mat) === 'OK') return true; }catch(e){}
+    try{
+      var lista = window.cacheTodos || [];
+      var achado = lista.find(function(x){ var m = String(x.Matricula || x.MATRICULA || '').replace(/\D/g,'').padStart(5,'0').slice(-5); return m && m === mat; });
+      if(achado){ var ap = achado.AP || achado.ap || achado.Ap || ''; if(String(ap).trim().toUpperCase() === 'OK') return true; }
+    }catch(e){}
+    return false;
+  }
+
+  // *** ESSA E A FUNCAO DO BOTAO - SO DELA, NAO PEGA NADA EMPRESTADO ***
+  async function botaoAP(){
+    var d = coletarDados();
+    if(d.Matricula) d.Matricula = String(d.Matricula).replace(/\D/g,'').padStart(5,'0').slice(-5);
+    var mat = getMat5();
+    var payload = {
+      acao: 'atualizar',
+      dados: Object.assign({}, d, {
+        AP: 'OK',
+        MatriculaOriginal: String(matriculaOriginal || d.Matricula || mat || '').replace(/\D/g,'').padStart(5,'0').slice(-5),
+        CodigoOriginal: codigoOriginal || d.Codigo || ''
+      })
+    };
+    var res = await _apiPostOriginal(payload);
+    if(res && res.result === 'ok'){
+      try{ localStorage.setItem('IEADMI_AP_'+mat, 'OK'); }catch(e){}
+    }
+    return res;
+  }
+
+  // *** CLIQUE DO TESTE SO CHAMA ELA, IGUAL CLICARIA NO BOTAO ***
+  window.abrirTeste52 = async function(){
+    var ok = false;
+    try{ ok = verificarDadosCompletos(); }catch(e){ ok = false; }
+    try{ atualizarStatusDados(); }catch(e){}
+    if(!ok){ try{ mostrarAlerta('Os dados estão incompletos','⚠️ Dados incompletos'); }catch(e){} return false; }
+
+    var mat = getMat5();
+    var precisaAutoAlterar = mat && mat !== '00000' && !jaEstaOK(mat);
+
+    if(precisaAutoAlterar){
+      try{ await botaoAP(); }catch(e){}
+    }
+
+    return _abrirTeste52Original.apply(this, arguments);
+  };
+})();
