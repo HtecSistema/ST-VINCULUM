@@ -895,43 +895,71 @@ function formatarZap(el){
 
 
 // CHECKBOX - TROCA O BOTÃO
-function toggleNaoLocalizei(){
-  let marcado = document.getElementById('chkNaoLocalizei').checked;
-  let campoBusca = document.getElementById('pesquisaNome');
-  let campoMat = document.getElementById('novaMatricula');
-  let campoNome = document.getElementById('novoNome');
+// === INCREMENTO - COLA ABAIXO DO toggleNaoLocalizei, NÃO APAGA NADA ACIMA ===
+(function(){
+  // Guarda tua função original inteira
+  var _toggleOriginal = window.toggleNaoLocalizei;
 
-  document.getElementById('btnSalvarVerde').style.display = marcado ? 'none' : 'block';
-  document.getElementById('btnSalvarProvisorio').style.display = marcado ? 'block' : 'none';
+  // Passa a controlar o clique
+  window.toggleNaoLocalizei = function(){
+    let chk = document.getElementById('chkNaoLocalizei');
+    let marcado = chk.checked;
 
-  if(marcado){
-    campoBusca.value = "";
-    campoBusca.placeholder = "DIGITE SEU NOME COMPLETO";
-    campoMat.value = "";
-    campoMat.placeholder = "AUTO";
-    campoMat.disabled = true;
-    campoMat.style.opacity = "0.4";
-    campoNome.value = "";
-    campoNome.placeholder = "SERÁ PREENCHIDO AUTOMÁTICO";
-    document.getElementById('listaPesquisa').innerHTML = "";
-document.getElementById('resultado-novo-aluno').innerHTML = "<div style='color:#fbbf24;padding:10px 12px;background:#0F172A;border:1px solid #f59e0b;border-radius:6px;text-align:justify;line-height:1.5;font-size:12px'>⚠️ Modo cadastro provisório ATIVO<br>Digite NOME COMPLETO e informe WhatsApp e CPF.<br>-----------------------------------------------<br>LEMBRANDO que sua matricula é temporária<br>A não regularização junto a secrectaria de sua igreja, promoverá impecilios para gerar o certificado</div>";
-    campoBusca.focus();
-    // SÓ ACRESCENTADO - TRAVA O ATUALIZAR QUANDO MARCA
-    var btnAtu = document.getElementById('btnAtualizarLista');
-    if(btnAtu){ btnAtu.disabled = true; btnAtu.style.opacity = "0.4"; }
-  } else {
-    campoBusca.value = "";
-    campoBusca.placeholder = "DIGITE PARA PESQUISAR...";
-    campoMat.disabled = false;
-    campoMat.placeholder = "EX: 00123";
-    campoMat.style.opacity = "1";
-    campoNome.placeholder = "ALUNO";
-    document.getElementById('resultado-novo-aluno').innerHTML = "";
-    // SÓ ACRESCENTADO - DESTRAVA O ATUALIZAR QUANDO DESMARCA
-    var btnAtu2 = document.getElementById('btnAtualizarLista');
-    if(btnAtu2){ btnAtu2.disabled = false; btnAtu2.style.opacity = "1"; }
+    // Se DESMARCOU, deixa tua função original fazer tudo normal
+    if(!marcado){
+      return _toggleOriginal();
+    }
+
+    // Se MARCOU, desfaz na hora e pergunta primeiro
+    // Não chama a original ainda
+    chk.checked = false;
+    abrirModalConfirmarProvisorio();
+  };
+
+  function abrirModalConfirmarProvisorio(){
+    let old = document.getElementById('modalConfirmarProvisorio');
+    if(old) old.remove();
+
+    let div = document.createElement('div');
+    div.id = 'modalConfirmarProvisorio';
+    div.style = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100005;display:flex;align-items:center;justify-content:center;padding:20px';
+    div.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:24px 20px;max-width:380px;width:100%;text-align:center;font-family:sans-serif;box-shadow:0 10px 30px rgba(0,0,0,0.3)">
+      <div style="font-size:28px">⚠️</div>
+      <div style="font-size:15px;font-weight:900;color:#111;margin:8px 0">ATENÇÃO - CADASTRO PROVISÓRIO</div>
+      <div style="font-size:13px;color:#222;line-height:1.5;text-align:justify">
+        Para esse tipo de procedimento, você precisa ter certeza que o seu nome <b>NÃO ESTÁ</b> na lista do CODPOINT.<br><br>
+        Sugiro que retorne na lista e volte a pesquisar o seu nome usando por exemplo um dos sobrenomes.<br><br>
+        <b>Quer rever sua pesquisa?</b>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button onclick="confirmarProvisorioSIM()" style="flex:1;background:#16a34a;color:white;border:0;padding:14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:14px">SIM, REVER</button>
+        <button onclick="confirmarProvisorioNAO()" style="flex:1;background:#111;color:white;border:0;padding:14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:14px">NÃO, CONTINUAR</button>
+      </div>
+    </div>`;
+    document.body.appendChild(div);
+    div.onclick = (e)=>{ if(e.target.id==='modalConfirmarProvisorio') confirmarProvisorioSIM(); };
   }
-}
+
+  // SIM = volta pra pesquisa, check continua desmarcado
+  window.confirmarProvisorioSIM = function(){
+    document.getElementById('modalConfirmarProvisorio')?.remove();
+    let chk = document.getElementById('chkNaoLocalizei');
+    chk.checked = false;
+    _toggleOriginal(); // tua função original faz o resto (volta pra pesquisa)
+    let campoBusca = document.getElementById('pesquisaNome');
+    if(campoBusca){ campoBusca.value = ""; campoBusca.focus(); }
+    if(document.getElementById('listaPesquisa')) document.getElementById('listaPesquisa').innerHTML = "";
+  };
+
+  // NÃO = marca o check e entra no provisório
+  window.confirmarProvisorioNAO = function(){
+    document.getElementById('modalConfirmarProvisorio')?.remove();
+    let chk = document.getElementById('chkNaoLocalizei');
+    chk.checked = true;
+    _toggleOriginal(); // tua função original faz o resto (modo provisório)
+  };
+})();
 
 // FORÇA MAIÚSCULO
 document.getElementById('pesquisaNome').addEventListener('input', function(){
