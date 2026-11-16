@@ -1098,3 +1098,54 @@ if(window.abrirTeste &&!window.abrirTeste._travadoStatus){
     return _abrirTeste52Original.apply(this, arguments);
   };
 })();
+
+
+// ===== AVISO PROVISORIO - ANTES DO BEM VINDO - COLAR NO FINAL =====
+(function(){
+  if(window.__AVISO_PROVISORIO) return;
+  window.__AVISO_PROVISORIO = true;
+
+  function ehProvisorio(){
+    var obs = (document.getElementById('Observacao')?.value || '').toString().toUpperCase();
+    if(obs.indexOf('PROVISORIO') >= 0) return true;
+    try{ if(JSON.stringify(window.dadosBuscaSelecionado || {}).toUpperCase().indexOf('PROVISORIO') >= 0) return true; }catch(e){}
+    try{
+      var mat = (document.getElementById('Matricula')?.value || '').replace(/\D/g,'').padStart(5,'0');
+      var ach = (window.cacheTodos || []).find(function(x){
+        return String(x.Matricula || x.MATRICULA || '').replace(/\D/g,'').padStart(5,'0') === mat;
+      });
+      if(ach && JSON.stringify(ach).toUpperCase().indexOf('PROVISORIO') >= 0) return true;
+    }catch(e){}
+    return false;
+  }
+
+  function avisoProvisorio(){
+    return new Promise(function(resolve){
+      var old = document.getElementById('modalAlertaTD'); if(old) old.remove();
+      var div = document.createElement('div');
+      div.id = 'modalAlertaTD';
+      div.style = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100002;display:flex;align-items:center;justify-content:center;padding:20px';
+      div.innerHTML = '<div style="background:#fff;border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3);font-family:sans-serif">'
+        + '<div style="font-size:14px;font-weight:900;color:#dc2626;margin-bottom:12px">⚠️ MATRÍCULA PROVISÓRIA</div>'
+        + '<div style="font-size:13px;color:#222;line-height:1.4;white-space:pre-line">Sua matrícula está PROVISÓRIA.\n\nPor gentileza, procure a secretaria de sua igreja para regularização da sua matrícula.</div>'
+        + '<button id="btnOkProvisorio" style="margin-top:20px;background:#dc2626;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:900;width:100%;font-size:13px">OK</button></div>';
+      document.body.appendChild(div);
+      document.getElementById('btnOkProvisorio').onclick = function(){ div.remove(); resolve(); };
+    });
+  }
+
+  // Espera 2,5s pra embrulhar POR CIMA de todas as outras travas (incompleto + AP)
+  setTimeout(function(){
+    var orig = window.abrirTeste52;
+    if(!orig || orig._avisoProvisorio) return;
+    var novo = async function(){
+      if(ehProvisorio()){
+        await avisoProvisorio();
+        // Só depois do OK abre o BEM VINDO
+      }
+      return orig.apply(this, arguments);
+    };
+    novo._avisoProvisorio = true;
+    window.abrirTeste52 = novo;
+  }, 2500);
+})();
