@@ -915,13 +915,21 @@ function abrirLinkRecuperacao(linkOriginal, codUnico){
       document.getElementById('wrap_Andamento').style.pointerEvents='';
       document.getElementById('wrap_Andamento').style.opacity='';
     }
-    let ehNaoFuncao = (temFuncao === 'NAO' || temFuncao === 'NÃO');
+        let ehNaoFuncao = (temFuncao === 'NAO' || temFuncao === 'NÃO');
     if(ehNaoFuncao){
-      if(funcaoEcle){ funcaoEcle.value=''; funcaoEcle.disabled=true; funcaoEcle.readOnly=true; }
+      // Garante que NENHUMA OPCAO existe na lista, senão o validador apaga
+      let listQ = document.getElementById('list_QualFuncao');
+      if(listQ && ![...listQ.children].some(o=>o.textContent.trim().toUpperCase()==='NENHUMA OPCAO')){
+        let d = document.createElement('div'); d.textContent = 'NENHUMA OPCAO'; listQ.appendChild(d);
+      }
+      if(funcaoEcle){ funcaoEcle.value='NENHUMA OPCAO'; funcaoEcle.disabled=true; funcaoEcle.readOnly=true; }
       document.getElementById('wrap_QualFuncao').style.pointerEvents='none';
       document.getElementById('wrap_QualFuncao').style.opacity='0.4';
     } else {
-      if(funcaoEcle){ funcaoEcle.disabled=false; funcaoEcle.readOnly=false; }
+      if(funcaoEcle){
+        if(funcaoEcle.value.toUpperCase()==='NENHUMA OPCAO') funcaoEcle.value='';
+        funcaoEcle.disabled=false; funcaoEcle.readOnly=false;
+      }
       document.getElementById('wrap_QualFuncao').style.pointerEvents='';
       document.getElementById('wrap_QualFuncao').style.opacity='';
     }
