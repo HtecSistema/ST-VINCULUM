@@ -15,7 +15,8 @@ body{margin:0;background:#f1f5f9;font-family:Inter,sans-serif;display:block !imp
 .section-title{font-size:10px;font-weight:900;color:#111;margin-bottom:8px;text-transform:uppercase}
 .grid{display:grid;gap:8px}.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:1fr 1fr 1fr}.grid-4{grid-template-columns:1fr 1fr 1fr 1fr}
 label{font-size:9px;font-weight:700;color:#334155;margin-bottom:2px;display:block;text-transform:uppercase}
-input,.combo-input{width:100%;padding:7px 8px;border:1.5px solid #D3D5D9;border-radius:6px;background:#ffffff;font-size:11px;font-weight:800;text-transform:uppercase;color:#1A45A5}
+input:not(#Email),.combo-input{width:100%;padding:7px 8px;border:1.5px solid #D3D5D9;border-radius:6px;background:#ffffff;font-size:11px;font-weight:800;text-transform:uppercase;color:#1A45A5}
+#Email{width:100%;padding:7px 8px;border:1.5px solid #D3D5D9;border-radius:6px;background:#ffffff;font-size:11px;font-weight:800;text-transform:none;color:#1A45A5}
 .combo-wrap{position:relative;display:flex}.combo-input{padding-right:40px}
 .combo-arrow{position:absolute;right:1px;top:1px;bottom:1px;width:36px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-left:1px solid #9ca3af;border-radius:0 8px 8px 0;cursor:pointer}
 .combo-list{position:absolute;top:100%;left:0;right:0;z-index:9999;background:white;border:1px solid #9ca3af;max-height:220px;overflow-y:auto;display:none;box-shadow:0 8px 20px rgba(0,0,0,0.15)}
@@ -39,5 +40,5 @@ input,.combo-input{width:100%;padding:7px 8px;border:1.5px solid #D3D5D9;border-
 /* FIX ANDROID SEM QUEBRAR IPHONE */
 @supports (-webkit-touch-callout: none) {
   /* iPhone - deixa como tá, já abre normal */
-  body{padding-bottom:190px !important}
+  body{padding-bottom:210px !important}
 }
