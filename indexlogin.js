@@ -849,6 +849,15 @@ fetch('https://script.google.com/macros/s/AKfycbwUIspP7xB_InyXoNNDLchbqe3JcVcxOb
 .then(r=>r.json()).then(d=>{ cacheConsultaFull = d.map(x=>({mat:String(x[1]).trim(), mat5:String(x[1]).trim().padStart(5,'0'), nome:String(x[2]).trim(), nomeU:String(x[2]).trim().toUpperCase()})); });
 
 function escolherConsulta(mat, nome){
+
+  // SE ESTAVA NO PROVISÓRIO, DESMARCA E VOLTA PRO NORMAL
+  var chk = document.getElementById('chkNaoLocalizei');
+  if(chk && chk.checked){
+    chk.checked = false;
+    _provisorioConfirmado = false;
+    toggleNaoLocalizei(); // volta botão Salvar verde, destrava matrícula, some o aviso amarelo
+  }
+
   document.getElementById('novaMatricula').value = String(mat).padStart(5,'0');
   document.getElementById('novoNome').value = nome.toUpperCase();
   document.getElementById('pesquisaNome').value = '';
@@ -856,7 +865,6 @@ function escolherConsulta(mat, nome){
   document.getElementById('resultado-novo-aluno').innerHTML='';
   document.getElementById('novoZap').focus();
 }
-
 
 let _abrir = abrirNovoAluno;
 abrirNovoAluno = function(){
@@ -870,14 +878,15 @@ abrirNovoAluno = function(){
   box.innerHTML = '';
   inp.oninput = function(){
     let q = this.value.toUpperCase().trim();
-    if(q.length<2){ box.innerHTML=''; return; }
+    if(q.length<1){ box.innerHTML=''; return; }
     let ach = [];
-    for(let i=0;i<cacheConsultaFull.length;i++){ if(cacheConsultaFull[i].nomeU.includes(q)){ ach.push(cacheConsultaFull[i]); if(ach.length>20) break; } }
+    for(let i=0;i<cacheConsultaFull.length && ach.length<20;i++){ if(cacheConsultaFull[i].nomeU.indexOf(q) !== -1){ ach.push(cacheConsultaFull[i]); } }
     if(!ach.length){ box.innerHTML=`<div style='padding:8px;color:#94A3B8'>Nenhum para "${q}"</div>`; return; }
 
-box.innerHTML = `<div style='max-height:220px;overflow:auto;background:#0F172A;border:1px solid #334155;border-radius:8px;margin-top:4px;margin-bottom:12px'>${ach.map(o=>`<div class="item-consulta" onclick="escolherConsulta('${o.mat}','${o.nome.replace(/'/g,' ')}')"><b>${o.mat5}</b> - ${o.nome}</div>`).join('')}</div>`;
+    box.innerHTML = `<div style='max-height:220px;overflow:auto;background:#0F172A;border:1px solid #334155;border-radius:8px;margin-top:4px;margin-bottom:12px'>${ach.map(o=>`<div class="item-consulta" onclick="escolherConsulta('${o.mat}','${o.nome.replace(/'/g,' ')}')"><b>${o.mat5}</b> - ${o.nome}</div>`).join('')}</div>`;
   };
 };
+
 
 function formatarZap(el){
   let v = el.value.replace(/\D/g,'').slice(0,11);
@@ -897,6 +906,7 @@ function formatarZap(el){
 // CHECKBOX - TROCA O BOTÃO
 // === INOVAÇÃO - CONTROLE DO AVISO, NÃO TIRA NADA DA FUNÇÃO ===
 var _provisorioConfirmado = false;
+
 function toggleNaoLocalizei(){
   let marcado = document.getElementById('chkNaoLocalizei').checked;
   let campoBusca = document.getElementById('pesquisaNome');
@@ -925,7 +935,11 @@ function toggleNaoLocalizei(){
     campoNome.value = "";
     campoNome.placeholder = "SERÁ PREENCHIDO AUTOMÁTICO";
     document.getElementById('listaPesquisa').innerHTML = "";
-document.getElementById('resultado-novo-aluno').innerHTML = "<div style='color:#fbbf24;padding:10px 12px;background:#0F172A;border:1px solid #f59e0b;border-radius:6px;text-align:justify;line-height:1.5;font-size:12px'>⚠️ Modo cadastro provisório ATIVO<br>Digite NOME COMPLETO e informe WhatsApp e CPF.<br>-----------------------------------------------<br>LEMBRANDO que sua matricula é temporária<br>A não regularização junto a secrectaria de sua igreja, promoverá impecilios para gerar o certificado</div>";
+
+
+document.getElementById('resultado-novo-aluno').innerHTML = "<div class='piscar-aviso' style='color:#fbbf24;padding:10px 12px;background:#0F172A;border:1px solid #f59e0b;border-radius:6px;text-align:justify;line-height:1.5;font-size:12px'>⚠️ Modo cadastro provisório ATIVO<br>Digite NOME COMPLETO e informe WhatsApp e CPF.<br>-----------------------------------------------<br>LEMBRANDO que sua matricula é temporária<br>A não regularização junto a secrectaria de sua igreja, promoverá impecilios para gerar o certificado</div>";
+
+
     campoBusca.focus();
     // SÓ ACRESCENTADO - TRAVA O ATUALIZAR QUANDO MARCA
     var btnAtu = document.getElementById('btnAtualizarLista');
