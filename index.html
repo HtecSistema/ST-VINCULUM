@@ -17,6 +17,15 @@
 <meta property="og:url" content="https://htecsistema.github.io/ST-VINCULUM/">
 <link rel="stylesheet" href="indexlogin.css?v=20261115.2.02">
 <style>
+
+@keyframes piscarAviso{
+  0%, 100% { opacity: 2; }
+  50% { opacity: 0.15; }
+}
+.piscar-aviso{
+  animation: piscarAviso 1s infinite;
+}
+
 .ht-modal{position:fixed;inset:0;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);display:none;justify-content:center;align-items:flex-start;padding:20px 12px;overflow-y:auto;z-index:99999}
 .ht-modal.ativo{display:flex}
 .ht-modal-box{width:100%;max-width:420px;margin-top:10px;animation:subir .22s ease}
@@ -101,7 +110,7 @@
 
     <!-- 1 - PESQUISE O SEU NOME PRIMEIRO -->
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-  <span style="font-size:11px;font-weight:700;color:#F1F5F9">LISTA DO CODPOINT - LOCALIZE O SEU NOME</span>
+  <span style="font-size:11px;font-weight:700;color:#F1F5F9">LISTA CODPOINT - LOCALIZE O SEU NOME</span>
   <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:#fbbf24;cursor:pointer;font-weight:700">
     <input type="checkbox" id="chkNaoLocalizei" onchange="toggleNaoLocalizei()" style="width:16px;height:16px;accent-color:#f59e0b">Cadastro Provisório</label>
 </div>
