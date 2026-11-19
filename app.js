@@ -1150,6 +1150,7 @@ if(window.abrirTeste &&!window.abrirTeste._travadoStatus){
   if(window.__AVISO_PROVISORIO) return;
   window.__AVISO_PROVISORIO = true;
 
+
 function ehProvisorio(){
   var res = (document.getElementById('Resultado')?.value || '').toUpperCase();
   if(res.indexOf('PROVISORIO') >= 0) return true;
@@ -1172,8 +1173,7 @@ function ehProvisorio(){
   }catch(e){}
 
   return false;
-}eturn false;
-  }
+}
 
   function avisoProvisorio(){
     return new Promise(function(resolve){
