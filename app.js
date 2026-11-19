@@ -1150,7 +1150,6 @@ if(window.abrirTeste &&!window.abrirTeste._travadoStatus){
   if(window.__AVISO_PROVISORIO) return;
   window.__AVISO_PROVISORIO = true;
 
-
 function ehProvisorio(){
   var res = (document.getElementById('Resultado')?.value || '').toUpperCase();
   if(res.indexOf('PROVISORIO') >= 0) return true;
@@ -1173,7 +1172,8 @@ function ehProvisorio(){
   }catch(e){}
 
   return false;
-}
+}eturn false;
+  }
 
   function avisoProvisorio(){
     return new Promise(function(resolve){
@@ -1182,9 +1182,12 @@ function ehProvisorio(){
       div.id = 'modalAlertaTD';
       div.style = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100002;display:flex;align-items:center;justify-content:center;padding:20px';
       div.innerHTML = '<div style="background:#fff;border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3);font-family:sans-serif">'
-        + '<div style="font-size:14px;font-weight:900;color:#dc2626;margin-bottom:12px">⚠️ MATRÍCULA PROVISÓRIA</div>'
-        + '<div style="font-size:13px;color:#222;line-height:1.4;white-space:pre-line">Sua matrícula está PROVISÓRIA.\n\nPor gentileza, procure a secretaria de sua igreja para regularização da sua matrícula.\n\nfazer o cadastro ou localizar sua matricula real\n\npois nesse formato não vai gerar certificado no final</div>'
- .     + '<button id="btnOkProvisorio" style="margin-top:20px;background:#dc2626;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:900;width:100%;font-size:13px">OK</button></div>';
+
+
++ '<div style="font-size:14px;font-weight:900;color:#dc2626;margin-bottom:12px;text-align:center">⚠️ MATRÍCULA PROVISÓRIA</div>'
++ '<div style="font-size:13px;color:#222;line-height:1.5;white-space:pre-line;text-align:center">Sua matrícula está PROVISÓRIA.\n\nPor gentileza, procure a secretaria de sua igreja para regularização da sua matrícula, pois nesse formato NÃO VAI EMITIR CERTIFICADO na conclusão do discipulado</div>'
++ '<button id="btnOkProvisorio" style="margin-top:20px;background:#dc2626;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:900;width:100%;font-size:13px">OK</button></div>';
+
       document.body.appendChild(div);
       document.getElementById('btnOkProvisorio').onclick = function(){ div.remove(); resolve(); };
     });
