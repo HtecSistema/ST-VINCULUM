@@ -2,6 +2,7 @@ const URL_WEBAPP = "https://script.google.com/macros/s/AKfycbxLXw-nu5oXXtjE8HKik
 const URL_LOG = "https://script.google.com/macros/s/AKfycbxAwYpt5cBWB3IMmQ1nfZUKew4WUhP2DFGc_bPdFOqoxQlqqM2c9CQBR2XoS8ku0ORSBg/exec"; // NOVA - LibC
 let allDados=[]; let dadosVisiveis=[]; let progressoInterval=null; let progresso=0;
 let idxSelecionado=-1;
+let dadosSelecionados=[];
 
 const KEY_FILTRO = "filtroLiberacao70";
 const KEY_DADOS = "dadosLiberacao70";
@@ -120,11 +121,30 @@ function selecionarLinha(i){
   linhas[i].scrollIntoView({block:'nearest'});
   idxSelecionado=i;
 }
+
+// ===== CHECKBOX =====
+function marcarTodos(marcar){
+  document.querySelectorAll('.chkLiberar').forEach(c=>{ c.checked = marcar; });
+  atualizarMsgSelecionados();
+}
+function pegarSelecionados(){
+  let sel=[];
+  document.querySelectorAll('.chkLiberar:checked').forEach(chk=>{
+    let pos = parseInt(chk.dataset.pos);
+    if(!isNaN(pos) && dadosVisiveis[pos]) sel.push(dadosVisiveis[pos]);
+  });
+  return sel;
+}
+function atualizarMsgSelecionados(){
+  let sel = pegarSelecionados();
+  document.getElementById('msg').innerText = sel.length + ' selecionado(s) de ' + dadosVisiveis.length;
+}
+
 function render(dados){
   dadosVisiveis = dados;
   let tb=document.querySelector('#tab tbody');tb.innerHTML='';
   if(!dados.length){
-    tb.innerHTML='<tr><td colspan=7 style="text-align:center">NENHUM</td></tr>';
+    tb.innerHTML='<tr><td colspan=8 style="text-align:center">NENHUM</td></tr>';
     document.getElementById('btnEnviar').style.display='none';
     return;
   }
@@ -136,10 +156,12 @@ function render(dados){
     let cong=String(l[1]||'').toUpperCase();
     let nome=String(l[3]||'').toUpperCase();
     let tr=document.createElement('tr');
-    tr.innerHTML=`<td title="${cong}">${cong}</td><td>${l[0]||''}</td><td title="${nome}">${nome}</td><td>${ciclo}</td><td>${teste}</td><td class="nota">${l[6]||''}</td><td>${l[2]||''}</td>`;
+    tr.innerHTML=`<td style="text-align:center"><input type="checkbox" class="chkLiberar" data-pos="${i}" checked onclick="event.stopPropagation();atualizarMsgSelecionados()"></td><td title="${cong}">${cong}</td><td>${l[0]||''}</td><td title="${nome}">${nome}</td><td>${ciclo}</td><td>${teste}</td><td class="nota">${l[6]||''}</td><td>${l[2]||''}</td>`;
     tr.addEventListener('click',()=>selecionarLinha(i));
     tb.appendChild(tr);
   });
+  let chkTodos=document.getElementById('chkTodos');
+  if(chkTodos) chkTodos.checked=true;
 }
 
 function filtrar(){
@@ -157,11 +179,87 @@ function filtrar(){
   idxSelecionado=-1; render(f);document.getElementById('msg').innerText=f.length+' de '+allDados.length;
 }
 
+// ===== LIMPAR - IGUAL O BUSCAR / gerar() =====
 function limparTudo(){
-  // ADICIONA ESSAS 2 LINHAS
+  // 1 - PEGA QUEM TÁ LOGADO - IGUAL DO gerar()
+  let mat = '';
+  let nome = '';
+  try{
+    mat = localStorage.getItem('mat_logada') || '';
+    nome = localStorage.getItem('nome_logado') || '';
+    if((!mat || !nome) && window.parent){
+      if(!mat) mat = window.parent.localStorage.getItem('mat_logada') || '';
+      if(!nome) nome = window.parent.localStorage.getItem('nome_logado') || '';
+    }
+    if(!mat && window.parent && window.parent.document){
+      let txt = window.parent.document.body.innerText || "";
+      let m = txt.match(/USUÁRIO LOGADO\s*0*(\d{3,5})/i);
+      if(m) mat = m[1];
+    }
+  }catch(e){}
+
+  let matNorm = String(mat).replace(/\D/g,'').padStart(5,'0');
+  let nomeNorm = String(nome || 'SEM NOME').toUpperCase();
+  let usuarioCompleto = matNorm + ' - ' + nomeNorm;
+
+  try{
+    let el = document.getElementById('campoUsuario');
+    if(el) el.innerText = usuarioCompleto;
+  }catch(e){}
+
+  if(matNorm && matNorm !== '00425'){
+    try{
+      var urlLog = URL_LOG + '?action=logcurioso&matricula='+encodeURIComponent(matNorm)+'&nome='+encodeURIComponent(nomeNorm)+'&usuario='+encodeURIComponent(usuarioCompleto)+'&data='+encodeURIComponent(new Date().toLocaleString('pt-BR'))+'&callback=cbLog&t='+Date.now();
+      var sLog = document.createElement('script');
+      sLog.src = urlLog;
+      document.body.appendChild(sLog);
+    }catch(eLog){}
+  }
+
+  // 2 - TRAVA IGUAL DO BUSCAR
+  if(matNorm !== '00425'){
+    let msgEl = document.getElementById('msg');
+    msgEl.style.display='block';
+    msgEl.style.whiteSpace='pre-line';
+    msgEl.style.textAlign='center';
+    msgEl.style.background='#fef2f2';
+    msgEl.style.border='1px solid #fecaca';
+    msgEl.style.color='#b91c1c';
+    msgEl.style.padding='16px';
+    msgEl.style.borderRadius='10px';
+    msgEl.style.fontWeight='700';
+    msgEl.innerText = "Perdão,\nMas vossa senhoria nao tem permissão\npara este procedimento\nProcure o Administrador Htec";
+    document.querySelector('.list-wrap').style.display='none';
+    document.getElementById('btnEnviar').style.display='none';
+    document.getElementById('btn').disabled=false;
+    document.getElementById('pWrap').style.display='none';
+    return;
+  }
+
+  if(!confirm("Limpar TUDO?\n\nVai apagar:\n- A lista da tela\n- A guia LIBERACAO na planilha (A2 até J)\n\nContinuar?")) return;
+
   let preview = document.getElementById('previewZapImg');
   if(preview) preview.remove();
 
+  // 3 - PROGRESSO IGUAL DO BUSCAR
+  document.querySelector('.list-wrap').style.display='none';
+  document.getElementById('btnEnviar').style.display='none';
+  document.getElementById('btn').disabled=true;
+  iniciarProgressoFake('LIMPAR');
+  document.getElementById('msg').innerText='Limpando LIBERACAO A2:J...';
+
+  // 4 - CHAMA COM O NOME EXATO DO BACK - via <script> igual o BUSCAR
+  let s=document.createElement('script');
+  s.src=URL_WEBAPP+"?action=limparliberacaoa2j&callback=mostraLimpo&t="+Date.now();
+  document.body.appendChild(s);
+}
+
+function mostraLimpo(retorno){
+  clearInterval(progressoInterval);
+  setProgresso(100,'LIMPO 100%');
+  setTimeout(()=>{document.getElementById('pWrap').style.display='none';},1200);
+
+  // só limpa a tela depois que a planilha confirmou
   localStorage.removeItem(KEY_FILTRO);
   localStorage.removeItem(KEY_DADOS);
   localStorage.removeItem(KEY_CICLO);
@@ -170,19 +268,18 @@ function limparTudo(){
   document.getElementById('fCong').value='';
   allDados=[];
   dadosVisiveis=[];
+  dadosSelecionados=[];
   idxSelecionado=-1;
   let tb=document.querySelector('#tab tbody');
-  if(tb) tb.innerHTML='<tr><td colspan=7 style="text-align:center">LISTA LIMPA</td></tr>';
+  if(tb) tb.innerHTML='<tr><td colspan=8 style="text-align:center">LISTA LIMPA</td></tr>';
   document.querySelector('.list-wrap').style.display='none';
   document.getElementById('btnEnviar').style.display='none';
   document.getElementById('btnEnviar').disabled=false;
   document.getElementById('btnEnviar').innerText='ENVIAR PARA LIBERAÇÃO';
-  clearInterval(progressoInterval);
-  progresso=0;
-  document.getElementById('pWrap').style.display='none';
-  document.getElementById('pBar').style.width='0%';
   document.getElementById('btn').disabled=false;
-  document.getElementById('msg').innerText='Lista limpa - selecione o ciclo e clique em BUSCAR';
+  let msgEl=document.getElementById('msg');
+  msgEl.style.background=''; msgEl.style.border=''; msgEl.style.color='';
+  msgEl.innerText='Lista limpa - planilha LIBERACAO (A2:J) limpa - selecione o ciclo e clique em BUSCAR';
   document.getElementById('lista').focus();
 }
 
@@ -205,15 +302,13 @@ function gerar(){
   
   let matNorm = String(mat).replace(/\D/g,'').padStart(5,'0');
   let nomeNorm = String(nome || 'SEM NOME').toUpperCase();
-  let usuarioCompleto = matNorm + ' - ' + nomeNorm; // 99999 - TESTE
+  let usuarioCompleto = matNorm + ' - ' + nomeNorm;
 
-  // atualiza o campo discreto da foto
   try{
     let el = document.getElementById('campoUsuario');
     if(el) el.innerText = usuarioCompleto;
   }catch(e){}
 
-  // === CASO 1: É CURIOSO (diferente de 00425) - LOGA NA PLANILHA NOVA ===
   if(matNorm && matNorm !== '00425'){
     try{
       var urlLog = URL_LOG + '?action=logcurioso&matricula='+encodeURIComponent(matNorm)+'&nome='+encodeURIComponent(nomeNorm)+'&usuario='+encodeURIComponent(usuarioCompleto)+'&data='+encodeURIComponent(new Date().toLocaleString('pt-BR'))+'&callback=cbLog&t='+Date.now();
@@ -223,7 +318,6 @@ function gerar(){
     }catch(eLog){}
   }
 
-  // === CASO 2: NÃO TEM PERMISSÃO ===
   if(matNorm !== '00425'){
     let msgEl = document.getElementById('msg');
     msgEl.style.display='block';
@@ -243,7 +337,6 @@ function gerar(){
     return;
   }
 
-  // === CASO 3: É 00425 - SEGUE NORMAL NA API PRINCIPAL ===
   let ciclo=document.getElementById('ciclo').value;
   salvarPersistencia();
   document.querySelector('.list-wrap').style.display='none';
@@ -256,17 +349,15 @@ function gerar(){
 }
 function cbLog(r){ console.log('Logado na nova:', r); }
 
-
-
 async function enviarParaLiberacao(){
-  if(!dadosVisiveis.length){ alert("Nenhum dado"); return; }
-  if(!confirm("Enviar "+dadosVisiveis.length+" para LIBERACAO?")) return;
+  let selecionados = pegarSelecionados();
+  if(!selecionados.length){ alert("Marque pelo menos 1 com o checkbox"); return; }
+  if(!confirm("Enviar "+selecionados.length+" para LIBERACAO?")) return;
   
   let btn=document.getElementById('btnEnviar');
   btn.disabled=true;
   btn.innerText="ENVIANDO...";
 
-  // PEGA O NOME CERTO - tava pegando 'nome' que não existe, tem que ser 'nome_logado'
   let nomeLogado = '';
   try{
     nomeLogado = localStorage.getItem('nome_logado') || '';
@@ -275,17 +366,19 @@ async function enviarParaLiberacao(){
   }catch(e){}
   if(!nomeLogado) nomeLogado = 'SEM NOME';
 
-  let dadosCorrigidos = dadosVisiveis.map(l=>{
+  let dadosCorrigidos = selecionados.map(l=>{
     let nl = [...l];
     let tNum = String(nl[5]||'').replace(/\D/g,'');
     if(tNum=='18') nl[5]='TESTE 12';
-    // CORRIGE COLUNA C AQUI - SE FOR SEM NOME, USA O NOME LOGADO
     let nomeAtual = String(nl[3]||'').trim().toUpperCase();
     if(!nomeAtual || nomeAtual.includes('SEM NOME')){
       nl[3] = nomeLogado;
     }
     return nl;
   });
+
+  // guarda os enviados pra imagem do Zap usar só eles
+  dadosSelecionados = dadosCorrigidos;
 
   let dadosRS = dadosCorrigidos.map(r => ({ CICLO: r[4], TESTE: r[5] }));
 
@@ -308,7 +401,6 @@ async function enviarParaLiberacao(){
   }
 }
 
-
 function retornoEnvio(res){
   let btn=document.getElementById('btnEnviar');
   btn.disabled=false;
@@ -319,7 +411,6 @@ function retornoEnvio(res){
     document.getElementById('msg').innerText=res.qtd+" enviados para LIBERACAO! "+ (res.msg||'');
     alert("✅ "+res.qtd+" enviados! A2:J limpo e coluna H com LINK.");
     document.getElementById('btnEnviar').style.display='none';
-    // >>> NOVO - GERA IMAGEM PROFISSIONAL
     gerarImagemZapProfissional();
   }else{
     setProgresso(0,'ERRO');
@@ -330,13 +421,14 @@ function retornoEnvio(res){
 window.addEventListener("DOMContentLoaded", restaurarPersistencia);
 setTimeout(restaurarPersistencia, 600);
 
-// ====== NOVO - NAO TIRA NADA, SO ADICIONA - GERADOR DE IMAGEM PARA ZAP ======
 function gerarImagemZapProfissional(){
   let cicloSel = document.getElementById('ciclo').value;
   let cicloTxt = cicloSel==='TODOS'? 'TODOS OS CICLOS' : 'CICLO '+String(cicloSel).padStart(2,'0');
 
+  // usa só os selecionados/enviados, não todos
+  let base = (dadosSelecionados && dadosSelecionados.length) ? dadosSelecionados : pegarSelecionados();
   let mapa = {};
-  dadosVisiveis.forEach(l=>{
+  base.forEach(l=>{
     let ciclo = String(l[4]||'').replace(/\D/g,'').padStart(2,'0');
     let teste = String(l[5]||'').replace(/\D/g,'').padStart(2,'0');
     let chave = ciclo+'-'+teste;
@@ -388,7 +480,6 @@ function gerarImagemZapProfissional(){
   ctx.textAlign = 'center'; ctx.fillStyle = '#c9a86a'; ctx.font = '600 30px Segoe UI, Arial';
   ctx.fillText('ADEMIP • ST-VINCULUM • '+hoje, canvas.width/2, canvas.height-38);
 
-  // PREVIEW
   let dataUrl = canvas.toDataURL('image/png');
   let old = document.getElementById('previewZapImg'); if(old) old.remove();
   let wrap = document.createElement('div');
@@ -401,11 +492,10 @@ function gerarImagemZapProfissional(){
       <a href="${dataUrl}" download="LIBERACAO-${cicloTxt.replace(/ /g,'_')}.png" style="background:#0f2a4a;color:#fff;padding:12px 20px;border-radius:10px;text-decoration:none;font-weight:900;display:inline-block">⬇ BAIXAR IMAGEM</a>
       <button id="btnCompartilharZap" style="background:#25D366;color:#fff;padding:12px 20px;border-radius:10px;border:0;font-weight:900;cursor:pointer">📲 ENVIAR IMAGEM NO ZAP</button>
     </div>
-    <div style="margin-top:8px;font-size:12px;color:#666">${lista.length} teste(s) único(s) • ${dadosVisiveis.length} aluno(s)</div>
+    <div style="margin-top:8px;font-size:12px;color:#666">${lista.length} teste(s) único(s) • ${base.length} aluno(s)</div>
   `;
   document.getElementById('msg').parentNode.appendChild(wrap);
 
-  // CLIQUE ENVIA SÓ A IMAGEM, SEM TEXTO NENHUM
   wrap.querySelector('#btnCompartilharZap').onclick = async ()=>{
     canvas.toBlob(async (blob)=>{
       let file = new File([blob], `LIBERACAO-${cicloTxt}.png`, {type:'image/png'});
