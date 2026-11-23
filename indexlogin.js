@@ -239,12 +239,23 @@ function mostrarSistema(){
   let nomeLogado = (localStorage.getItem('nome_logado')||'').trim();
   let matFmt = String(matLogada).padStart(5,'0');
   document.getElementById("user-display").innerText = matFmt + ' - ' + nomeLogado;
+
+  // --- SÓ ESSES 3 VEEM A PASTA ADMINISTRAÇÃO ---
+  const adms = ['00425', '00001', '05722'];
+  const ehAdm = adms.includes(matFmt);
+
+  let grupoAdmin = document.getElementById('grupo-admin');
+  if(grupoAdmin) grupoAdmin.style.display = ehAdm ? 'block' : 'none';
+
   let btnAcessoUsuario = document.getElementById('btn-acesso-usuario');
-  if(matFmt === '00425'){ if(btnAcessoUsuario) btnAcessoUsuario.style.display = 'flex'; }else{ if(btnAcessoUsuario) btnAcessoUsuario.style.display = 'none'; }
+  if(btnAcessoUsuario) btnAcessoUsuario.style.display = ehAdm ? 'flex' : 'none';
+
   let btnMovimentoAdm = document.getElementById('btn-movimento-adm');
-  if(matFmt === '00425'){ if(btnMovimentoAdm) btnMovimentoAdm.style.display = 'flex'; }else{ if(btnMovimentoAdm) btnMovimentoAdm.style.display = 'none'; }
+  if(btnMovimentoAdm) btnMovimentoAdm.style.display = ehAdm ? 'flex' : 'none';
+
   let btnManut = document.getElementById('btn-manutencao');
-  if(matFmt === '00425'){ if(btnManut) btnManut.style.display='flex'; }else{ if(btnManut) btnManut.style.display='none'; }
+  if(btnManut) btnManut.style.display = ehAdm ? 'flex' : 'none';
+
   let iframe = document.getElementById('tela-Cadastro.html');
   if(iframe){
     iframe.onload = function(){ jaEnviou = false; setTimeout(enviarParaForm, 800); };
@@ -500,7 +511,7 @@ async function salvarNovoAluno(){
     let cpfSoNum = cpf.replace(/\D/g,'');
     let matSemZero = mat.replace(/^0+/,'');
     let achadoPend = cachePendentes.find(x=>{ let m = String(x.Matricula||x.B||'').replace(/\D/g,'').padStart(5,'0'); let mSemZero = String(x.Matricula||x.B||'').replace(/\D/g,'').replace(/^0+/,''); let n = String(x.Nome||x.C||'').toUpperCase().trim(); let c = String(x.CPF||'').replace(/\D/g,''); return (m==mat || mSemZero==matSemZero) || (c && c==cpfSoNum) || (n && (n==nome || n.includes(nome) || nome.includes(n))); });
-    if(achadoPend){ resDiv.innerHTML=`<div style='padding:12px;background:#0F172A;border:1px solid #f59e0b;border-radius:8px;text-align:center;color:#fbbf24'><b>⚠️ VOCÊ JÁ ESTÁ EM PENDENTES!</b><br><br>Encontrado: <b>${String(achadoPend.Matricula||'').padStart(5,'0')} - ${achadoPend.Nome||''}</b><br>CPF: ${achadoPend.CPF||''}<br><br>Não pode cadastrar como Aluno Novo.<br><br>Use a opção 2:<br><b>"Tenho Teste - Mas tenho matriculas divergentes"</b></div>`; return; }
+    if(achadoPend){ resDiv.innerHTML=`<div style='padding:12px;background:#0F172A;border:1px solid #f59e0b;border-radius:8px;text-align:center;color:#fbbf24'><b>⚠️  VOCÊ JÁ ESTÁ COM MATRICULA DIVERGENTE!</b><br><br>Encontrado: <b>${String(achadoPend.Matricula||'').padStart(5,'0')} - ${achadoPend.Nome||''}</b><br>Não pode cadastrar como Aluno Novo.<br><br>ATENÇÃO:<br><b>"Matriculas Divergentes. Contate o Administrador no contato 91 98603-2155"</b></div>`; return; }
   }catch(e){}
   resDiv.innerHTML="⏳ Gerando senha...";
   try{
@@ -542,7 +553,7 @@ async function salvarNovoAluno(){
           btnSalvar.setAttribute('onclick', `gerarAcesso('${mat}')`);
         }
 
-resDiv.innerHTML += `<div style='margin-top:8px;color:#fbbf24;font-size:13px'>Voce ja esta cadastrado.<br>Clique em <b>Ver Codigo</b>para receber o codigo temporario no seu WhatsApp.<b>Em seguida, volte no login e digite a sua matricula + codigo temporario em senha.<b>Vai em cadastro e click no olho da senha no formulario.</div>`;
+resDiv.innerHTML += `<div style='margin-top:8px;color:#fbbf24;font-size:13px'>Voce ja esta cadastrado.<br>Clique em <b>Ver Codigo</b>para receber o codigo temporario no seu WhatsApp.<b> Em seguida, volte no login e digite a sua matricula + codigo temporario em senha.<b>Vai em cadastro e click no olho da senha no formulario.</div>`;
       }
       // === FIM NOVO ===
     }
@@ -623,7 +634,7 @@ async function salvarAlunoProvisorio(){
     if(cachePendentes.length===0){ resDiv.innerHTML="⏳ Verificando divergencia de Matricula..."; let rPend = await apiGet('todosPendentes'); cachePendentes = rPend.data||[]; }
     let cpfSoNum = cpf.replace(/\D/g,'');
     let achadoPend = cachePendentes.find(x=>{ let n = String(x.Nome||x.C||'').toUpperCase().trim(); let c = String(x.CPF||'').replace(/\D/g,''); return (c && c==cpfSoNum) || (n && (n==nome || n.includes(nome) || nome.includes(n))); });
-    if(achadoPend){ resDiv.innerHTML=`<div style='padding:12px;background:#0F172A;border:1px solid #f59e0b;border-radius:8px;text-align:center;color:#fbbf24'><b>⚠️ VOCÊ JÁ ESTÁ EM PENDENTES!</b><br><br>Encontrado: <b>${String(achadoPend.Matricula||'').padStart(5,'0')} - ${achadoPend.Nome||''}</b><br>CPF: ${achadoPend.CPF||''}<br><br>Não pode cadastrar como Aluno Novo.<br><br>Use a opção 2:<br><b>"Tenho Teste - Mas tenho matriculas divergentes"</b></div>`; return; }
+    if(achadoPend){ resDiv.innerHTML=`<div style='padding:12px;background:#0F172A;border:1px solid #f59e0b;border-radius:8px;text-align:center;color:#fbbf24'><b>⚠️ VOCÊ JÁ ESTÁ COM MATRICULA DIVERGENTE!</b><br><br>Encontrado: <b>${String(achadoPend.Matricula||'').padStart(5,'0')} - ${achadoPend.Nome||''}<br><br>Não pode cadastrar como Aluno Novo.<br><br>ATENÇÃO:<br><b>"Matriculas Divergentes. Contate o Administrador no contato 91 98603-2155"</b></div>`; return; }
   }catch(e){}
 
   // === REAPROVEITADO - Gerando senha... ===
@@ -666,7 +677,7 @@ resDiv.innerHTML=`<div style='padding:12px;background:#0F172A;border:1px solid #
           btnSalvar.style.fontWeight = '800';
           btnSalvar.setAttribute('onclick', `gerarAcesso('${mat}')`);
         }
-        resDiv.innerHTML += `<div style='margin-top:8px;color:#fbbf24;font-size:13px'>Voce ja esta cadastrado.<br>Clique em <b>Ver Codigo</b>para receber o codigo temporario no seu WhatsApp.<b>Em seguida, volte no login e digite a sua matricula + codigo temporario em senha.<b>Vai em cadastro e click no olho da senha no formulario.</div>`;
+        resDiv.innerHTML += `<div style='margin-top:8px;color:#fbbf24;font-size:13px'>Voce ja esta cadastrado.<br>Clique em <b>Ver Codigo</b>para receber o codigo temporario no seu WhatsApp.<b> Em seguida, volte no login e digite a sua matricula + codigo temporario em senha.<b>Vai em cadastro e click no olho da senha no formulario.</div>`;
       }
       // === FIM ===
     }
@@ -1030,4 +1041,57 @@ function limparNovoAluno(){
   if(btnP) btnP.style.display='none';
   var inp = document.getElementById('pesquisaNome');
   if(inp) inp.focus();
+}
+
+function toggleSubmenuAdm(e){
+  if(e) e.stopPropagation();
+  document.querySelector('.menu-grupo-adm').classList.toggle('aberto');
+}
+
+// ===== TESTES + RECUPERAR - ESPERA O ACESSO LIBERAR =====
+function esperarAcessoELiberar(botao, nomeFuncao, titulo){
+  abrir('Cadastro.html', botao, titulo);
+
+  var tent = 0;
+  var iv = setInterval(function(){
+    tent++;
+    try{
+      var iframe = document.getElementById('tela-Cadastro.html');
+      if(!iframe || !iframe.contentWindow) return;
+
+      // Pergunta pro próprio Cadastro se já pode abrir
+      // usa a mesma função que ele já usa pra travar
+      var pode = true;
+      if(typeof iframe.contentWindow.verificarDadosCompletos === 'function'){
+        pode = iframe.contentWindow.verificarDadosCompletos();
+      }
+
+      if(pode){
+        clearInterval(iv);
+        if(typeof iframe.contentWindow[nomeFuncao] === 'function'){
+          iframe.contentWindow[nomeFuncao]();
+        }
+        return;
+      }
+    }catch(e){}
+    // Se em 10s não liberar, chama mesmo assim
+    // aí o próprio Cadastro mostra o modal de "Dados incompletos"
+    if(tent > 50){
+      clearInterval(iv);
+      try{
+        var iframe2 = document.getElementById('tela-Cadastro.html');
+        if(iframe2 && iframe2.contentWindow && typeof iframe2.contentWindow[nomeFuncao] === 'function'){
+          iframe2.contentWindow[nomeFuncao]();
+        }
+      }catch(e){}
+    }
+  }, 200);
+}
+
+function abrirTestesDoCadastro(botao){
+  esperarAcessoELiberar(botao, 'abrirTeste52', 'Testes');
+}
+
+function abrirRecuperarDoCadastro(botao){
+  esperarAcessoELiberar(botao, 'recuperar', 'Recuperar');
 }
