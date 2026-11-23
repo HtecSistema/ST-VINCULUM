@@ -444,6 +444,23 @@ function listarFaltandoDoAlunoCert(a){
   return faltando;
 }
 
+
+function isProvisorioCert(a){
+  if(!a) return false;
+  let v = '';
+  if(Array.isArray(a)){
+    v = a[42]; // AQ = resultado
+  } else {
+    // se a API vier como objeto
+    for(let k of Object.keys(a)){
+      if(k.toLowerCase().trim() === 'resultado'){ v = a[k]; break; }
+    }
+  }
+  let norm = String(v||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+  return norm === 'PROVISORIO';
+}
+
+
 // ===== CACHE PRA TRAVA ABRIR RÁPIDO =====
 var CACHE_TODOS_CERT = null;
 var CACHE_TODOS_CERT_TEMPO = 0;
@@ -459,6 +476,31 @@ document.addEventListener('DOMContentLoaded', function(){
     }).catch(e=>{});
   }, 500);
 });
+
+
+async function buscarAlunoParaTravaCert(mat){
+  let res = await fetch(API_DUSUARIO + '?action=todos');
+  let json = await res.json();
+  let lista = json.dados || json.data || json.alunos || json;
+  if(!Array.isArray(lista)) return null;
+
+  for(let a of lista){
+    let m = '';
+    let linha = a;
+    if(Array.isArray(a)){
+      m = a[1]; // B = Matricula
+    } else {
+      // objeto: procura a chave Matricula
+      for(let k of Object.keys(a)){
+        if(k.toLowerCase().trim() === 'matricula'){ m = a[k]; break; }
+      }
+    }
+    if(String(m||'').trim() === String(mat||'').trim()){
+      return linha;
+    }
+  }
+  return null;
+}
 
 async function buscarAlunoParaTravaCert(mat){
   let mat5 = normalizaMat5Cert(mat);
@@ -492,19 +534,14 @@ function mostrarAlertaSistema(msg){
   document.body.insertAdjacentHTML('beforeend', `
   <div id="modalAlertaSistema" style="position:fixed;inset:0;background:rgba(15,23,42,.65);backdrop-filter:blur(3px);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:16px">
     <div style="background:#fff;width:100%;max-width:420px;border-radius:16px;padding:26px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);border:1px solid #e2e8f0">
-      <div style="color:#0b5ed7;font-weight:900;font-size:15px;margin-bottom:12px">⚠️ Campos Obrigatórios</div>
+      <div style="color:#dc2626;font-weight:900;font-size:15px;margin-bottom:12px">⚠️ Campos Obrigatórios</div>
       <div style="font-size:13px;color:#222;white-space:pre-line;text-align:left;line-height:1.8">${msg}</div>
-      <button onclick="document.getElementById('modalAlertaSistema').remove()" style="margin-top:20px;background:#0b5ed7;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:900;width:100%">OK</button>
+      <button onclick="document.getElementById('modalAlertaSistema').remove()" style="margin-top:20px;background:#dc2626;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:900;width:100%">OK</button>
     </div>
   </div>`);
 }
 
 async function gerarCertificado(){
-
-
-
-
-// ===== ANTES DE QUALQUER COISA - LÊ DADOS NA API E TRAVA SE INCOMPLETO =====
   let matTrava = '';
   try{
     if(typeof DETALHE!=='undefined' && DETALHE && DETALHE.mat) matTrava = DETALHE.mat;
@@ -515,14 +552,19 @@ async function gerarCertificado(){
   if(matTrava){
     try{
       let alunoAPI = await buscarAlunoParaTravaCert(matTrava);
+
+      // 1º - PROVISÓRIO = SECRETARIA
+      if(isProvisorioCert(alunoAPI)){
+        mostrarAlertaSistema('Certificado suspenso devido à matrícula provisória.\n\nPor gentileza, procure a secretaria para regularizar a sua matrícula.');
+        return;
+      }
+
+      // 2º - FALTA CAMPO = CAMPOS
       let faltando = listarFaltandoDoAlunoCert(alunoAPI);
       if(faltando.length){
-        let msgTopo = '';
-        if(faltando.length === 1){
-          msgTopo = 'Há 1 dado pendente e para gerar o certificado é preciso completá-lo.\n\nPor gentileza, preencha o campo pendente:\n\n• ' + faltando.join('\n• ');
-        } else {
-          msgTopo = 'Há ' + faltando.length + ' dados pendentes e para gerar o certificado é preciso completá-los.\n\nPor gentileza, preencha os campos pendentes:\n\n• ' + faltando.join('\n• ');
-        }
+        let msgTopo = faltando.length === 1
+          ? 'Certificado suspenso devido ausência de informação de dado.\n\nPor gentileza, volte no cadastro e preencha o campo pendente:\n\n• ' + faltando.join('\n• ')
+          : 'Certificado suspenso devido ausência de informações de dados.\n\nPor gentileza, volte no cadastro e preencha os campos pendentes:\n\n• ' + faltando.join('\n• ');
         mostrarAlertaSistema(msgTopo);
         return;
       }
@@ -531,9 +573,9 @@ async function gerarCertificado(){
       return;
     }
   }
-  // ===== FIM DA TRAVA - DAQUI PRA BAIXO SEGUE IGUAL =====
+  // ===== DAQUI PRA BAIXO SEGUE IGUAL, NÃO MEXER =====
 
-  if(!SELECIONADO && !DETALHE){  
+  if(!SELECIONADO && !DETALHE){
     var mat = document.getElementById("inputMatricula").value.trim(); 
     if(mat){ pesquisar(); return; } 
     alert("Selecione aluno"); return; 
