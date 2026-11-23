@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste Discipulado</title>
+<style>
+*{box-sizing:border-box;font-family:sans-serif}
+body{background:#0F172A;color:#F1F5F9;margin:0;padding:0}
+.topo{background:#111;color:#fff;padding:12px;display:flex;align-items:center;gap:12px}
+.topo button{background:#fff;color:#111;border:0;padding:8px 14px;border-radius:8px;font-weight:900;cursor:pointer}
+.topo h3{margin:0;font-size:14px;font-weight:900;flex:1}
+.wrap{padding:12px;max-width:720px;margin:0 auto}
+#listaTestes{overflow-y:auto;padding:10px;background:#f8f9fa;border-radius:12px;min-height:200px;color:#111}
+</style>
+</head>
+<body>
+<div class="container" style="margin:0 !important;max-width:800px;width:100%">
+<div class="topo">
+  <h3 id="tituloTeste">📝 BEM VINDO AOS TESTES</h3>
+  <button onclick="reiniciarTestes()">🔄 Atualizar</button>
+</div>
+<div class="wrap">
+<div id="infoAluno" style="background:#1E293B;border:1px solid #334155;border-radius:10px;padding:12px;margin-bottom:12px;font-size:13px;display:none"></div>
+<div id="listaTestes">Carregando testes... Por gentileza, Aguarde!</div>
+</div>
+</div>
+<script>
+const API_LIB='https://script.google.com/macros/s/AKfycbz2phEY97FZOsloQriNH9i0cWQ0Qex0PAr02jbL18qZHjHwnTtOB4tRcwJRIQbHjMYC/exec';
+const API_URL='https://script.google.com/macros/s/AKfycbxLXw-nu5oXXtjE8HKik_W_bbT9CGjTNJWw-dUm4wWYv-hjcz1dOhMHLxoUTRHGJA3D0A/exec';
+const API_URL_LOG='https://script.google.com/macros/s/AKfycbz94-3iCkeVDD7Za2XAYzYL7BtCM3rWWMxGc_9kL-xtpnRoog91IR4KmqgWzLXYHIsb/exec';
+let CACHE_MANUTENCAO=[];
+function semAcentoMANUT(s){return (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim().toUpperCase();}
+async function carregarManutencao(){
+  try{
+    const r=await fetch(API_URL_LOG+'?action=getmanutencao&t='+Date.now(),{cache:'no-store'});
+    const t=await r.text(); let lista=[]; try{lista=JSON.parse(t)}catch{lista=[]}
+    if(lista.data) lista=lista.data; if(!Array.isArray(lista)) lista=[];
+    CACHE_MANUTENCAO=lista;
+  }catch(e){}
+}
+function checkCicloEmManutencao(cicloNome){
+  if(!CACHE_MANUTENCAO||!CACHE_MANUTENCAO.length) return null;
+  let cicloNorm=semAcentoMANUT(cicloNome).replace(/\s+/g,"");
+  for(let i=0;i<CACHE_MANUTENCAO.length;i++){
+    let m=CACHE_MANUTENCAO[i];
+    let status=semAcentoMANUT(m.status||m.Status||m.F||"");
+    if(status.indexOf("MANUTEN")===-1) continue;
+    let tipo=semAcentoMANUT(m.tipo||m.Tipo||m.TipoCiclo||m.B||"").replace(/\s+/g,"");
+    let tipoSoNum=(tipo.match(/\d+/)||[""])[0];
+    let cicloSoNum=(cicloNorm.match(/\d+/)||[""])[0];
+    if(tipo===cicloNorm||tipo.indexOf(cicloNorm)!==-1||cicloNorm.indexOf(tipo)!==-1||(tipoSoNum&&cicloSoNum&&tipoSoNum===cicloSoNum)){
+      return {tipo:m.tipo||m.TipoCiclo||m.B||cicloNome,dataFinal:m.dataFinal||m.DataFinal||m.D||"",horario:m.horario||m.Horario||m.E||""};
+    }
+  }
+  return null;
+}
+function mostrarModalManutencao(info){
+  let old=document.getElementById('modalManutencao'); if(old) old.remove();
+  let div=document.createElement('div'); div.id='modalManutencao';
+  div.style='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100001;display:flex;align-items:center;justify-content:center;padding:20px';
+  div.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center"><div style="font-size:15px;font-weight:900;color:#111">EM MANUTENÇÃO</div><div style="font-size:18px;font-weight:900;color:#e67e00;margin:10px 0">'+(info.tipo||'')+' em OBSERVAÇÃO</div><div style="font-size:13px;color:#222">Instável até às <b>'+(info.horario||'')+' do dia '+(info.dataFinal||'')+'</b></div><button onclick="document.getElementById(\'modalManutencao\').remove()" style="margin-top:20px;background:#000;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:900;width:100%">FECHAR</button></div>';
+  document.body.appendChild(div);
+}
+function mostrarAlerta(msg,titulo="ST-VINCULUM - Htec"){
+  let old=document.getElementById('modalAlertaTD'); if(old) old.remove();
+  let div=document.createElement('div'); div.id='modalAlertaTD';
+  div.style='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100002;display:flex;align-items:center;justify-content:center;padding:20px';
+  div.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center"><div style="font-size:14px;font-weight:900;color:#0b5ed7;margin-bottom:12px">'+titulo+'</div><div style="font-size:13px;color:#222;white-space:pre-line">'+msg+'</div><button onclick="document.getElementById(\'modalAlertaTD\').remove()" style="margin-top:20px;background:#0b5ed7;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:900;width:100%">OK</button></div>';
+  document.body.appendChild(div);
+}
+async function apiGet(a,p={}){p.t=Date.now();const u=API_URL+'?action='+a+'&'+new URLSearchParams(p);const r=await fetch(u,{cache:'no-store'});const t=await r.text();try{return JSON.parse(t)}catch{return{result:'ok',data:[]}}}
+async function apiPost(pl){const r=await fetch(API_URL,{method:'POST',body:JSON.stringify(pl)});const t=await r.text();try{return JSON.parse(t)}catch{return{result:'ok',message:t}}}
+function normaliza5Dig(v){return String(v||'').replace(/\D/g,'').padStart(5,'0').slice(-5);}
+let listaTestes=[]; let listaFeitos=[]; let listaLiberacao=[]; let _travaTeste={cod:'',tempo:0};
+let cacheTodos=[]; let alunoAtual=null; let matriculaOriginal='', codigoOriginal='';
+function getMatriculaAtual(){
+  let m=normaliza5Dig(localStorage.getItem('mat_logada')||localStorage.getItem('matricula')||'');
+  if(m&&m!=='00000') return m;
+  try{
+    if(window.parent&&window.parent!==window){
+      let p=window.parent;
+      if(p.localStorage){let pm=normaliza5Dig(p.localStorage.getItem('mat_logada')||''); if(pm&&pm!=='00000') return pm;}
+      if(p.document){let el=p.document.getElementById('Matricula'); if(el&&el.value) return normaliza5Dig(el.value);}
+    }
+  }catch(e){}
+  return m;
+}
+function getMat5(){return getMatriculaAtual();}
+function pegar(a){
+  for(var i=1;i<arguments.length;i++){
+    var k=arguments[i];
+    if(a[k]!==undefined && a[k]!==null && String(a[k]).trim()!=='') return a[k];
+  }
+  return '';
+}
+function coletarDados(){
+  if(!alunoAtual) return {Matricula:getMat5(),Nome:'',Congregacao:'',Fcongregacao:'',WhatsApp:'',Sexo:'',BatizadoAgua:'',BEspSanto:'',EspSanto:'',TFunEclesiastica:'',QualFuncao:'',Nascimento:'',CPF:''};
+  let a=alunoAtual; let up=v=>String(v||'').trim().toUpperCase();
+  return {
+    Codigo: up(pegar(a,'Codigo','CODIGO')),
+    Matricula: normaliza5Dig(pegar(a,'Matricula','MATRICULA')),
+    Congregacao: up(pegar(a,'Congregacao','Congregação','CONGREGACAO','Congregacao ','congregacao')),
+    Fcongregacao: up(pegar(a,'Fcongregacao','Fcongregação','FCONGREGACAO','Função na Congregação','Funcao na Congregacao','fcongregacao')),
+    Nome: up(pegar(a,'Nome','NOME')),
+    Nascimento: up(pegar(a,'Nascimento','NASCIMENTO')),
+    Sexo: up(pegar(a,'Sexo','SEXO')),
+    CPF: up(pegar(a,'CPF','Cpf')),
+    WhatsApp: up(pegar(a,'WhatsApp','WHATSAPP','Whatsapp')),
+    BatizadoAgua: up(pegar(a,'BatizadoAgua','Batizado Agua','BATIZADOAGUA')),
+    BEspSanto: up(pegar(a,'BEspSanto','EspSanto','B Esp Santo','BEsp Santo')),
+    EspSanto: up(pegar(a,'BEspSanto','EspSanto')),
+    TFunEclesiastica: up(pegar(a,'TFunEclesiastica','TFunEcle','TFun Eclesiastica')),
+    QualFuncao: up(pegar(a,'QualFuncao','Qual Funcao','Qual Função','QUAL FUNCAO')),
+    Resultado: up(pegar(a,'Resultado','AQ')),
+    Observacao: up(pegar(a,'Observacao','OBSERVACAO'))
+  };
+}
+function listarDadosFaltando(){
+  var d=coletarDados();
+  var lista=[{chave:['Matricula'],label:'MATRÍCULA'},{chave:['CPF'],label:'CPF'},{chave:['Nome'],label:'NOME COMPLETO'},{chave:['Sexo'],label:'SEXO'},{chave:['WhatsApp'],label:'WHATSAPP'},{chave:['Nascimento'],label:'NASCIMENTO'},{chave:['Congregacao'],label:'NOME DA CONGREGAÇÃO'},{chave:['BatizadoAgua'],label:'MEMBRO'},{chave:['EspSanto','BEspSanto'],label:'BT ESPÍRITO SANTO'},{chave:['TFunEclesiastica'],label:'FUNÇÃO ECLESIÁSTICA'},{chave:['Fcongregacao'],label:'FUNÇÃO NA CONGREGAÇÃO'}];
+  if(String(d.TFunEclesiastica||'').toUpperCase().trim()==='SIM') lista.push({chave:['QualFuncao'],label:'QUAL FUNÇÃO'});
+  var faltando=[];
+  for(var i=0;i<lista.length;i++){ var v=''; for(var j=0;j<lista[i].chave.length;j++){ var x=d[lista[i].chave[j]]; if(x!==undefined&&x!==null&&String(x).trim()!==''){v=String(x).trim();break;} } if(!v) faltando.push(String(lista[i].label)); }
+  return faltando;
+}
+function verificarDadosCompletos(){ return listarDadosFaltando().length===0; }
+function mostrarPopupDadosIncompletos(){
+  return new Promise(function(resolve){
+    var old=document.getElementById('modalAlertaTD'); if(old) old.remove();
+    var div=document.createElement('div'); div.id='modalAlertaTD';
+    div.style='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100002;display:flex;align-items:center;justify-content:center;padding:20px';
+    div.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center"><div style="font-size:14px;font-weight:900;color:#0b5ed7;margin-bottom:12px">⚠️ Dados incompletos</div><div style="font-size:13px;color:#222">Os dados estão incompletos</div><button id="btnOkDados" style="margin-top:20px;background:#0b5ed7;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:900;width:100%">OK</button></div>';
+    document.body.appendChild(div);
+    document.getElementById('btnOkDados').onclick=function(){div.remove();resolve();};
+  });
+}
+function reiniciarTestes(){ document.getElementById('listaTestes').innerHTML='Verificando seus dados... Por gentileza, Aguarde!'; abrirTeste52(); }
+function mostrarAvisoAntesAbrir(linkFinal){
+  let old=document.getElementById('modalAvisoCabecalho'); if(old) old.remove();
+  let f=document.createElement('div'); f.id='modalAvisoCabecalho';
+  f.style='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100000;display:flex;justify-content:center;align-items:center;padding:16px;overflow-y:auto';
+  f.innerHTML='<div style="background:white;max-width:410px;width:100%;border-radius:18px;padding:26px 20px 18px;text-align:center"><div style="font-size:36px">📄</div><h3 style="margin:6px 0 14px;font-weight:900;font-size:18px;color:#111">ATENÇÃO</h3><div style="text-align:justify;font-size:12px;line-height:1.45;color:#111">Você não precisa mais <b>PREENCHER</b> os seus Dados no <b>Formulário de Teste</b>. Já estão sendo transferidos pelo <b>ST-Vinculum</b>. Por favor, não <b>ALTERE</b> seus Dados. Clique em <b>SEGUINTE</b> ou <b>AVANÇAR</b> para acessar as perguntas.</div><div style="margin:10px 0 8px;text-align:justify;font-size:12px;line-height:1.45;color:#111">E, se de repente surgir essa mensagem ao abrir o teste:</div><div style="border-top:1px dashed #999;margin:8px 0 14px"></div><div style="background:#fff;border:1px solid #dadce0;border-radius:12px;padding:14px 14px 10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);text-align:left"><div style="font-weight:700;font-size:14px;line-height:1.25;color:#202124">Quer continuar o rascunho atual?</div><div style="font-size:14px;margin-top:8px;color:#202124;line-height:1.35;text-align:left">Tem um rascunho anterior da sua resposta do formulário. Quer utilizá-lo ou continuar com o seu rascunho atual?</div><div style="display:flex;justify-content:flex-end;gap:18px;margin-top:14px;font-size:14px"><span style="color:#5f6368">Usar rascunho anterior</span><span style="color:#1a73e8;font-weight:700">Continuar</span></div></div><div style="font-size:12px;margin-top:14px;text-align:justify;line-height:1.45;color:#111">Se você "NÃO CONCLUIU O TESTE" por uma ou outra razão, clique em <b>Usar rascunho anterior</b> caso contrario click em <b>Continuar</b></div><div style="font-weight:900;margin-top:16px;text-align:left;font-size:14px;color:#111">Boa prova!</div><div style="display:flex;gap:10px;margin-top:20px"><button id="btnFecharAviso" style="flex:1;background:#6c757d;color:white;border:0;padding:14px;border-radius:10px;font-weight:900">FECHAR</button><button id="btnOkAviso" style="flex:1;background:#0f766e;color:white;border:0;padding:14px;border-radius:10px;font-weight:900">ABRIR TESTE</button></div></div>';
+  document.body.appendChild(f);
+  document.getElementById('btnFecharAviso').onclick=()=>{f.remove();};
+  document.getElementById('btnOkAviso').onclick=()=>{f.remove(); let a=document.createElement('a'); a.href=linkFinal; a.target='_blank'; document.body.appendChild(a); a.click(); setTimeout(()=>{try{a.remove()}catch(e){}},800);};
+}
+// ===== REGRA: 1) TFEITOS, 2) LIBERACAO =====
+// Se já achou no tfeitos = REALIZADO, nem olha liberacao.
+// Se não achou no tfeitos e achou no liberacao (CICLO+TESTE, independente da matrícula) = RECUPERAÇÃO travado.
+function estaEmLiberacao(cNum, tNum){
+  if(!listaLiberacao || !listaLiberacao.length) return false;
+  return listaLiberacao.some(it=>{
+    let c = String(it.CICLO || it.E || it.e || '').toUpperCase().trim();
+    let tt = String(it.TESTE || it.F || it.f || '').toUpperCase().trim();
+    if(!c || !tt) return false;
+    let cNumL = (c.match(/\d+/)||[''])[0].replace(/^0+/,'') || '0';
+    let tNumL = (tt.match(/\d+/)||[''])[0].replace(/^0+/,'') || '0';
+    return cNumL===String(cNum) && tNumL===String(tNum);
+  });
+}
+function jaFezTeste(cNum, tNum){
+  let normChave=v=>String(v||'').split('-').map(p=>String(p).replace(/^0+/,'')||'0').join('-');
+  let chave = normChave(cNum+'-'+tNum);
+  return listaFeitos.some(f=> normChave(f.chave)===chave || String(f.cod||'').toUpperCase()===String('CICLO '+cNum+'-'+String(tNum).padStart(2,'0')).toUpperCase());
+}
+async function abrirTeste(linkOriginal,codUnico){
+  try{ let cicloTmp=(listaTestes.find(t=>String(t.Cod)===String(codUnico))?.Ciclo||'').toUpperCase(); let manutTmp=checkCicloEmManutencao(cicloTmp); if(manutTmp){mostrarModalManutencao(manutTmp);return;} }catch(e){}
+  let agora=Date.now(); if(_travaTeste.cod===codUnico&&(agora-_travaTeste.tempo)<2500) return; _travaTeste={cod:codUnico,tempo:agora};
+  let faltando=listarDadosFaltando();
+  if(faltando.length){ mostrarAlerta('Por gentileza, preencha os campos pendentes:\n\n• '+faltando.join('\n• '),'⚠️ Campos Obrigatórios'); return; }
+  // Trava RECUPERAÇÃO: só trava se NÃO fez e está no LIBERACAO. Se já fez, deixa abrir.
+  try{
+    let itemTmp = listaTestes.find(t=>String(t.Cod)==String(codUnico));
+    let cicloTmp2 = itemTmp ? String(itemTmp.Ciclo||'').toUpperCase() : '';
+    let cNumTmp = (cicloTmp2.match(/\d+/)||[''])[0].replace(/^0+/,'') || '0';
+    let mTmp = String(codUnico).match(/-(\d+)/);
+    let tNumTmp = mTmp ? mTmp[1].replace(/^0+/,'') || '0' : '';
+    if(cNumTmp && tNumTmp && !jaFezTeste(cNumTmp, tNumTmp)){
+      if(!listaLiberacao.length){
+        try{ let rLib = await apiGet('getliberacao',{}); listaLiberacao = rLib.data || rLib || []; }catch(e){}
+      }
+      if(estaEmLiberacao(cNumTmp, tNumTmp)){
+        mostrarAlerta('Teste LIBERADO para Recuperação. Por gentileza, aguarde','⏸️ RECUPERAÇÃO');
+        return;
+      }
+    }
+  }catch(e){}
+  const d=coletarDados(); let ciclo='4'; try{let item=listaTestes.find(t=>String(t.Cod)==String(codUnico)); if(item&&item.Ciclo) ciclo=String(item.Ciclo).replace(/\D/g,'');}catch(e){}
+  let base=linkOriginal;
+  try{ base=linkOriginal.split('/viewform')[0]+'/viewform?usp=pp_url'; let entries=[...linkOriginal.matchAll(/entry\.(\d+)/g)].map(x=>x[0]); let bat=String(d.BatizadoAgua||'').toUpperCase(); if(bat!=='SIM'&&bat!=='NAO') bat='SIM'; let vals=[d.Congregacao||'',d.Nome||'',d.WhatsApp||'',d.Matricula||'',(d.Sexo||'').toUpperCase(),bat,(d.QualFuncao||'').toUpperCase(),(d.Fcongregacao||'').toUpperCase()]; if(entries.length>0) entries.forEach((e,i)=>{if(vals[i]!==undefined) base+='&'+e+'='+encodeURIComponent(vals[i]);}); }catch(e){base=linkOriginal;}
+  apiGet('salvarNaResposta',{dados:JSON.stringify({...d,CodigoTeste:codUnico,Ciclo:ciclo}),cod:codUnico,ciclo:ciclo}).catch(()=>{});
+  try{let abertos=JSON.parse(localStorage.getItem('testes_abertos')||'{}'); abertos[codUnico]=true; localStorage.setItem('testes_abertos',JSON.stringify(abertos));}catch(e){}
+  mostrarAvisoAntesAbrir(base);
+}
+function jaEstaOK(mat){ try{if(localStorage.getItem('IEADMI_AP_'+mat)==='OK') return true;}catch(e){} try{var achado=(cacheTodos||[]).find(function(x){var m=String(x.Matricula||'').replace(/\D/g,'').padStart(5,'0').slice(-5);return m&&m===mat;}); if(achado&&String(achado.AP||'').trim().toUpperCase()==='OK') return true;}catch(e){} return false; }
+
+
+function ehProvisorio(){ try{var v=alunoAtual.Resultado||alunoAtual.AQ||''; return String(v).toUpperCase().indexOf('PROVISORIO')>=0;}catch(e){return false;} }
+function avisoProvisorio(){ return new Promise(function(resolve){ var div=document.createElement('div'); div.id='modalAlertaTD'; div.style='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100002;display:flex;align-items:center;justify-content:center;padding:20px'; div.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center"><div style="font-size:14px;font-weight:900;color:#dc2626">⚠️ MATRÍCULA PROVISÓRIA</div><div style="font-size:13px;color:#222;margin-top:12px">Sua matrícula está PROVISÓRIA.<br>Procure a secretaria para regularização, pois NÃO VAI EMITIR CERTIFICADO.</div><button id="btnOkProv" style="margin-top:20px;background:#dc2626;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:900;width:100%">OK</button></div>'; document.body.appendChild(div); document.getElementById('btnOkProv').onclick=function(){div.remove();resolve();}; }); }
+async function abrirTeste52(){
+  let mat=getMat5();
+  if(!mat||mat==='00000'){ return _abrirTeste52Original(); }
+  try{
+    let res=await apiGet('todos'); let lista=res.data||[]; cacheTodos=lista;
+    let achado=lista.find(x=>String(x.Matricula||'').replace(/\D/g,'').padStart(5,'0')===mat);
+    if(!achado){ document.getElementById('listaTestes').innerHTML='Matrícula '+mat+' não encontrada.'; return; }
+    alunoAtual=achado; matriculaOriginal=mat; codigoOriginal=achado.Codigo||'';
+    document.getElementById('infoAluno').style.display='block';
+var dInfo = coletarDados();
+document.getElementById('infoAluno').innerHTML='<b>'+dInfo.Nome+'</b> | Matrícula: <b>'+dInfo.Matricula+'</b><br>Congregação: <b>'+dInfo.Congregacao+'</b>';
+      }catch(e){ document.getElementById('listaTestes').innerHTML='ERRO: '+e.message; return; }
+  if(!verificarDadosCompletos()){
+    var faltando=listarDadosFaltando();
+    var linhas=''; for(var k=0;k<faltando.length;k++){ linhas=linhas+'• '+String(faltando[k])+'<br>'; }
+    document.getElementById('listaTestes').innerHTML='<div style="background:#fff;border-radius:12px;padding:16px;color:#111"><div style="font-weight:900;font-size:15px;color:#dc2626">⚠️ DADOS INCOMPLETOS</div><div style="font-size:13px;margin:12px 0">Está faltando preencher:</div><div style="font-size:13px;line-height:1.9;font-weight:700">'+linhas+'</div><div style="font-size:12px;margin-top:14px">Volte no Cadastro e preencha os seus dados.</div><button onclick="reiniciarTestes()" style="margin-top:16px;width:100%;background:#111;color:#fff;border:0;padding:14px;border-radius:10px;font-weight:900;cursor:pointer">🔄 REINICIAR / VERIFICAR DE NOVO</button></div>';
+    return false;
+  }
+    if(ehProvisorio()){ await avisoProvisorio(); }
+  return _abrirTeste52Original.apply(this,arguments);
+}
+async function _abrirTeste52Original(){
+  await carregarManutencao();
+  document.getElementById('listaTestes').innerHTML='Carregando testes... Por gentileza, Aguarde!';
+  let matriculaBusca=(getMatriculaAtual()||'').toString().replace(/\D/g,'').padStart(5,'0');
+  try{
+    if(matriculaBusca&&matriculaBusca!='00000'){ await fetch(API_LIB+'?action=realizado&matricula='+matriculaBusca+'&t='+Date.now()).catch(()=>{}); }
+    let r=await apiGet('testeLink',{});
+    listaTestes=r.data||r||[];
+    // LIBERACAO - busca junto
+    try{ let rLib=await apiGet('getliberacao',{}); listaLiberacao=rLib.data||rLib||[]; }catch(e){ listaLiberacao=[]; }
+    if(!matriculaBusca||matriculaBusca=='00000'){ document.getElementById('tituloTeste').innerText='📝 TESTES - '+listaTestes.length+' | SEM MATRICULA'; listaFeitos=[]; }
+    else{ let rFeitos=await apiGet('tfeitos',{matricula:matriculaBusca}); listaFeitos=rFeitos.data||rFeitos||[]; document.getElementById('tituloTeste').innerText='📝 TESTES - '+listaTestes.length+' | FEITOS: '+listaFeitos.filter(f=>f.feito===true).length+' | MAT: '+matriculaBusca; }
+    renderTestes(listaTestes);
+  }catch(e){ document.getElementById('listaTestes').innerHTML='ERRO: '+e.message; }
+}
+function renderTestes(lista){
+  listaTestes=lista;
+  let div=document.getElementById('listaTestes'); if(!div) return;
+  let cores={'CICLO 01':'#0f766e','CICLO 02':'#2563eb','CICLO 03':'#7c3aed','CICLO 04':'#dc2626','CICLO 05':'#ea580c','CICLO 06':'#0891b2','CICLO 07':'#059669','CICLO 08':'#9333ea'};
+  let cont={}; div.innerHTML='';
+  lista.forEach((t)=>{
+    let ciclo=(t.Ciclo||'CICLO 01').toUpperCase();
+    if(!cont[ciclo]) cont[ciclo]=0; cont[ciclo]++;
+    let nf=String(cont[ciclo]).padStart(2,'0');
+    let cod=t.Cod||(ciclo+'-'+nf);
+    let tema=t.Tema||'Conhecendo Jesus e o Seu Reino';
+    let cNum=(ciclo.match(/\d+/)||['0'])[0].replace(/^0+/,'')||'0';
+    let tNum=nf.replace(/^0+/,'')||'0';
+    let chave=cNum+'-'+tNum;
+    let normChave=v=>String(v||'').split('-').map(p=>String(p).replace(/^0+/,'')||'0').join('-');
+    let info=listaFeitos.find(f=>normChave(f.chave)===normChave(chave)||String(f.cod||'').toUpperCase()==cod.toUpperCase())||{};
+    // 1) TFEITOS
+    let isFeito=info.feito===true||info.status==='REALIZADO';
+    // 2) LIBERACAO - só se NÃO fez. Se fez, continua REALIZADO.
+    let emReedicao = !isFeito && estaEmLiberacao(cNum, tNum);
+    let statusTexto=isFeito?'REALIZADO':(emReedicao?'RECUPERAÇÃO':'PENDENTE');
+    let manut=info.manutencao?info.manutencao:checkCicloEmManutencao(ciclo);
+    let cor=cores[ciclo]||'#111827';
+    let card=document.createElement('div');
+    card.style='background:'+(emReedicao?'#fef3c7':(isFeito?'#ecfdf5':(manut?'#fff7ed':'white')))+';border-left:6px solid '+(emReedicao?'#f59e0b':(isFeito?'#16a34a':(manut?'#f59e0b':cor)))+';border-radius:12px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center';
+    card.innerHTML='<div style="flex:1"><span style="background:'+(emReedicao?'#f59e0b':(isFeito?'#16a34a':(manut?'#f59e0b':cor)))+';color:white;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900">'+ciclo+'</span><span style="font-weight:900;font-size:13px"> TESTE '+nf+' - '+statusTexto+'</span><div style="font-size:11px;margin-top:2px;color:#333">'+tema+'</div></div>';
+    let btn=document.createElement('button');
+    if(isFeito){ btn.innerText='✅ Realizado'; btn.style='background:#16a34a;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:130px'; btn.onclick=()=>abrirTeste(t.LinkAcesso,cod); }
+    else if(emReedicao){ btn.innerText='⏸️ Recuperação'; btn.style='background:#9ca3af;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:not-allowed;min-width:130px'; btn.onclick=()=>{ mostrarAlerta('Teste LIBERADO para Recuperação. Por gentileza, aguarde','⏸️ RECUPERAÇÃO'); }; }
+    else if(manut){ btn.innerText='🚧 Manutenção'; btn.style='background:#f59e0b;color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:130px'; btn.onclick=()=>{mostrarModalManutencao(manut);}; }
+    else{ btn.innerText='📋 Pendente'; btn.style='background:'+cor+';color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;min-width:130px'; btn.onclick=()=>abrirTeste(t.LinkAcesso,cod); }
+    card.appendChild(btn); div.appendChild(card);
+  });
+}
+abrirTeste52();
+</script>
+</body>
+</html>

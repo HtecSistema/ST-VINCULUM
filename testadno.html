@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DADOS x RELTODOS - AO VIVO</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,Arial,sans-serif;background:#f8f9fb;color:#0f172a}
+.mono{font-family:'JetBrains Mono',monospace}
+.top{background:#fff;border-bottom:1px solid #e2e8f0;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+.top h1{font-size:17px;display:flex;gap:8px;align-items:center}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{border:1px solid #e2e8f0;background:#fff;padding:5px 10px;border-radius:999px;font-size:11px}
+.pill.live{color:#059669;border-color:#bbf7d0;background:#f0fdf4}
+.pill.red{color:#dc2626;border-color:#fecaca;background:#fef2f2}
+.pill.blue{color:#2563eb;border-color:#bfdbfe;background:#eff6ff}
+button{border:1px solid #0f172a;background:#0f172a;color:#fff;padding:6px 12px;border-radius:9px;cursor:pointer;font-size:12px}
+.wrap{max-width:1300px;margin:0 auto;padding:12px}
+.toolbar{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filters input,.filters select{border:1px solid #e2e8f0;background:#f8fafc;border-radius:8px;padding:7px 9px;font-size:12px;outline:none}
+.btn-clear{background:#fff;color:#64748b;border:1px solid #e2e8f0}
+.muted{color:#64748b;font-size:11px}
+.progress{height:4px;background:#eef2f7;border-radius:99px;overflow:hidden;margin:10px 0}
+.progress i{display:block;height:100%;background:#0f172a;width:0;transition:width .3s}
+.scroll{background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:auto;max-height:38vh}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:900px}
+thead th{position:sticky;top:0;background:#f8fafc;text-align:left;padding:6px 10px;font-size:10px;color:#64748b;border-bottom:1px solid #e2e8f0;white-space:nowrap;line-height:1.2}
+thead th.r{text-align:right}
+tbody td{padding:5px 10px;border-bottom:1px solid #f1f5f9;white-space:nowrap;line-height:1.2}
+tbody tr:hover{background:#f8fafc}
+tbody tr.falta{background:#fff7f7}
+tbody tr.sel{background:#eff6ff}
+td.r{text-align:right}
+.badge{font-size:9px;font-weight:800;padding:3px 7px;border-radius:999px;border:1px solid;white-space:nowrap}
+.badge.red{background:#fef2f2;color:#dc2626;border-color:#fecaca}
+.badge.green{background:#f0fdf4;color:#16a34a;border-color:#bbf7d0}
+.badge.gray{background:#f9fafb;color:#6b7280;border-color:#e5e7eb}
+.badge.blue{background:#eff6ff;color:#2563eb;border-color:#bfdbfe}
+.foot{display:flex;justify-content:space-between;font-size:11px;color:#64748b;padding:8px 4px}
+.tabs{display:flex;gap:8px;margin-top:10px}
+.tab{flex:1;background:#fff;color:#374151;border:1px solid #e2e8f0;padding:8px;border-radius:10px;font-weight:800;cursor:pointer;font-size:12px}
+.tab.ativo{background:#0f172a;color:#fff;border-color:#0f172a}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.donut{width:150px;height:150px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.donut::after{content:'';position:absolute;inset:18px;background:#fff;border-radius:50%;box-shadow:inset 0 0 0 1px #f1f5f9}
+.donutCenter{position:relative;z-index:2;text-align:center}
+.kpi{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="container" style="margin:0 !important;max-width:1400px;width:100%">
+<div class="top">
+  <h1><i>◧</i> DADOS x RELTODOS ao VIVO</h1>
+  <div class="bar">
+    <span class="pill live"><b id="status">Conectando...</b></span>
+    <span class="pill mono" id="count">0</span>
+    <span class="pill red mono" id="countFalta">0 falta</span>
+    <span class="pill blue mono" id="countSoDados">0 So se inscreveram</span>
+    <button onclick="carregar(true)">↻ Atualizar</button>
+    <button id="btnRelatorio" style="background:#7c3aed;border-color:#7c3aed">📄 Relatório (<span id="selCount">0</span>)</button>
+  </div>
+</div>
+<div class="wrap">
+  <div class="toolbar">
+    <div class="filters">
+      <input id="fMat" placeholder="Matrícula" style="width:100px" inputmode="numeric">
+      <input id="fNome" placeholder="Nome">
+      <input id="fCong" placeholder="Congregação">
+      <select id="fSexo"><option value="">Sexo (todos)</option><option value="MASCULINO">Masculino</option><option value="FEMININO">Feminino</option><option value="M">M</option><option value="F">F</option></select>
+      <select id="fStatus"><option value="">Status (todos)</option><option value="falta">🔴 Em Dados de Tetes</option><option value="ambos">🟢 Cadastro Testes</option></select>
+      <input id="q" placeholder="Busca geral...">
+      <button onclick="limparFiltros()" class="btn-clear">Limpar</button>
+    </div>
+    <b id="info" class="muted"></b>
+  </div>
+  <div class="progress"><i id="pbar"></i></div>
+  <div class="tabs">
+    <button class="tab ativo" id="tabAmbas" onclick="setModo('ambas')">📊 Cadasstros e Testes</button>
+    <button class="tab" id="tabDados" onclick="setModo('dados')">📘 Cadastro Vinculum</button>
+    <button class="tab" id="tabRel" onclick="setModo('rel')">📕 Resultado Geral</button>
+    <button class="tab" id="tabFalta" onclick="setModo('falta')">🔴 Desistente</button>
+  </div>
+  <div class="scroll" style="margin-top:10px">
+    <table>
+      <thead><tr><th style="width:28px;text-align:center"><input type="checkbox" id="selAll"></th><th>ITEM</th><th class="r">MATRICULA</th><th>NOME</th><th>CONGREGAÇÃO</th><th>WHATSAPP</th><th>SEXO</th><th>STATUS</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <div class="foot"><span>HtecSistemas</span><span class="mono" id="foot">aguardando</span></div>
+  <div id="secGraficos" style="margin-top:16px;display:grid;gap:12px">
+    <h2 style="font-size:16px">📊 Visão Geral ST-Vinculum</h2>
+    <div style="display:grid;grid-template-columns:1.2fr 2fr;gap:12px">
+      <div class="card" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <div class="donut" id="donut"><div class="donutCenter"><b id="gPerc" style="font-size:24px">0%</b><div style="font-size:11px;color:#64748b">desistência</div></div></div>
+        <div style="flex:1;min-width:160px">
+<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9"><span>🟢 Ativos</span><b id="gAtivos">0</b></div>
+<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9"><span>🔴 Desistentes</span><b id="gDesist" style="color:#dc2626">0</b></div>
+<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9"><span>📊 Total Geral</span><b id="gTotal">0</b></div>
+<div style="display:flex;justify-content:space-between;padding:6px 0"><span>📘So Inscritos</span><b id="gSoDados" style="color:#2563eb">0</b></div>
+          <div id="gLegenda" style="font-size:11px;color:#64748b;margin-top:6px"></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+  <div class="card" style="background:linear-gradient(135deg,#ecfdf5,#f0fdf4);border-color:#bbf7d0"><div class="kpi" style="color:#059669">✅ Aprovados</div><b id="gAprovados" style="font-size:32px;color:#059669">0</b><div style="font-size:11px;color:#64748b">52 testes e tudo &gt;= 70</div><div style="height:6px;background:#d1fae5;border-radius:99px;margin-top:8px;overflow:hidden"><div id="gBarAprovados" style="height:100%;background:#10b981;border-radius:99px"></div></div></div>
+  <div class="card" style="background:linear-gradient(135deg,#fff7ed,#fef3c7);border-color:#fed7aa"><div class="kpi" style="color:#ea580c">🟠 Recuperação</div><b id="gRecuperacao" style="font-size:32px;color:#ea580c">0</b><div style="font-size:11px;color:#64748b">52 testes e alguma nota &lt; 60</div><div style="height:6px;background:#ffedd5;border-radius:99px;margin-top:8px;overflow:hidden"><div id="gBarRecuperacao" style="height:100%;background:linear-gradient(90deg,#f97316,#eab308);border-radius:99px"></div></div></div>
+  <div class="card" style="background:linear-gradient(135deg,#eef2ff,#f5f3ff);border-color:#c7d2fe"><div class="kpi" style="color:#4f46e5">🔵 Em Testes</div><b id="gEmTestes" style="font-size:32px;color:#4f46e5">0</b><div style="font-size:11px;color:#64748b">Já começou - 1 a 51 testes</div><div style="height:6px;background:#e0e7ff;border-radius:99px;margin-top:8px;overflow:hidden"><div id="gBarEmTestes" style="height:100%;background:#6366f1;border-radius:99px"></div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>HtecSistemas</span><span>Gráficos ao vivo</span></div>
+</div>
+<script>
+const URL_APP = "https://script.google.com/macros/s/AKfycbz2phEY97FZOsloQriNH9i0cWQ0Qex0PAr02jbL18qZHjHwnTtOB4tRcwJRIQbHjMYC/exec";
+let listaDados=[], listaRel=[], modo='ambas';
+let SELECIONADOS = new Map();
+let LINHAS_ATUAIS = [];
+function setModo(m){ modo=m; SELECIONADOS.clear(); document.getElementById('selAll').checked=false; atualizarContador(); document.querySelectorAll('.tab').forEach(b=>b.classList.remove('ativo')); document.getElementById(m==='ambas'?'tabAmbas':m==='dados'?'tabDados':m==='rel'?'tabRel':'tabFalta').classList.add('ativo'); aplicarFiltro(); window.scrollTo({top:0,behavior:'smooth'}); }
+async function carregar(forcar){
+  document.getElementById('status').textContent='Carregando...'; document.getElementById('pbar').style.width='30%';
+  document.getElementById('tbody').innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:#64748b">Carregando...</td></tr>';
+  try{
+    const r=await fetch(URL_APP+"?action=soEmRelTodos"+(forcar?"&nocache=1&t="+Date.now():""));
+    const j=await r.json(); listaDados=j.listaDados||[]; listaRel=j.listaRelTodos||[];
+    document.getElementById('pbar').style.width='100%'; document.getElementById('status').textContent='Ao vivo';
+    document.getElementById('foot').textContent='DADOS: '+listaDados.length+' | RELTODOS: '+listaRel.length;
+    aplicarFiltro();
+  }catch(e){ document.getElementById('status').textContent='ERRO: '+e.message; }
+}
+function aplicarFiltro(){
+  const q=(document.getElementById('q').value||'').toLowerCase().trim();
+  const fMat=(document.getElementById('fMat').value||'').trim();
+  const fNome=(document.getElementById('fNome').value||'').toLowerCase().trim();
+  const fCong=(document.getElementById('fCong').value||'').toLowerCase().trim();
+  const fSexo=(document.getElementById('fSexo').value||'').toUpperCase().trim();
+  const fStatus=document.getElementById('fStatus').value;
+  let linhas=[]; let mapa=new Map();
+  listaRel.forEach(x=>mapa.set(x.mat,x));
+  listaDados.forEach(item=>{
+    const m = (typeof item === 'string') ? item : (item.mat || item.Matricula || item.matricula || '');
+    if(!m) return;
+    if(!mapa.has(m)){
+      const d = (typeof item === 'object' && item !== null) ? item : {};
+      mapa.set(m,{
+        mat: m,
+        nome: d.nome || d.Nome || '',
+        congregacao: d.congregacao || d.Congregacao || '',
+        whatsapp: d.whatsapp || d.WhatsApp || d.WHATSAPP || '',
+        sexo: d.sexo || d.Sexo || '',
+        emDados:true,
+        soDados:true
+      });
+    }
+  });
+  let arr=Array.from(mapa.values()).sort((a,b)=>{
+    let ca=((a.congregacao||a.Congregacao||'').trim().toUpperCase());
+    let cb=((b.congregacao||b.Congregacao||'').trim().toUpperCase());
+    return ca.localeCompare(cb,'pt-BR') || (a.nome||'').localeCompare(b.nome||'','pt-BR') || String(a.mat).localeCompare(String(b.mat));
+  });
+  for(let x of arr){
+    let qtd = Number(x.qtdTestes ?? x.qtd ?? x.totalTestes ?? 0);
+    let completo = qtd >= 52;
+    let falta = x.emDados===false && !completo; let soDados=!!x.soDados;
+    if(modo==='dados' && !soDados) continue;
+    if(modo==='rel' && soDados) continue;
+    if(modo==='falta' && !falta) continue;
+    if(fStatus==='falta' && !falta) continue;
+    if(fStatus==='ambos' && falta) continue;
+    if(fMat && !x.mat.includes(fMat)) continue;
+    if(fNome && !(x.nome||'').toLowerCase().includes(fNome)) continue;
+    if(fCong && !(x.congregacao||'').toLowerCase().includes(fCong)) continue;
+    if(fSexo && (x.sexo||'').toUpperCase()!==fSexo) continue;
+    if(q && !((x.mat+' '+(x.nome||'')+' '+(x.congregacao||'')+' '+(x.whatsapp||'')+' '+(x.sexo||'')).toLowerCase().includes(q))) continue;
+    linhas.push(x);
+  }
+  const faltaTotal=listaRel.filter(x=>!x.emDados && Number(x.qtdTestes ?? x.qtd ?? x.totalTestes ?? 0) < 52).length;
+  const emAmbos=listaRel.filter(x=>x.emDados).length;
+  const soDadosTotal=listaDados.length - emAmbos;
+  document.getElementById('count').textContent=linhas.length+' linhas';
+  document.getElementById('countFalta').textContent=faltaTotal+' Em Dados de Tetes';
+  document.getElementById('countSoDados').textContent=soDadosTotal+' So se inscrever';
+  document.getElementById('info').textContent='DADOS: '+listaDados.length+' | RELTODOS: '+listaRel.length+' | FALTA: '+faltaTotal+' | EM AMBOS: '+emAmbos+' | SÓ DADOS: '+soDadosTotal;
+  LINHAS_ATUAIS = linhas;
+  render(linhas);
+  montarGraficos(linhas, soDadosTotal);
+}
+function esc(s){ return String(s??'').replace(/</g,'&lt;'); }
+function render(linhas){
+  const tb=document.getElementById('tbody');
+  if(!linhas.length){ tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:#64748b">Nenhum</td></tr>'; return; }
+  let html='';
+  linhas.forEach((x,i)=>{
+    let badge, cls='';
+    if(x.soDados){ badge='<span class="badge blue">📘 Inscritos sem Inicio de Teste</span>'; }
+    else if(x.statusAprovacao==='APROVADO'){ badge='<span class="badge green">✓ APROVADO</span>'; }
+    else if(x.statusAprovacao==='RECUPERACAO'){ badge='<span class="badge" style="background:#fff7ed;color:#ea580c;border-color:#fed7aa">🟠 RECUPERAÇÃO</span>'; }
+    else if(x.statusAprovacao==='PENDENTE'){ badge='<span class="badge gray">⏳ PENDENTE 60-69</span>'; }
+    else if(!x.emDados && Number(x.qtdTestes ?? x.qtd ?? x.totalTestes ?? 0) < 52){ badge='<span class="badge red">🔴 Desistente</span>'; cls=' class="falta"'; }
+    else { badge='<span class="badge green">✓ ATIVO</span>'; }
+    const checked = SELECIONADOS.has(x.mat) ? 'checked' : '';
+    const selCls = SELECIONADOS.has(x.mat) ? ' sel' : '';
+    html+='<tr class="'+(cls?'falta':'')+selCls+'"><td style="text-align:center"><input type="checkbox" class="chk-item" data-mat="'+esc(x.mat)+'" '+checked+'></td>'
+      +'<td class="mono">'+String(i+1).padStart(4,'0')+'</td>'
+      +'<td class="r mono">'+esc(x.mat)+'</td>'
+      +'<td>'+esc(x.nome||'—')+'</td>'
+      +'<td>'+esc(x.congregacao||'—')+'</td>'
+      +'<td class="mono">'+esc(x.whatsapp||'—')+'</td>'
+      +'<td>'+esc(x.sexo||'—')+'</td>'
+      +'<td>'+badge+'</td></tr>';
+  });
+  tb.innerHTML=html;
+  tb.querySelectorAll('.chk-item').forEach(chk=>{
+    chk.addEventListener('change', (e)=>{
+      const mat = e.target.dataset.mat;
+      const linha = linhas.find(l=>String(l.mat)===String(mat));
+      if(e.target.checked){ SELECIONADOS.set(mat, linha); }
+      else{ SELECIONADOS.delete(mat); }
+      e.target.closest('tr').classList.toggle('sel', e.target.checked);
+      atualizarContador();
+    });
+  });
+}
+function atualizarContador(){
+  const el = document.getElementById('selCount');
+  if(el) el.textContent = SELECIONADOS.size;
+}
+function limparFiltros(){ ['fMat','fNome','fCong','q'].forEach(id=>document.getElementById(id).value=''); document.getElementById('fSexo').value=''; document.getElementById('fStatus').value=''; aplicarFiltro(); }
+function copiar(){ const falta=listaRel.filter(x=>!x.emDados).map(x=>x.mat); if(!falta.length) return alert('Nada pra copiar'); navigator.clipboard.writeText(falta.join("\n")).then(()=>alert('Copiado! '+falta.length)); }
+function montarGraficos(linhasFiltradas, soDadosTotalGlobal){
+  const temFiltro = (document.getElementById('fMat').value||'').trim()!=='' || (document.getElementById('fNome').value||'').trim()!=='' || (document.getElementById('fCong').value||'').trim()!=='' || (document.getElementById('q').value||'').trim()!=='' || (document.getElementById('fSexo').value||'')!=='' || (document.getElementById('fStatus').value||'')!=='';
+  let ativos, desist, soDados;
+  if(temFiltro && linhasFiltradas){
+    ativos = linhasFiltradas.filter(x=>x.emDados && !x.soDados).length;
+    desist = linhasFiltradas.filter(x=>!x.emDados && Number(x.qtdTestes ?? x.qtd ?? x.totalTestes ?? 0) < 52).length;
+    soDados = linhasFiltradas.filter(x=>!!x.soDados).length;
+  } else {
+    ativos = listaRel.filter(x=>x.emDados).length;
+    desist = listaRel.filter(x=>!x.emDados && Number(x.qtdTestes ?? x.qtd ?? x.totalTestes ?? 0) < 52).length;
+    soDados = (soDadosTotalGlobal!=null ? soDadosTotalGlobal : listaDados.length - ativos);
+  }
+  const totalGeral = ativos + desist;
+  const perc = totalGeral ? Math.round(desist/totalGeral*100) : 0;
+  const pAt = totalGeral ? Math.round(ativos/totalGeral*100) : 0;
+  const pSoDados = totalGeral ? Math.round(soDados/totalGeral*100) : 0;
+  document.getElementById('gAtivos').textContent = ativos;
+  document.getElementById('gDesist').textContent = desist;
+  document.getElementById('gSoDados').textContent = soDados;
+  document.getElementById('gTotal').textContent = totalGeral;
+  document.getElementById('gPerc').textContent = perc + '%';
+  document.getElementById('donut').style.background = 'conic-gradient(#10b981 0% '+pAt+'%, #ef4444 '+pAt+'% 100%)';
+  document.getElementById('gLegenda').textContent = ativos + ' ativos | ' + desist + ' desistentes = ' + totalGeral + ' total | ' + soDados + ' So se inscreveram (já contidos no total)';
+  try{
+    let baseGraf = listaRel;
+    let qAprov = baseGraf.filter(x=>x.statusAprovacao==='APROVADO').length;
+    let qRecup = baseGraf.filter(x=>x.statusAprovacao==='RECUPERACAO').length;
+    let qEmTestes = baseGraf.filter(x=>{ let qtd2=Number(x.qtdTestes ?? x.qtd ?? x.totalTestes ?? 0); return !x.soDados && qtd2>0 && qtd2<52; }).length;
+    let totalBase = baseGraf.length || 1;
+    let e1=document.getElementById('gAprovados'); if(e1) e1.textContent=qAprov;
+    let e2=document.getElementById('gRecuperacao'); if(e2) e2.textContent=qRecup;
+    let e3=document.getElementById('gEmTestes'); if(e3) e3.textContent=qEmTestes;
+    let b1=document.getElementById('gBarAprovados'); if(b1) b1.style.width=Math.round(qAprov/totalBase*100)+'%';
+    let b2=document.getElementById('gBarRecuperacao'); if(b2) b2.style.width=Math.round(qRecup/totalBase*100)+'%';
+    let b3=document.getElementById('gBarEmTestes'); if(b3) b3.style.width=Math.round(qEmTestes/totalBase*100)+'%';
+  }catch(e){}
+}
+['fMat','fNome','fCong','q'].forEach(id=>document.getElementById(id).addEventListener('input',aplicarFiltro));
+document.getElementById('fSexo').addEventListener('change',aplicarFiltro);
+document.getElementById('fStatus').addEventListener('change',aplicarFiltro);
+document.getElementById('selAll')?.addEventListener('change', (e)=>{
+  const checks = document.querySelectorAll('.chk-item');
+  checks.forEach(c=>{
+    c.checked = e.target.checked;
+    const mat = c.dataset.mat;
+    if(e.target.checked){
+      let achado = listaRel.find(x=>String(x.mat)===String(mat));
+      if(!achado){
+        const d = listaDados.find(x=>String((typeof x==='string'?x:x.mat))===String(mat)) || null;
+        if(d) achado = {mat:mat,nome:d.nome||'',congregacao:d.congregacao||'',whatsapp:d.whatsapp||'',sexo:d.sexo||'',emDados:true,soDados:true};
+      }
+      SELECIONADOS.set(mat, achado);
+    } else { SELECIONADOS.delete(mat); }
+  });
+  atualizarContador();
+  aplicarFiltro();
+});
+document.getElementById('btnRelatorio')?.addEventListener('click', ()=>{
+  if(SELECIONADOS.size===0){ alert('Selecione pelo menos 1 item'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('l','mm','a4');
+  doc.setFont('helvetica','bold'); doc.setFontSize(12);
+  doc.text('RELATORIO VINCULUM - DADOS x RELTODOS', 14, 10);
+  doc.setFontSize(9); doc.setFont('helvetica','normal');
+  const dataHora = new Date().toLocaleString('pt-BR');
+  let dados = Array.from(SELECIONADOS.values()).filter(Boolean);
+  let matsVisiveis = new Set(LINHAS_ATUAIS.map(x=>String(x.mat)));
+  let dadosDaTela = dados.filter(r=>matsVisiveis.has(String(r.mat)));
+  if(dadosDaTela.length) dados = dadosDaTela;
+  const fMatFiltro = (document.getElementById('fMat').value||'').replace(/\D/g,'').trim();
+  const matFiltroPad = fMatFiltro ? fMatFiltro.padStart(5,'0') : '';
+  if(matFiltroPad){
+    const filtrado = dados.filter(r => String(r.mat||'').replace(/\D/g,'').padStart(5,'0') === matFiltroPad);
+    if(filtrado.length) dados = filtrado;
+  }
+  if(dados.length === 0){ alert('Nenhum dado com o filtro atual'); return; }
+  dados = dados.sort((a,b)=>{
+    let ca=((a.congregacao||a.Congregacao||'').trim().toUpperCase());
+    let cb=((b.congregacao||b.Congregacao||'').trim().toUpperCase());
+    return ca.localeCompare(cb,'pt-BR') || (a.nome||'').localeCompare(b.nome||'','pt-BR') || String(a.mat).localeCompare(String(b.mat));
+  });
+  const qAtivos = dados.filter(x=>!x.soDados && x.emDados).length;
+  const qDesist = dados.filter(x=>!x.emDados && Number(x.qtdTestes ?? x.qtd ?? x.totalTestes ?? 0) < 52).length;
+  const qSoDados = dados.filter(x=>x.soDados).length;
+  let linhaInfo = `Relatorio | Data: ${dataHora} | Total: ${dados.length} | Ativos: ${qAtivos} | Desistentes: ${qDesist} | So em Dados: ${qSoDados}`;
+  if(matFiltroPad) linhaInfo = `Matricula: ${matFiltroPad} | Data: ${dataHora} | Total: ${dados.length}`;
+  doc.text(linhaInfo, 14, 16);
+  const head = [['ITEM','MAT','NOME','CONGREGACAO','WHATSAPP','SEXO','STATUS','QTD TESTES','ULTIMO TESTE']];
+  const body = [];
+  let cont = 0;
+  dados.forEach((r)=>{
+    cont++;
+    body.push([
+      String(cont).padStart(5,'0'),
+      String(r.mat||'').replace(/\D/g,'').padStart(5,'0'),
+      String(r.nome||'').toUpperCase(),
+      String(r.congregacao||''),
+      String(r.whatsapp||''),
+      String(r.sexo||'').toUpperCase(),
+      r.soDados ? 'SO EM DADOS' : (r.statusAprovacao==='APROVADO' ? 'APROVADO' : r.statusAprovacao==='RECUPERACAO' ? 'RECUPERACAO' : r.statusAprovacao==='PENDENTE' ? 'PENDENTE' : (!r.emDados && Number(r.qtdTestes ?? r.qtd ?? r.totalTestes ?? 0) < 52 ? 'DESISTENTE' : 'ATIVO')),
+      String(r.qtdTestes ?? (r.soDados ? '0' : '—')),
+      String(r.ultimoLabel || '—')
+    ]);
+    let prox = dados[cont];
+    let congAtual = (r.congregacao||'').toUpperCase();
+    let congProx = prox ? (prox.congregacao||'').toUpperCase() : null;
+    if(congAtual !== congProx){
+      body.push(['__SEP__','','','','','','','','']);
+    }
+  });
+  doc.autoTable({
+    head: head, body: body, startY: 20,
+    margin: { left: 14, right: 10, bottom: 15 },
+    styles: { fontSize: 7, cellPadding: 2 },
+    headStyles: { fillColor: [15,23,42], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [248,250,252] },
+    columnStyles: { 0: { halign: 'right', cellWidth: 14 }, 1: { halign: 'right', cellWidth: 14 }, 4: { halign: 'left', cellWidth: 26 }, 5: { halign: 'left', cellWidth: 20 }, 6: { halign: 'left', cellWidth: 24 }, 7: { halign: 'right', cellWidth: 16 }, 8: { halign: 'left', cellWidth: 36 } },
+    didParseCell: function(data){
+      if(data.row.raw && data.row.raw[0]==='__SEP__'){
+        data.cell.text=[''];
+        data.cell.styles.fillColor=[255,255,255];
+        data.cell.styles.cellPadding={top:4,bottom:4,left:2,right:2};
+        data.cell.styles.lineWidth={top:0,bottom:1,left:0,right:0};
+        data.cell.styles.lineColor=[15,23,42];
+      }
+      if(data.column.index === 0 || data.column.index === 1 || data.column.index === 7) data.cell.styles.halign = 'right';
+      if(data.column.index === 4 || data.column.index === 5 || data.column.index === 6) data.cell.styles.halign = 'left';
+    },
+    didDrawPage: function(data){
+      const pageW = doc.internal.pageSize.width; const pageH = doc.internal.pageSize.height;
+      doc.setFontSize(7); doc.setFont('helvetica','normal');
+      doc.text('Htec Sistemas - Uma forma simples e eficiente em produzir', 10, pageH - 6);
+      doc.text(`Pag ${String(data.pageNumber).padStart(2,'0')}/${String(doc.internal.getNumberOfPages()).padStart(2,'0')}`, pageW - 10, pageH - 6, {align:'right'});
+    }
+  });
+  const total = doc.internal.getNumberOfPages();
+  for(let i=1; i<=total; i++){
+    doc.setPage(i); const pageW = doc.internal.pageSize.width; const pageH = doc.internal.pageSize.height;
+    doc.setFontSize(7); doc.text('Htec Sistemas - Uma forma simples e eficiente em produzir', 10, pageH - 6);
+    doc.text(`Pag ${String(i).padStart(2,'0')}/${String(total).padStart(2,'0')}`, pageW - 10, pageH - 6, {align:'right'});
+  }
+  let finalY = doc.lastAutoTable.finalY + 15;
+  if(finalY > 185){ doc.addPage(); finalY = 20; }
+  else doc.setPage(total);
+  doc.line(100, finalY, 190, finalY);
+  doc.setFont('helvetica','bold'); doc.setFontSize(9);
+  doc.text('Assinatura', 145, finalY+6, {align:'center'});
+  doc.save(`relatorio_dados_x_reltodos_${matFiltroPad || ''}_${new Date().toISOString().slice(0,10)}.pdf`);
+});
+carregar(false);
+</script>
+</body>
+</html>

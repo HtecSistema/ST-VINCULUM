@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recuperação</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#0F172A;color:#F1F5F9;margin:0;padding:0}
+.topo{background:#111;color:#fff;padding:12px;display:flex;align-items:center;gap:12px}
+.topo h3{margin:0;font-size:14px;font-weight:900;flex:1}
+.topo button{background:#fff;color:#111;border:0;padding:6px 12px;border-radius:8px;font-weight:900;cursor:pointer}
+.wrap{padding:12px;max-width:720px;margin:0 auto}
+#listaRecup{overflow-y:auto;padding:12px;background:#eef2f7;border-radius:16px;min-height:200px;color:#111}
+</style>
+</head>
+<body>
+<div class="container" style="margin:0 !important;max-width:800px;width:100%">
+<div class="topo"><button onclick="history.back()"><h3 id="tituloRecup">📝 REEDIÇÃO</h3></div>
+<div class="wrap"><div id="listaRecup">Buscando recuperação... Por gentileza, Aguarde!</div></div>
+</div>
+<script>
+const API_URL='https://script.google.com/macros/s/AKfycbxLXw-nu5oXXtjE8HKik_W_bbT9CGjTNJWw-dUm4wWYv-hjcz1dOhMHLxoUTRHGJA3D0A/exec';
+const API_URL_LOG='https://script.google.com/macros/s/AKfycbz94-3iCkeVDD7Za2XAYzYL7BtCM3rWWMxGc_9kL-xtpnRoog91IR4KmqgWzLXYHIsb/exec';
+let CACHE_MANUTENCAO=[];
+function semAcentoMANUT(s){return (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim().toUpperCase();}
+async function carregarManutencao(){ try{const r=await fetch(API_URL_LOG+'?action=getmanutencao&t='+Date.now(),{cache:'no-store'});const t=await r.text();let l=[];try{l=JSON.parse(t)}catch{l=[]} if(l.data) l=l.data; if(!Array.isArray(l)) l=[]; CACHE_MANUTENCAO=l;}catch(e){} }
+function checkCicloEmManutencao(cicloNome){
+  if(!CACHE_MANUTENCAO||!CACHE_MANUTENCAO.length) return null;
+  let cicloNorm=semAcentoMANUT(cicloNome).replace(/\s+/g,"");
+  for(let i=0;i<CACHE_MANUTENCAO.length;i++){ let m=CACHE_MANUTENCAO[i]; let st=semAcentoMANUT(m.status||m.Status||m.F||""); if(st.indexOf("MANUTEN")===-1) continue; let tipo=semAcentoMANUT(m.tipo||m.Tipo||m.TipoCiclo||m.B||"").replace(/\s+/g,""); let tn=(tipo.match(/\d+/)||[""])[0]; let cn=(cicloNorm.match(/\d+/)||[""])[0]; if(tipo===cicloNorm||tipo.indexOf(cicloNorm)!==-1||cicloNorm.indexOf(tipo)!==-1||(tn&&cn&&tn===cn)) return {tipo:m.tipo||m.TipoCiclo||m.B||cicloNome,dataFinal:m.dataFinal||m.DataFinal||m.D||"",horario:m.horario||m.Horario||m.E||""}; }
+  return null;
+}
+function mostrarModalManutencao(info){
+  let old=document.getElementById('modalManutencao'); if(old) old.remove();
+  let div=document.createElement('div'); div.id='modalManutencao'; div.style='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100001;display:flex;align-items:center;justify-content:center;padding:20px';
+  div.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center"><div style="font-size:15px;font-weight:900;color:#111">EM MANUTENÇÃO</div><div style="font-size:18px;font-weight:900;color:#e67e00;margin:10px 0">'+(info.tipo||'')+' em OBSERVAÇÃO</div><button onclick="document.getElementById(\'modalManutencao\').remove()" style="margin-top:20px;background:#000;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:900;width:100%">FECHAR</button></div>';
+  document.body.appendChild(div);
+}
+function mostrarAlerta(msg,titulo="ST-VINCULUM - Htec"){
+  let old=document.getElementById('modalAlertaTD'); if(old) old.remove();
+  let div=document.createElement('div'); div.id='modalAlertaTD'; div.style='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100002;display:flex;align-items:center;justify-content:center;padding:20px';
+  div.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center"><div style="font-size:14px;font-weight:900;color:#0b5ed7;margin-bottom:12px">'+titulo+'</div><div style="font-size:13px;color:#222;white-space:pre-line">'+msg+'</div><button onclick="document.getElementById(\'modalAlertaTD\').remove()" style="margin-top:20px;background:#0b5ed7;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:900;width:100%">OK</button></div>';
+  document.body.appendChild(div);
+}
+async function apiGet(a,p={}){p.t=Date.now();const u=API_URL+'?action='+a+'&'+new URLSearchParams(p);const r=await fetch(u,{cache:'no-store'});const t=await r.text();try{return JSON.parse(t)}catch{return{result:'ok',data:[]}}}
+function normaliza5Dig(v){return String(v||'').replace(/\D/g,'').padStart(5,'0').slice(-5);}
+function getMatriculaAtual(){
+  let m=normaliza5Dig(localStorage.getItem('mat_logada')||localStorage.getItem('matricula')||'');
+  if(m&&m!=='00000') return m;
+  try{ if(window.parent&&window.parent!==window){ let p=window.parent; if(p.localStorage){let pm=normaliza5Dig(p.localStorage.getItem('mat_logada')||''); if(pm&&pm!=='00000') return pm;} if(p.document){let el=p.document.getElementById('Matricula'); if(el&&el.value) return normaliza5Dig(el.value);} } }catch(e){}
+  return m;
+}
+function getMat5(){return getMatriculaAtual();}
+async function recuperar(){
+  await carregarManutencao();
+  let matAtual=getMat5();
+  if(!matAtual||matAtual==='00000'){ matAtual=normaliza5Dig(document.getElementById('Matricula')?.value||''); }
+  let nomeAtual='';
+  try{ nomeAtual=(window.parent&&window.parent!==window? window.parent.document.getElementById('Nome')?.value : document.getElementById('Nome')?.value)||''; }catch(e){}
+  nomeAtual=String(nomeAtual||'').toUpperCase();
+  document.getElementById('tituloRecup').innerText='📝 REEDIÇÃO - '+matAtual;
+  let div=document.getElementById('listaRecup');
+  try{
+    let res=await apiGet('getliberacao',{});
+    let lista=res.data||res||[];
+    let filtrados=lista.filter(it=>{
+      let mat=normaliza5Dig(String(it.MATRICULA||it.Matricula||it.A||'').trim());
+      return mat&&mat===matAtual;
+    });
+    if(filtrados.length===0){
+      document.getElementById('tituloRecup').innerText='📝 REEDIÇÃO - '+matAtual+' - 0';
+      div.innerHTML='<div style="text-align:center;padding:20px">Nenhuma recuperação liberada para<br><b>'+matAtual+' - '+nomeAtual+'</b><br><br>Só para alunos com nota inferior a 70.</div>';
+      return;
+    }
+    document.getElementById('tituloRecup').innerText='📝 REEDIÇÃO - '+matAtual+' - '+filtrados.length;
+    let abertosRecup={}; try{abertosRecup=JSON.parse(localStorage.getItem('recuperacoes_abertas')||'{}')}catch(e){}
+    div.innerHTML=filtrados.map((it)=>{
+      let ciclo=String(it.CICLO||it.E||'').toUpperCase();
+      let teste=String(it.TESTE||it.F||'').toUpperCase();
+      let nome=String(it.NOME||it.B||'').toUpperCase();
+      let nota=it.NOTA||it.G||'';
+      let link=String(it.LINK||it.H||'').trim();
+      let cong=String(it.CONGREGACAO||it.D||'PARA | PARAGOMINAS - ROCHA ETERNA').toUpperCase();
+      let codRecup=(ciclo+'-'+teste+'-'+(it.MATRICULA||matAtual)).replace(/\s+/g,'');
+      let jaFeito=!!abertosRecup[codRecup];
+      let manut=checkCicloEmManutencao(ciclo);
+      // ===== CARD BONITO NOVO =====
+      return `<div style="background:#fff;border-radius:16px;padding:14px 14px 12px;margin-bottom:12px;display:flex;gap:12px;align-items:center;box-shadow:0 4px 14px rgba(15,23,42,0.08);border:1px solid #e2e8f0;border-left:6px solid ${jaFeito?'#16a34a':'#f59e0b'}">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-weight:900;font-size:13px;color:#0f172a;letter-spacing:.2px">${ciclo} &nbsp;|&nbsp; ${teste}</span><span style="background:${Number(nota)<70?'#fef3c7;color:#92400e':'#dcfce7;color:#166534'};font-size:11px;font-weight:900;padding:3px 8px;border-radius:20px">NOTA ${nota}</span>${jaFeito?'<span style="font-size:11px">✅</span>':''}</div>
+          <div style="font-size:12px;font-weight:800;color:#334155;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.MATRICULA||matAtual} - ${nome}</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px">📍 ${cong}</div>
+        </div>
+        <button data-link="${link.replace(/"/g,'')}" data-cod="${codRecup}" data-ciclo="${ciclo}" onclick="abrirRecuperacao(this)" style="background:${manut?'#f59e0b':(jaFeito?'#16a34a':'#0f766e')};color:#fff;border:0;padding:11px 16px;border-radius:10px;font-weight:900;font-size:12px;cursor:pointer;min-width:82px;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.15)">${manut?'🚧 Manutenção':(jaFeito?'✅ VISTO':'ABRIR')}</button>
+      </div>`;
+    }).join('');
+  }catch(e){ div.innerHTML='ERRO: '+e.message; }
+}
+
+// MENSAGEM DE VOLTA - IGUAL DO APP
+function mostrarAvisoAntesAbrir(linkFinal){
+  let old=document.getElementById('modalAvisoCabecalho'); if(old) old.remove();
+  let f=document.createElement('div'); f.id='modalAvisoCabecalho';
+  f.style='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100000;display:flex;justify-content:center;align-items:center;padding:16px;overflow-y:auto';
+  f.innerHTML=`<div style="background:white;max-width:410px;width:100%;border-radius:18px;padding:26px 20px 18px;text-align:center;font-family:Arial,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,0.3)">
+    <div style="font-size:36px">📄</div>
+    <h3 style="margin:6px 0 14px;font-weight:900;font-size:18px;color:#111">ATENÇÃO</h3>
+    <div style="text-align:justify;font-size:12px;line-height:1.45;color:#111">
+      Você não precisa mais <b>PREENCHER</b> os seus Dados no <b>Formulário de Teste</b>. Já estão sendo transferidos pelo <b>ST-Vinculum</b>. Por favor, não <b>ALTERE</b> seus Dados</b>. Clique em <b>SEGUINTE</b> ou <b>AVANÇAR</b> para acessar as perguntas.
+      <div style="margin:10px 0 8px;text-align:justify">E, se de repente surgir essa mensagem ao abrir o teste:</div>
+      <div style="border-top:1px dashed #999;margin:8px 0 14px"></div>
+      <div style="background:#fff;border:1px solid #dadce0;border-radius:12px;padding:14px 14px 10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);text-align:left">
+        <div style="font-weight:700;font-size:14px;line-height:1.25">Quer continuar o rascunho atual?</div>
+        <div style="font-size:14px;margin-top:8px;color:#202124;line-height:1.35;text-align:left">Tem um rascunho anterior da sua resposta do formulário. Quer utilizá-lo ou continuar com o seu rascunho atual?</div>
+        <div style="display:flex;justify-content:flex-end;gap:18px;margin-top:14px;font-size:14px"><span style="color:#5f6368">Usar rascunho anterior</span><span style="color:#1a73e8;font-weight:700">Continuar</span></div>
+      </div>
+      <div style="font-size:14px;margin-top:14px;text-align:justify;line-height:1.45">Se você "NÃO CONCLUIU O TESTE" por uma ou outra razão, clique em <b>Usar rascunho anterior</b> caso contrario click em <b>Continuar</b></div>
+      <div style="font-weight:900;margin-top:16px;text-align:left;font-size:14px">Boa prova!</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button id="btnFecharAviso" style="flex:1;background:#6c757d;color:white;border:0;padding:14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:14px">FECHAR</button>
+      <button id="btnOkAviso" style="flex:1;background:#0f766e;color:white;border:0;padding:14px;border-radius:10px;font-weight:900;cursor:pointer;font-size:14px">ABRIR TESTE</button>
+    </div>
+  </div>`;
+  document.body.appendChild(f);
+  document.getElementById('btnFecharAviso').onclick=()=>{ f.remove(); };
+  document.getElementById('btnOkAviso').onclick=()=>{
+    f.remove();
+    let a=document.createElement('a'); a.href=linkFinal; a.target='_blank'; a.rel='noopener noreferrer';
+    document.body.appendChild(a); a.click(); setTimeout(()=>{ try{a.remove()}catch(e){} }, 800);
+  };
+  f.onclick=(e)=>{ if(e.target.id==='modalAvisoCabecalho') f.remove(); };
+}
+function abrirRecuperacao(btn){
+  let ciclo=btn.getAttribute('data-ciclo')||'';
+  let manut=checkCicloEmManutencao(ciclo);
+  if(manut){ mostrarModalManutencao(manut); return; }
+  let link=btn.getAttribute('data-link')||'';
+  let cod=btn.getAttribute('data-cod')||'';
+  if(!link){ mostrarAlerta('Link da recuperação não encontrado.','⚠️ RECUPERAÇÃO'); return; }
+  try{ let a=JSON.parse(localStorage.getItem('recuperacoes_abertas')||'{}'); a[cod]=true; localStorage.setItem('recuperacoes_abertas',JSON.stringify(a)); }catch(e){}
+  mostrarAvisoAntesAbrir(link);
+  setTimeout(()=>{ recuperar(); }, 500);
+}
+recuperar();
+</script>
+</body>
+</html>

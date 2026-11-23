@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buscar Dados</title>
+<style>
+  *{box-sizing:border-box;font-family:sans-serif}
+  body{background:#E2E8F0;color:#0F172A;padding:10px 10px 20px 8px;margin:0}
+  .container{margin:0 !important;max-width:480px;width:100%}
+  .header-destaque{background:#F8FAFC;border:1px solid #CBD5E1;border-radius:14px;padding:16px;display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+  .header-icone{width:44px;height:44px;min-width:44px;border-radius:50%;background:#E2E8F0;color:#475569;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px}
+  .header-topo{font-size:10px;font-weight:800;letter-spacing:1px;color:#7c3aed}
+  .header-titulo{font-size:20px;font-weight:900;color:#0F172A;line-height:1.1;margin-top:2px}
+  .header-sub{font-size:12px;color:#64748B;line-height:1.4;margin-top:4px}
+  .check-solto{display:flex;align-items:center;gap:8px;padding:12px 4px 0 4px;background:none;border:none}
+  .check-solto input{width:18px;height:18px;margin:0;accent-color:#7c3aed}
+  .check-solto label{margin:0;font-size:13px;font-weight:800;color:#0F172A;cursor:pointer}
+  .check-solto small{color:#64748B;font-weight:400}
+  .card{max-width:480px;margin:0;margin-left:0;background:#F8FAFC;border:1px solid #CBD5E1;border-radius:14px;padding:20px}
+  label{font-size:11px;font-weight:700;color:#475569;display:block;margin-top:12px}
+  input{width:100%;background:#FFFFFF;color:#0F172A;border:1px solid #CBD5E1;border-radius:10px;padding:12px;margin-top:6px;text-transform:uppercase}
+  input::placeholder{color:#94A3B8}
+  input[readonly]{background:#F1F5F9}
+  button{width:100%;background:#7c3aed;color:#fff;border:0;border-radius:10px;padding:13px;font-weight:800;cursor:pointer;margin-top:12px}
+  #erro{margin-top:12px;background:#FEF2F2;border:1px solid #f87171;border-radius:10px;padding:12px;color:#DC2626;font-weight:700;font-size:13px;display:none}
+  .titulo-coluna{margin-top:28px;display:block;font-weight:800;color:#0F172A}
+  .botoes{display:flex;gap:8px}
+  .botoes button{flex:1;padding:13px 6px;font-size:13px}
+  .btn-limpar{background:#FFFFFF !important;border:1px solid #CBD5E1;color:#0F172A}
+  .btn-excluir{background:#DC2626 !important;color:#fff !important;border:1px solid #DC2626}
+  .btn-liberar{background:#16A34A !important;color:#fff !important;border:1px solid #16A34A}
+  .busca-linha{display:flex;gap:8px;align-items:stretch}
+  .busca-linha input{flex:1;margin-top:6px}
+  .btn-atualizar{width:52px !important;min-width:52px;flex:none;margin-top:6px;background:#E2E8F0 !important;color:#0F172A !important;border:1px solid #CBD5E1;font-size:20px;padding:0;display:flex;align-items:center;justify-content:center}
+  #lista{margin-top:8px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden;display:none}
+  .item-lista{padding:9px 12px;border-bottom:1px solid #E2E8F0;cursor:pointer;font-size:12px;font-weight:700;line-height:1.3;color:#0F172A}
+  .item-lista:last-child{border-bottom:0}
+  .item-lista:active{background:#F1F5F9}
+  .item-lista b{color:#16A34A}
+  #debug{font-size:11px;color:#64748B;margin-top:6px}
+    #msg-ok{margin-top:12px;background:#F0FDF4;border:1px solid #22C55E;border-radius:10px;padding:12px;color:#15803D;font-weight:700;font-size:13px;display:none}
+  #modalAluno{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
+  #modalAlunoBox{background:#1E293B;color:#fff;border-radius:16px;padding:24px 20px;max-width:360px;width:100%;text-align:center}
+  #modalAlunoBox h3{color:#22C55E;font-size:15px;margin:8px 0 12px}
+  #modalAlunoBox p{font-size:14px;line-height:1.5;color:#E2E8F0;margin:0}
+  #modalAlunoBox small{display:block;margin-top:14px;font-size:12px;color:#CBD5E1}
+  #modalAlunoBox button{width:100%;background:#16A34A;color:#fff;border:0;border-radius:10px;padding:13px;font-weight:900;margin-top:16px;cursor:pointer}
+  #modalConfirmar{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
+  #modalConfirmarBox{background:#1E293B;color:#fff;border-radius:16px;padding:24px 20px;max-width:360px;width:100%;text-align:center}
+  #modalConfirmarBox h3{color:#22C55E;font-size:15px;margin:8px 0 6px}
+  #modalConfirmarBox .matConf{font-size:13px;color:#CBD5E1;font-weight:700}
+  #modalConfirmarBox .nomeConf{font-size:16px;font-weight:900;margin:6px 0 12px;color:#fff}
+  #modalConfirmarBox p{font-size:14px;line-height:1.5;color:#E2E8F0;margin:0}
+  #modalConfirmarBox small{display:block;margin-top:14px;font-size:12px;color:#CBD5E1}
+  #modalConfirmarBox .linhaBtn{display:flex;gap:8px;margin-top:16px}
+  #modalConfirmarBox .btnSim{flex:1;background:#16A34A;color:#fff;border:0;border-radius:10px;padding:13px;font-weight:900;cursor:pointer}
+  #modalConfirmarBox .btnNao{flex:1;background:#334155;color:#fff;border:0;border-radius:10px;padding:13px;font-weight:800;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="container">
+<div class="header-destaque">
+  <div class="header-icone">🔍</div>
+  <div>
+    <div class="header-topo">ST-VINCULUM • LOCALIZA COD</div>
+    <div class="header-titulo">BUSCAR DADOS</div>
+    <div class="header-sub">Digite o nome ou a matrícula para localizar o cadastro rapidinho.</div>
+  </div>
+</div>
+<div id="debug"></div>
+<div class="card">
+  <label>BUSCA</label>
+  <div class="busca-linha">
+    <input type="text" id="busca" placeholder="DIGITE NOME OU MATRÍCULA" autocomplete="off" oninput="filtrarLista()" onkeypress="if(event.key==='Enter') filtrarLista()">
+    <button class="btn-atualizar" onclick="filtrarLista()" title="Buscar / Atualizar">🔄</button>
+  </div>
+  <div id="lista"></div>
+  <div class="check-solto">
+    <input type="checkbox" id="checkPendentes" onchange="trocarBase()">
+    <label for="checkPendentes">Buscar em Pendentes <small>• guia Pendentes</small></label>
+  </div>
+  <div class="botoes">
+    <button class="btn-liberar" id="btnLiberar" onclick="liberarSelecionado()">✅ LIBERAR</button>
+    <button class="btn-excluir" id="btnExcluir" onclick="excluirSelecionado()">🗑️ EXCLUIR</button>
+    <button class="btn-limpar" onclick="limparCampos()">🧹 LIMPAR</button>
+  </div>
+  <div id="erro"></div>
+  <div id="msg-ok"></div>
+  <div class="titulo-coluna">CAMPOS DAS COLUNAS</div>
+  <label>Item</label>
+  <input type="text" id="campoItem" placeholder="Item">
+  <label>mat</label>
+  <input type="text" id="campoMat" placeholder="mat">
+  <label>nome</label>
+  <input type="text" id="campoNome" placeholder="nome">
+  <div id="camposNormais">
+    <label>membro</label>
+    <input type="text" id="campoMembro" placeholder="membro">
+    <label>funcao</label>
+    <input type="text" id="campoFuncao" placeholder="funcao">
+  </div>
+  <!-- PENDENTES: SO A A G - SEM RG / CPF -->
+  <div id="camposPendentes" style="display:none">
+    <label>congregacao</label>
+    <input type="text" id="campoCongregacao" placeholder="congregacao">
+    <label>Sexo</label>
+    <input type="text" id="campoSexo" placeholder="Sexo">
+    <label>Liberar - Coluna F</label>
+    <input type="text" id="campoLiberar" placeholder="Liberar" readonly>
+    <label>WhatsApp</label>
+    <input type="text" id="campoWhats" placeholder="WhatsApp">
+  </div>
+</div>
+<script>
+const API_CONSULTA = 'https://script.google.com/macros/s/AKfycbwUIspP7xB_InyXoNNDLchbqe3JcVcxObtTxZkd8ho9a6oH0CXPwwY8vvk4Ymofp_gg/exec';
+const API_PENDENTES = 'https://script.google.com/macros/s/AKfycbxLXw-nu5oXXtjE8HKik_W_bbT9CGjTNJWw-dUm4wWYv-hjcz1dOhMHLxoUTRHGJA3D0A/exec';
+let ULTIMOS = [];
+let BASE = [];
+let BASE_PEND = [];
+let BASE_CARREGADA = false;
+let PEND_CARREGADA = false;
+let PEND_CARREGANDO = false;
+function pegar(obj, nomes){
+  if(!obj) return '';
+  for(var k in obj){
+    var kl = k.toLowerCase().replace(/\s+/g,'');
+    for(var i=0;i<nomes.length;i++){
+      if(kl === nomes[i].toLowerCase().replace(/\s+/g,'')) return obj[k];
+    }
+  }
+  return '';
+}
+function mostrarDebug(){
+  document.getElementById('debug').innerText = ehPendentes()
+    ? 'Pendentes: ' + BASE_PEND.length + ' linhas carregadas'
+    : 'Normal: ' + BASE.length + ' linhas carregadas';
+}
+fetch(API_CONSULTA + '?action=todos&t=' + Date.now(), {cache:'no-store'})
+  .then(r => r.json())
+  .then(d => {
+    var arr = Array.isArray(d) ? d : (d.data || []);
+    BASE = arr.map(function(o){
+      if(Array.isArray(o)) return o;
+      return [
+        pegar(o, ['codigo','item','cod']),
+        pegar(o, ['matricula','mat']),
+        pegar(o, ['nome']),
+        pegar(o, ['congregacao','igreja','membro']),
+        pegar(o, ['qualfuncao','qual funcao','funcao','tfuneclesiastica','funcaodepartamento'])
+      ];
+    });
+    BASE_CARREGADA = true; mostrarDebug();
+  }).catch(()=>{});
+function carregarPendentes(callback){
+  if(PEND_CARREGADA){ if(callback) callback(); return; }
+  if(PEND_CARREGANDO) return;
+  PEND_CARREGANDO = true;
+  document.getElementById('debug').innerText = 'Carregando Pendentes...';
+  fetch(API_PENDENTES + '?action=todospendentes&t=' + Date.now(), {cache:'no-store'})
+    .then(r => r.json())
+    .then(d => {
+      var arr = Array.isArray(d) ? d : (d.data || []);
+      BASE_PEND = arr.map(function(o){
+        if(Array.isArray(o)) return o;
+        // A a G: Item, Mat, Cong, Nome, Sexo, Liberar, Whats
+        return [
+          pegar(o, ['item','a','codigo','cod','id']),
+          pegar(o, ['matricula','mat','b']),
+          pegar(o, ['congregacao','igreja']),
+          pegar(o, ['nome','c']),
+          pegar(o, ['sexo']),
+          pegar(o, ['liberar','f','rg']),
+	  pegar(o, ['whatsapp','contato','zap','g','cpf'])
+        ];
+      });
+      PEND_CARREGADA = true; PEND_CARREGANDO = false; mostrarDebug();
+      if(callback) callback();
+    }).catch(()=>{ PEND_CARREGANDO = false; });
+}
+function ehPendentes(){ return document.getElementById('checkPendentes').checked; }
+function trocarBase(){
+  var pend = ehPendentes();
+  document.getElementById('camposNormais').style.display = pend ? 'none' : 'block';
+  document.getElementById('camposPendentes').style.display = pend ? 'block' : 'none';
+  if(pend) carregarPendentes();
+  limparCampos(); mostrarDebug();
+}
+function setCampo(id, valor){ var el = document.getElementById(id); if(el) el.value = valor || ''; }
+function preencherCampos(a){
+  if(ehPendentes()){
+    setCampo('campoItem', a[0] || a[1]);
+    setCampo('campoMat', a[1]);
+    setCampo('campoCongregacao', a[2]);
+    setCampo('campoNome', a[3]);
+    setCampo('campoSexo', a[4]);
+    setCampo('campoLiberar', a[5]);
+    setCampo('campoWhats', a[6]);
+  } else {
+    setCampo('campoItem', a[0]);
+    setCampo('campoMat', a[1]);
+    setCampo('campoNome', a[2]);
+    setCampo('campoMembro', a[3]);
+    setCampo('campoFuncao', a[4]);
+  }
+}
+function limparCampos(){
+  ['busca','campoItem','campoMat','campoNome','campoMembro','campoFuncao','campoCongregacao','campoSexo','campoLiberar','campoWhats'].forEach(id => setCampo(id,''));
+  document.getElementById('lista').style.display='none';
+  document.getElementById('lista').innerHTML='';
+  document.getElementById('erro').style.display='none';
+  document.getElementById('msg-ok').style.display='none';
+  document.getElementById('busca').focus();
+}
+
+function fecharModalAluno(){
+  document.getElementById('modalAluno').style.display = 'none';
+}
+
+function filtrarLista(){
+  var termo = (document.getElementById('busca').value||'').trim().toUpperCase();
+  var lista = document.getElementById('lista');
+  var erro = document.getElementById('erro');
+  erro.style.display='none';
+  if(termo.length < 2){ lista.style.display='none'; lista.innerHTML=''; return; }
+  var pend = ehPendentes();
+  var baseAtual = pend ? BASE_PEND : BASE;
+  var carregada = pend ? PEND_CARREGADA : BASE_CARREGADA;
+  if(!carregada){
+    if(pend) carregarPendentes(function(){ filtrarLista(); });
+    return;
+  }
+  var ehMatricula = /^[0-9]+$/.test(termo);
+  var qMatPad = ehMatricula ? termo.replace(/\D/g, "").padStart(5, "0") : "";
+  ULTIMOS = [];
+  for(var i = 0; i < baseAtual.length; i++){
+    var x = baseAtual[i];
+    var mat = String(x[1] || "").trim();
+    var nome = String(pend ? (x[3] || "") : (x[2] || "")).trim();
+    if(!nome && !mat) continue;
+    var linhaTexto = x.join(' ').toUpperCase();
+    if(ehMatricula){
+      var matPad = mat.padStart(5, "0");
+      if(matPad !== qMatPad && mat !== termo && linhaTexto.indexOf(termo) === -1) continue;
+    } else {
+      if(linhaTexto.indexOf(termo) === -1) continue;
+    }
+    ULTIMOS.push(x);
+    if(ULTIMOS.length >= 30) break;
+  }
+  if(!ULTIMOS.length){
+    lista.style.display='none'; lista.innerHTML='';
+    erro.style.display='block';
+    erro.innerText = '❌ Não encontrado';
+    return;
+  }
+  lista.innerHTML = ULTIMOS.map(function(x,i){
+    var nomeLista = pend ? (x[3]||'') : (x[2]||'');
+    var liberado = pend && x[5] ? ' ✅' : '';
+    return '<div class="item-lista" onclick="selecionarLista('+i+')"><b>'+(x[1]||'')+'</b> - '+nomeLista+liberado+'</div>';
+  }).join('');
+  lista.style.display='block';
+}
+function selecionarLista(i){
+  var achado = ULTIMOS[i];
+  if(!achado) return;
+  preencherCampos(achado);
+  document.getElementById('lista').style.display='none';
+  document.getElementById('lista').innerHTML='';
+}
+function excluirSelecionado(){
+  var pend = ehPendentes();
+  var mat = document.getElementById('campoMat').value.trim();
+  var nome = document.getElementById('campoNome').value.trim();
+  var item = document.getElementById('campoItem').value.trim();
+  var erro = document.getElementById('erro');
+  var ok = document.getElementById('msg-ok');
+  erro.style.display='none'; ok.style.display='none';
+  if(!pend){
+    erro.style.display='block';
+    erro.innerText = '⚠️ Marque "Buscar em Pendentes" para excluir de Pendentes.';
+    return;
+  }
+  if(!mat && !nome){
+    erro.style.display='block';
+    erro.innerText = '⚠️ Selecione primeiro uma pessoa na busca.';
+    return;
+  }
+  if(!confirm('Excluir de Pendentes?\n\n' + (item||'') + ' - ' + nome + '\nMat: ' + mat)){
+    return;
+  }
+  var btn = document.getElementById('btnExcluir');
+  btn.disabled = true; btn.innerText = 'Excluindo...';
+  var url = API_PENDENTES + '?action=excluirpendente&matricula=' + encodeURIComponent(mat) + '&mat=' + encodeURIComponent(mat) + '&item=' + encodeURIComponent(item) + '&nome=' + encodeURIComponent(nome) + '&t=' + Date.now();
+  fetch(url, {cache:'no-store'})
+    .then(r => r.json().catch(()=>({})))
+    .then(d => {
+      if(d.result === 'err' || d.result === 'error'){
+        erro.style.display='block';
+        erro.innerText = '❌ ' + (d.msg || 'Não excluiu na planilha');
+        return;
+      }
+      BASE_PEND = BASE_PEND.filter(function(x){
+        return String(x[1]||'').trim() !== mat;
+      });
+      ok.style.display='block';
+      ok.innerText = '✅ Excluído de Pendentes: ' + nome + ' (' + mat + ')';
+      limparCampos();
+      document.getElementById('checkPendentes').checked = true;
+      document.getElementById('camposPendentes').style.display='block';
+      document.getElementById('camposNormais').style.display='none';
+      mostrarDebug();
+    })
+    .catch(()=>{
+      erro.style.display='block';
+      erro.innerText = '❌ Erro ao excluir. Verifique a implantação.';
+    })
+    .finally(()=>{ btn.disabled=false; btn.innerText='🗑️ EXCLUIR'; });
+}
+function liberarSelecionado(){
+  var pend = ehPendentes();
+  var mat = document.getElementById('campoMat').value.trim();
+  var nome = document.getElementById('campoNome').value.trim();
+  var item = document.getElementById('campoItem').value.trim();
+  var erro = document.getElementById('erro');
+  var ok = document.getElementById('msg-ok');
+  erro.style.display='none'; ok.style.display='none';
+  if(!pend){
+    erro.style.display='block';
+    erro.innerText = '⚠️ Marque "Buscar em Pendentes" para liberar.';
+    return;
+  }
+  if(!mat && !nome){
+    erro.style.display='block';
+    erro.innerText = '⚠️ Selecione primeiro uma pessoa na busca.';
+    return;
+  }
+  document.getElementById('confMat').innerText = 'MAT ' + mat;
+  document.getElementById('confNome').innerText = nome;
+  document.getElementById('modalConfirmar').style.display = 'flex';
+}
+function fecharConfirmar(){
+  document.getElementById('modalConfirmar').style.display = 'none';
+}
+function confirmarLiberarSim(){
+  document.getElementById('modalConfirmar').style.display = 'none';
+  var mat = document.getElementById('campoMat').value.trim();
+  var nome = document.getElementById('campoNome').value.trim();
+  var erro = document.getElementById('erro');
+  var ok = document.getElementById('msg-ok');
+  erro.style.display='none'; ok.style.display='none';
+  var btn = document.getElementById('btnLiberar');
+  btn.disabled = true; btn.innerText = 'Liberando...';
+  var url = API_PENDENTES + '?action=liberarpendente&matricula=' + encodeURIComponent(mat) + '&mat=' + encodeURIComponent(mat) + '&nome=' + encodeURIComponent(nome) + '&t=' + Date.now();
+  fetch(url, {cache:'no-store'})
+    .then(r => r.json().catch(()=>({})))
+    .then(d => {
+      if(d.result === 'err' || d.result === 'error' || d.result === 'erro'){
+        erro.style.display='block';
+        erro.innerText = '❌ ' + (d.msg || d.message || 'Não liberou');
+        return;
+      }
+      for(var i=0;i<BASE_PEND.length;i++){
+        if(String(BASE_PEND[i][1]||'').trim() === mat) BASE_PEND[i][5] = 'LIBERADO PARA ACESSO';
+      }
+      setCampo('campoLiberar', 'LIBERADO PARA ACESSO');
+      var zapEnviar = document.getElementById('campoWhats').value.replace(/\D/g,'');
+      if(zapEnviar.length >= 10){
+        if(zapEnviar.length == 10 || zapEnviar.length == 11) zapEnviar = '55' + zapEnviar;
+        var msgZap = 'Ola *' + nome + '*,\nEssa é uma mensagem da coordenação do sistema Vinculum.\nO seu cadastro de testes do novo discípulo\nja foi *LIBERADO PARA ACESSO*!\nSeja bem vindo ao retorno de seus testes.\nPor gentileza, clique no link e faça o seu seu pré-cadastro com a matricula *' + mat + '*\nhttps://htecsistema.github.io/ST-VINCULUM/';
+        window.open('https://wa.me/' + zapEnviar + '?text=' + encodeURIComponent(msgZap), '_blank');
+      }
+      ok.style.display='block';
+      ok.innerText = '✅ Liberado! Coluna F = LIBERADO PARA ACESSO - ' + nome + ' (' + mat + ')';
+      mostrarDebug();
+    })
+    .catch(()=>{
+      erro.style.display='block';
+      erro.innerText = '❌ Erro ao liberar. Verifique a implantação.';
+    })
+    .finally(()=>{ btn.disabled=false; btn.innerText='✅ LIBERAR'; });
+}
+</script>
+
+<div id="modalAluno">
+  <div id="modalAlunoBox">
+    <div style="font-size:28px">✅</div>
+    <h3>ATENÇÃO - ALUNO NOVO</h3>
+    <p>Por gentileza, clique na opção PESQUISE e altere os seus dados imediatamente, salvando em ALTERAR, validando assim o seu acesso aos testes.</p>
+    <button onclick="fecharModalAluno()">OK - ENTENDI</button>
+  </div>
+</div>
+
+<div id="modalConfirmar">
+  <div id="modalConfirmarBox">
+    <div style="font-size:28px">✅</div>
+    <h3>ATENÇÃO - LIBERAR ACESSO</h3>
+    <div class="matConf" id="confMat"></div>
+    <div class="nomeConf" id="confNome"></div>
+    <p>Desejas liberar o usuário para acesso ao sistema de testes?</p>
+    <div class="linhaBtn">
+      <button class="btnNao" onclick="fecharConfirmar()">Cancelar</button>
+      <button class="btnSim" onclick="confirmarLiberarSim()">SIM, LIBERAR</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
