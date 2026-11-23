@@ -15,29 +15,7 @@
 <meta property="og:image:height" content="630">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://htecsistema.github.io/ST-VINCULUM/">
-<link rel="stylesheet" href="indexlogin.css?v=20261115.2.02">
-<style>
-
-@keyframes piscarAviso{
-  0%, 100% { opacity: 2; }
-  50% { opacity: 0.15; }
-}
-.piscar-aviso{
-  animation: piscarAviso 1s infinite;
-}
-
-.ht-modal{position:fixed;inset:0;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);display:none;justify-content:center;align-items:flex-start;padding:20px 12px;overflow-y:auto;z-index:99999}
-.ht-modal.ativo{display:flex}
-.ht-modal-box{width:100%;max-width:420px;margin-top:10px;animation:subir .22s ease}
-@keyframes subir{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
-.ht-modal.ativo #box-primeiro-acesso,
-.ht-modal.ativo #box-cadastro-novo,
-.ht-modal.ativo #box-novo-aluno,
-.ht-modal.ativo #box-master,
-.ht-modal.ativo #box-masterlista{display:block !important;margin-top:0 !important;max-height:90vh;overflow-y:auto}
-#box-primeiro-acesso, #box-cadastro-novo, #box-novo-aluno, #box-master, #box-masterlista{background:#1E293B;border:1px solid #334155;border-radius:12px;padding:14px;color:#F1F5F9;}
-#aviso-entrada-pendente{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);align-items:center;justify-content:center;z-index:10005;padding:16px;}
-</style>
+<link rel="stylesheet" href="indexlogin.css?v=20261123.2.03">
 </head>
 <body>
 <div id="tela-login">
@@ -86,10 +64,10 @@
 
   <div id="modal-cadastro" class="ht-modal" onclick="if(event.target===this) fecharCadastroNovo()"><div class="ht-modal-box">
     <div id="box-cadastro-novo">
-      <h4 style="margin:0 0 10px 0;font-size:14px;font-weight:700;color:#fb923c">Tenho Teste - Estou nos Pendentes</h4>
+      <h4 style="margin:0 0 10px 0;font-size:14px;font-weight:700;color:#fb923c">Tenho Teste - Estou nos Divergentes</h4>
       <div id="cadastro-novo-info" style="display:flex;align-items:center;gap:6px;padding:10px 12px;background:#0F172A;border:1px solid #334155;border-radius:8px;font-weight:700;font-size:12px;margin-bottom:10px;color:#F1F5F9">✅ Clique para selecionar</div>
 
-<div style="margin-bottom:10px; display:flex; gap:8px; align-items:center;"><input type="text" id="buscaPendenteAzul" placeholder="🔍 Digite seu nome aqui" style="flex:1; padding:12px; border:1px solid #334155; border-radius:10px; font-size:13px; font-weight:800; background:#0F172A;color:#F1F5F9;" oninput="let t=this.value.toLowerCase().trim(); if(!t){mostrarListaPendentes(cachePendentes); return;} let f=cachePendentes.filter(x=> String(x.Matricula).includes(t) || x.Nome.toLowerCase().includes(t)); mostrarListaPendentes(f)"><button onclick="document.getElementById('buscaPendenteAzul').value=''; mostrarListaPendentes(cachePendentes); document.getElementById('cadastro-novo-info').innerText = `✅ ${cachePendentes.length} pendentes - Clique para selecionar`" style="width:46px; height:46px; border-radius:10px; border:1px solid #334155; background:#1E293B; color:#F1F5F9; font-weight:900;">X</button></div>
+<div style="margin-bottom:10px; display:flex; gap:8px; align-items:center;"><input type="text" id="buscaPendenteAzul" placeholder="🔍 Digite seu nome aqui" style="flex:1; padding:12px; border:1px solid #334155; border-radius:10px; font-size:13px; font-weight:800; background:#0F172A;color:#F1F5F9;" oninput="let t=this.value.toLowerCase().trim(); if(!t){mostrarListaPendentes(cachePendentes); return;} let f=cachePendentes.filter(x=> String(x.Matricula).includes(t) || x.Nome.toLowerCase().includes(t)); mostrarListaPendentes(f)"><button onclick="document.getElementById('buscaPendenteAzul').value=''; mostrarListaPendentes(cachePendentes); document.getElementById('cadastro-novo-info').innerText = `✅ ${cachePendentes.length} Divergentes - Clique para selecionar`" style="width:46px; height:46px; border-radius:10px; border:1px solid #334155; background:#1E293B; color:#F1F5F9; font-weight:900;">X</button></div>
       <div id="lista-nomes-pendentes" style="max-height:220px;overflow-y:auto;background:#0F172A;border:1px solid #334155;border-radius:8px;margin-bottom:12px;display:block;"></div>
 
  <label style="font-size:11px;font-weight:800;color:#fb923c">CPF * OBRIGATÓRIO</label>
@@ -106,7 +84,6 @@
   <div id="box-novo-aluno">
 
 <h4 style="margin:0 0 10px 0;font-size:14px;font-weight:700;color:#22c55e">Orientação:<br>1. No primeiro campo gera a lista do CODPOINT. Pesquise o seu nome<br>2. Encontrado, click sobre ele e informe os demais dados<br>3. Se o seu nome, <span style="color:#facc15;font-weight:900">NÃO FOI LOCALIZADO</span>, marque a opção <span style="color:#facc15;font-weight:900">"Cadastro Provisório"</span> e faça o seu Pre-Cadastro<br><span style="color:#f87171;font-weight:900">4. FIQUE ATENTO A SUA SENHA</span></h4>
-
 
     <!-- 1 - PESQUISE O SEU NOME PRIMEIRO -->
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -151,20 +128,15 @@
       </div>
     </div>
 
-
 <div id="resultado-novo-aluno" style="margin-top:10px"></div>
     <div style="display:flex; gap:8px; margin-top:12px;">
-      <!-- BOTÃO VERDE - MODO NORMAL -->
       <button id="btnSalvarVerde" onclick="salvarNovoAluno()" style="flex:1;background:#16a34a;color:white;border:none;border-radius:10px;padding:13px;font-weight:800;cursor:pointer">✅ Salvar</button>
-      <!-- BOTÃO NOVO - COR DO FECHAR - COMEÇA ESCONDIDO -->
       <button id="btnSalvarProvisorio" onclick="salvarAlunoProvisorio()" style="display:none;flex:1;background:#1E293B;color:#F1F5F9;border:1px solid #334155;border-radius:10px;padding:13px;font-weight:800;cursor:pointer">✅ Salvar</button>
-      <!-- BOTÃO LIMPAR - NO MEIO -->
       <button onclick="limparNovoAluno()" style="background:#475569;color:white;border:1px solid #64748b;border-radius:10px;padding:13px 16px;font-weight:800;cursor:pointer;white-space:nowrap">🧹 Limpar</button>
       <button onclick="fecharNovoAluno()" style="flex:1;background:#1E293B;color:#F1F5F9;border:1px solid #334155;border-radius:10px;padding:13px;font-weight:700;cursor:pointer">Fechar</button>
     </div>
   </div>
 </div></div>
-
 
   <div id="modal-master" class="ht-modal" onclick="if(event.target===this) fecharMaster()"><div class="ht-modal-box">
     <div id="box-master" style="background:#1E293B;border:1px solid #334155;border-radius:12px;padding:14px;color:#F1F5F9;">
@@ -220,45 +192,94 @@
 <div class="logo-icon" onclick="toggleMenuLateral()" style="background:transparent; border:none; padding:0;"><img src="logo-branco.png" style="width:48px; height:48px; object-fit:contain; display:block;"></div> 
     ST-VINCULUM
   </div>
-  <div class="user-info"><small>Usuário logado</small><b id="user-display">-</b><small id="versao-display" style="display:block; margin-top:6px; color:#7c3aed; font-weight:800; font-size:10px; letter-spacing:0.5px;">v20261115.2.02</small></div>
+  <div class="user-info"><small>Usuário logado</small><b id="user-display">-</b><small id="versao-display" style="display:block; margin-top:6px; color:#7c3aed; font-weight:800; font-size:10px; letter-spacing:0.5px;">v20261123.2.03</small></div>
 </div>
+
 <div class="menu-nav">
   <div class="label">Principal</div>
-  <button class="menu-btn ativo" onclick="abrir('inicio.html', this, 'Início')"><span class="icon">🏠</span> Início</button>
-  <button class="menu-btn" onclick="abrir('acompanhamento.html', this, 'Acompanhamento')"><span class="icon">📈</span> Acompanhamento</button>
-  <button class="menu-btn" onclick="abrir('CadastroAdm.html', this, 'Administradores')"><span class="icon">👑</span> Administrador</button>
-  <button class="menu-btn" onclick="abrir('Cadastro.html', this, 'Cadastro e Acesso Testes')"><span class="icon">📝</span>Cadastro/Teste Discipulado</button>
-  <button class="menu-btn" onclick="abrir('Relatorio.html', this, 'Certificados')"><span class="icon">📊</span> Certificados</button>
-  <button class="menu-btn" onclick="abrir('Informativo.html', this, 'Informativo')"><span class="icon">ℹ️</span> Informativo</button>
-  <button class="menu-btn" onclick="abrir('Liberacao.html', this, 'Liberação')"><span class="icon">🔓</span> Liberação</button>
-  <button class="menu-btn" onclick="abrir('Baixar.html', this, 'Lições')"><span class="icon">📖</span> Lições</button>
-  <button id="btn-manutencao" class="menu-btn" onclick="fecharMenuLateral(); abrir('Manutencao.html', this, 'Manutenção')"><span class="icon">🛠️</span> Manutenção</button>
-  <button id="btn-movimento-adm" class="menu-btn" style="display:none" onclick="abrir('MovimentoAdm.html', this, 'Movimento Adm')"><span class="icon">📊</span> Relatório Administrador</button>
-  <button id="btn-acesso-usuario" class="menu-btn" style="display:none" onclick="abrir('AcessoUsuario.html', this, 'Acesso Usuário')"><span class="icon">👤</span> Relatório Usuario</button>
-  <button class="menu-btn" onclick="abrir('sugerir.html', this, 'Sugestoes')"><span class="icon">💡</span> Sugestões</button>
-  <button class="menu-btn" onclick="abrir('testes.html', this, 'Testes')"><span class="icon">📝</span> Testes Novos</button>
-  <button id="btn-sair" class="menu-btn" onclick="sair()"><span class="icon">🚪</span> Sair do Sistema</button>
+<button class="menu-btn ativo" onclick="abrir('inicio.html', this, 'Início')"><span class="icon">🏠</span> Início</button>
+<button class="menu-btn" onclick="abrir('Cadastro.html', this, 'Cadastro')" style="border-top:1px solid #475569; margin-top:10px; padding-top:10px;"><span class="icon">📝</span> Cadastro</button>
+  <button class="menu-btn" onclick="abrir('Relatorio.html', this, 'Certificados')" style="border-top:1px solid #475569; margin-top:10px; padding-top:10px;"><span class="icon">📊</span> Certificados</button>
+
+  <!-- PAI - ESTATISTICA -->
+  <div class="menu-grupo-acompanhamento" id="grupo-acompanhamento" style="border-top:1px solid #475569; margin-top:10px; padding-top:10px;">
+    <button type="button" class="menu-btn menu-pai" id="btn-acompanhamento-pai" onclick="toggleSubmenuAcompanhamento(event); return false;">
+      <span class="icon">📈</span> Estatistica
+      <span class="seta-acompanhamento" id="seta-acompanhamento">▼</span>
+    </button>
+    <div class="submenu-acompanhamento" id="submenu-acompanhamento" style="display:none">
+      <button class="menu-btn sub-item" onclick="abrir('testadno.html', this, 'Acompanhamento')"><span class="icon">🏃</span> Acompanhamento</button>
+      <button class="menu-btn sub-item" onclick="abrir('grf.html', this, 'Gráficos')"><span class="icon">📊</span> Gráficos</button>
+      <button class="menu-btn sub-item" onclick="abrir('acompanhamento.html', this, 'Movimentação')"><span class="icon">🌊</span>Movimentação</button>
+    </div>
+  </div>
+
+  <button class="menu-btn" onclick="abrir('Informativo.html', this, 'Informativo')" style="border-top:1px solid #475569; margin-top:10px; padding-top:10px;"><span class="icon">ℹ️</span> Informativo</button>
+  <button class="menu-btn" onclick="abrir('sugerir.html', this, 'Sugestoes')" style="border-top:1px solid #475569; margin-top:10px; padding-top:10px;"><span class="icon">💡</span> Sugestões</button>
+  <button class="menu-btn" onclick="abrirTestesAvancados(this)" style="border-top:1px solid #475569; margin-top:10px; padding-top:10px;"><span class="icon">📝</span> Testes Avançados</button>
+
+  <!-- PAI - TESTE DISCIPULADO -->
+  <div class="menu-grupo-teste" id="grupo-teste" style="border-top:1px solid #475569; margin-top:10px; padding-top:10px;">
+    <button type="button" class="menu-btn menu-pai" id="btn-teste-pai" onclick="toggleSubmenuTeste(event); return false;">
+      <span class="icon">📝</span> Teste Discipulado
+      <span class="seta-teste" id="seta-teste">▼</span>
+    </button>
+    <div class="submenu-teste" id="submenu-teste" style="display:none">
+      <button class="menu-btn sub-item" onclick="abrir('Liberacao.html', this, 'Liberação')"><span class="icon">🔓</span> Liberação</button>
+      <button class="menu-btn" onclick="abrir('Baixar.html', this, 'Lições')"><span class="icon">📖</span> Lições</button>
+      <button class="menu-btn sub-item" onclick="abrir('Recuperacao.html', this, 'Recuperação')"><span class="icon">🔄</span> Recuperação</button>
+      <button class="menu-btn sub-item" onclick="abrir('TesteDiscipulado.html', this, 'Teste')"><span class="icon">📝</span> Teste</button>
+    </div>
+  </div>
+
+  <!-- PAI - ADMINISTRAÇÃO -->
+  <div class="menu-grupo-adm" id="grupo-admin" style="border-top:1px solid #475569; margin-top:10px; padding-top:10px;">
+    <button class="menu-btn menu-pai" id="btn-admin-pai" onclick="toggleSubmenuAdm(event)">
+      <span class="icon">📁</span> Administração
+      <span class="seta-adm" id="seta-adm">▼</span>
+    </button>
+    <div class="submenu-adm" id="submenu-adm">
+      <button class="menu-btn sub-item" onclick="abrir('CadastroAdm.html', this, 'Administradores')"><span class="icon">👑</span> Administrador</button>
+      <button id="btn-manutencao" class="menu-btn sub-item" onclick="fecharMenuLateral(); abrir('Manutencao.html', this, 'Manutenção')"><span class="icon">🛠️</span> Manutenção</button>
+      <button id="btn-movimento-adm" class="menu-btn sub-item" style="display:none" onclick="abrir('MovimentoAdm.html', this, 'Movimento Adm')"><span class="icon">📊</span> Relatório Administrador</button>
+      <button id="btn-acesso-usuario" class="menu-btn sub-item" style="display:none" onclick="abrir('AcessoUsuario.html', this, 'Acesso Usuário')"><span class="icon">👤</span> Relatório Usuario</button>
+      <button class="menu-btn sub-item" onclick="abrir('consulta.html', this, 'consulta')"><span class="icon">🔍</span> Localiza Cod</button>
+    </div>
+  </div>
+
+  <button id="btn-sair" onclick="sair()" style="display:flex; align-items:center; gap:12px; width:100%; background:transparent; border:none; padding:12px 16px; cursor:pointer; color:#7d8aa0; font-size:15px; font-weight:600; text-align:left;">
+    <span style="font-size:20px; line-height:1; color:#7d8aa0;">↩</span> Sair
+  </button>
 </div>
 </div>
+
 <div id="conteudo-direita">
   <div class="barra-topo-conteudo"><div style="display:flex; align-items:center; gap:10px;"><button id="btn-menu-mobile" onclick="abrirMenuLateral()">☰</button><span>📍 <b id="pagina-atual">Início</b></span></div><span id="hora-atual">-</span></div>
-  <div id="frame-inicio.html" class="tela-frame ativa"><iframe id="tela-inicio.html" src="inicio.html?v=20261115.2.02"></iframe></div>
-  <div id="frame-acompanhamento.html" class="tela-frame"><iframe id="tela-acompanhamento.html" src="acompanhamento.html?v=20261115.2.02"></iframe></div>
-  <div id="frame-AcessoUsuario.html" class="tela-frame"><iframe id="tela-AcessoUsuario.html" src="AcessoUsuario.html?v=20261115.2.02"></iframe></div>
-  <div id="frame-Baixar.html" class="tela-frame"><iframe id="tela-Baixar.html" src="Baixar.html?v=20261115.2.02"></iframe></div>
-  <div id="frame-Cadastro.html" class="tela-frame"><iframe id="tela-Cadastro.html" src="Cadastro.html?v=20261115.2.02"></iframe></div>
-  <div id="frame-CadastroAdm.html" class="tela-frame"><iframe id="tela-CadastroAdm.html" src="CadastroAdm.html?v=20261115.2.02"></iframe></div>
-  <div id="frame-Liberacao.html" class="tela-frame"><iframe id="tela-Liberacao.html" src="Liberacao.html?v=20261115.2.02"></iframe></div>
-  <div id="frame-Manutencao.html" class="tela-frame"><iframe id="tela-Manutencao.html" src="Manutencao.html?v=20261115.2.02"></iframe></div>
-  <div id="frame-MovimentoAdm.html" class="tela-frame"><iframe id="tela-MovimentoAdm.html" src="MovimentoAdm.html?v=20261115.2.02"></iframe></div>
-  <div id="frame-Relatorio.html" class="tela-frame"><iframe id="tela-Relatorio.html" src="Relatorio.html?v=20261115.2.02"></iframe></div>
-<div id="frame-Informativo.html" class="tela-frame"><iframe id="tela-Informativo.html" src="Informativo.html?v=20261115.2.02"></iframe></div>
-  <div id="frame-sugerir.html" class="tela-frame"><iframe id="tela-sugerir.html" src="sugerir.html?v=20261115.2.02"></iframe></div>
-  <div id="frame-testes.html" class="tela-frame"><iframe id="tela-testes.html" src="testes.html?v=20261115.2.02"></iframe></div>
+  <div id="frame-inicio.html" class="tela-frame ativa"><iframe id="tela-inicio.html" src="inicio.html?v=20261123.2.03"></iframe></div>
 
-<div id="frame-teste_1.html" class="tela-frame"><iframe id="tela-teste_1.html" src="teste_1.html?v=20261115.2.02"></iframe></div>
-<div id="frame-teste_2.html" class="tela-frame"><iframe id="tela-teste_2.html" src="teste_2.html?v=20261115.2.02"></iframe></div>
-<div id="frame-teste_3.html" class="tela-frame"><iframe id="tela-teste_3.html" src="teste_3.html?v=20261115.2.02"></iframe></div>
+
+<div id="frame-acompanhamento.html" class="tela-frame"><iframe id="tela-acompanhamento.html" src="acompanhamento.html?v=20261123.2.03"></iframe></div>
+<div id="frame-consulta.html" class="tela-frame"><iframe id="tela-consulta.html" src="consulta.html?v=20261123.2.03"></iframe></div>
+<div id="frame-grf.html" class="tela-frame"><iframe id="tela-grf.html" src="grf.html?v=20261123.2.03"></iframe></div>
+<div id="frame-testadno.html" class="tela-frame"><iframe id="tela-testadno.html" src="testadno.html?v=20261123.2.03"></iframe></div>
+
+  <div id="frame-AcessoUsuario.html" class="tela-frame"><iframe id="tela-AcessoUsuario.html" src="AcessoUsuario.html?v=20261123.2.03"></iframe></div>
+  <div id="frame-Baixar.html" class="tela-frame"><iframe id="tela-Baixar.html" src="Baixar.html?v=20261123.2.03"></iframe></div>
+  <div id="frame-Cadastro.html" class="tela-frame"><iframe id="tela-Cadastro.html" src="Cadastro.html?v=20261123.2.03"></iframe></div>
+  <div id="frame-CadastroAdm.html" class="tela-frame"><iframe id="tela-CadastroAdm.html" src="CadastroAdm.html?v=20261123.2.03"></iframe></div>
+  <div id="frame-Liberacao.html" class="tela-frame"><iframe id="tela-Liberacao.html" src="Liberacao.html?v=20261123.2.03"></iframe></div>
+  <div id="frame-Manutencao.html" class="tela-frame"><iframe id="tela-Manutencao.html" src="Manutencao.html?v=20261123.2.03"></iframe></div>
+  <div id="frame-MovimentoAdm.html" class="tela-frame"><iframe id="tela-MovimentoAdm.html" src="MovimentoAdm.html?v=20261123.2.03"></iframe></div>
+  <div id="frame-Relatorio.html" class="tela-frame"><iframe id="tela-Relatorio.html" src="Relatorio.html?v=20261123.2.03"></iframe></div>
+<div id="frame-Informativo.html" class="tela-frame"><iframe id="tela-Informativo.html" src="Informativo.html?v=20261123.2.03"></iframe></div>
+  <div id="frame-sugerir.html" class="tela-frame"><iframe id="tela-sugerir.html" src="sugerir.html?v=20261123.2.03"></iframe></div>
+  <div id="frame-TesteDiscipulado.html" class="tela-frame"><iframe id="tela-TesteDiscipulado.html" src="TesteDiscipulado.html?v=20261123.2.03"></iframe></div>
+  <div id="frame-Recuperacao.html" class="tela-frame"><iframe id="tela-Recuperacao.html" src="Recuperacao.html?v=20261123.2.03"></iframe></div>
+  <div id="frame-testes.html" class="tela-frame"><iframe id="tela-testes.html" src="testes.html?v=20261123.2.03"></iframe></div>
+
+<div id="frame-teste_1.html" class="tela-frame"><iframe id="tela-teste_1.html" src="teste_1.html?v=20261123.2.03"></iframe></div>
+<div id="frame-teste_2.html" class="tela-frame"><iframe id="tela-teste_2.html" src="teste_2.html?v=20261123.2.03"></iframe></div>
+<div id="frame-teste_3.html" class="tela-frame"><iframe id="tela-teste_3.html" src="teste_3.html?v=20261123.2.03"></iframe></div>
 
 </div>
 </div>
@@ -271,7 +292,7 @@
 <div style="background:#1E293B;max-width:380px;width:100%;border-radius:20px;padding:28px 24px;text-align:center;font-family:sans-serif;box-shadow:0 20px 60px rgba(0,0,0,0.4);border:1px solid #334155"><div style="font-size:36px; margin-bottom:8px;">📄</div><h3 style="margin:0 0 12px 0;font-weight:900;font-size:16px;color:#fb923c">ATENÇÃO PARA ESTE COMUNICADO</h3><p style="font-size:14px;line-height:1.5;margin:0 0 22px 0;text-align:justify;color:#F1F5F9">MATRICULAS DIVERGENTES, são alunos com testes no discipulado com diversas MATRÍCULAS e ou NOMES incompletos, assim trazendo divergência.<br><br>Por gentileza, digite seu nome ou matricula no campo "Digite seu nome aqui" e em seguida, selecione na lista o seu nome ou matricula corretos. Seguidamente informe o seu CPF e salve.<br><br>O sistema vai GERAR UMA SENHA no login. DEPOIS é so clicar em "Entrar no Sistema".<br><br>Se o seu NOME não estiver na relação, então você não faz parte desse sobreaviso.</p><button onclick="fecharAvisoEntradaPendente()" style="background:#ea580c;color:white;border:0;padding:14px;width:100%;border-radius:12px;font-weight:900;cursor:pointer">OK - ENTENDI</button></div>
 </div>
 
-<script src="indexlogin.js?v=20261115.2.02"></script>
+<script src="indexlogin.js?v=20261123.2.03"></script>
 <script>
 // FECHOU, ABRE O 2
 function _htShow(id){document.getElementById(id).classList.add('ativo')}
@@ -282,9 +303,6 @@ const _f2=fecharCadastroNovo;
 const _o3=abrirNovoAluno, _f3=fecharNovoAluno;
 const _oM=abrirMaster, _fM=fecharMaster;
 const _oML=abrirMasterLista, _fML=fecharMasterLista;
-
-
-
 
 abrirPrimeiroAcesso=function(){
   const mat = (document.getElementById('matricula').value||'').trim();
@@ -323,7 +341,6 @@ abrirPrimeiroAcesso=function(){
 
 fecharPrimeiroAcesso=function(){_htHide('modal-primeiro'); if(_f1) try{_f1()}catch(e){}};
 
-
 abrirCadastroNovo=function(){
   document.getElementById('aviso-entrada-pendente').style.display='flex';
 };
@@ -336,7 +353,7 @@ window.fecharAvisoEntradaPendente=function(){
   setTimeout(()=>{
     if(window.cachePendentes && window.cachePendentes.length){
       mostrarListaPendentes(window.cachePendentes);
-      document.getElementById('cadastro-novo-info').innerText = `✅ ${window.cachePendentes.length} pendentes - Clique para selecionar`;
+      document.getElementById('cadastro-novo-info').innerText = `✅ ${window.cachePendentes.length} Divergentes - Clique para selecionar`;
       document.getElementById('lista-nomes-pendentes').style.display='block';
     }
   }, 800);
@@ -350,7 +367,7 @@ window.mostrarListaPendentes = function(lista){
   div.style.cursor='default';
   div.innerHTML = '';
   if(!lista || lista.length==0){
-    div.innerHTML = '<div style="padding:12px;text-align:center;color:#94A3B8">Nenhum pendente encontrado</div>';
+    div.innerHTML = '<div style="padding:12px;text-align:center;color:#94A3B8">Nenhum divergente encontrado</div>';
     return;
   }
   (lista||[]).forEach(item=>{
@@ -410,5 +427,80 @@ function fecharAvisoEntradaLaranja(){document.getElementById('aviso-entrada-lara
 function fecharAvisoEntradaVerde(){document.getElementById('aviso-entrada-verde').style.display='none';}
 </script>
 <script src="script.js?v=2"></script>
+<script>
+
+
+// CORREÇÃO FINAL - TEM QUE FICAR DEPOIS DO script.js, SENÃO ELE APAGA
+// Cada um usa só o seu id, nunca querySelector genérico
+function toggleSubmenuTeste(e){
+  if(e){ e.preventDefault(); e.stopPropagation(); }
+  var sub = document.getElementById('submenu-teste');
+  var seta = document.getElementById('seta-teste');
+  if(!sub) return false;
+  var aberto = sub.style.display === 'block';
+  sub.style.display = aberto ? 'none' : 'block';
+  if(seta) seta.innerText = aberto ? '▼' : '▲';
+  return false;
+}
+function toggleSubmenuAdm(e){
+  if(e){ e.preventDefault(); e.stopPropagation(); }
+  var sub = document.getElementById('submenu-adm');
+  var seta = document.getElementById('seta-adm');
+  if(!sub) return false;
+  var aberto = sub.style.display === 'block';
+  sub.style.display = aberto ? 'none' : 'block';
+  if(seta) seta.innerText = aberto ? '▼' : '▲';
+  return false;
+}
+
+function toggleSubmenuAcompanhamento(e){
+  if(e){ e.preventDefault(); e.stopPropagation(); }
+  var sub = document.getElementById('submenu-acompanhamento');
+  var seta = document.getElementById('seta-acompanhamento');
+  if(!sub) return false;
+  var aberto = sub.style.display === 'block';
+  sub.style.display = aberto ? 'none' : 'block';
+  if(seta) seta.innerText = aberto ? '▼' : '▲';
+  return false;
+}
+
+function toggleSubmenuCadastro(e){
+  if(e){ e.preventDefault(); e.stopPropagation(); }
+  var sub = document.getElementById('submenu-cadastro');
+  var seta = document.getElementById('seta-cadastro');
+  if(!sub) return false;
+  var aberto = sub.style.display === 'block';
+  sub.style.display = aberto ? 'none' : 'block';
+  if(seta) seta.innerText = aberto ? '▼' : '▲';
+  return false;
+}
+
+function abrirTestesAvancados(btn){
+  // pega a matrícula de quem tá logado - tenta do campo, depois do nome do usuário
+  let mat = (document.getElementById('matricula')?.value || '').replace(/\D/g,'').padStart(5,'0');
+  if(mat === '00000' || !mat){
+    let u = (document.getElementById('user-display')?.innerText || '').replace(/\D/g,'').slice(0,5);
+    mat = u.padStart(5,'0');
+  }
+  if(localStorage.getItem('matricula')) mat = localStorage.getItem('matricula').replace(/\D/g,'').padStart(5,'0');
+
+  // SÓ 425 LIBERADO
+  if(mat !== '00425'){
+    let div = document.getElementById('msg-testes-avancados');
+    if(!div){
+      div = document.createElement('div');
+      div.id = 'msg-testes-avancados';
+      div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;padding:18px 22px;background:#0F172A;border:3px solid #FDE047;border-radius:12px;text-align:center;box-shadow:0 0 25px rgba(0,0,0,0.7)';
+      document.body.appendChild(div);
+    }
+    div.innerHTML = `<style>@keyframes piscaDivergente{0%,100%{opacity:1}50%{opacity:0.6}}</style><b style='color:#FDE047;font-size:17px;animation:piscaDivergente 1s infinite'>⏳ EM ANDAMENTO, AGUARDE</b><br><span style='color:#FFF;font-size:13px'>Testes Avançados em construção.<br>Será liberado em breve.</span><br><br><button onclick="document.getElementById('msg-testes-avancados').remove()" style='background:#FDE047;color:#000;font-weight:800;border:0;padding:8px 16px;border-radius:8px;cursor:pointer'>FECHAR</button>`;
+    return;
+  }
+
+  // SE FOR 425, abre normal
+  abrir('testes.html', btn, 'Testes');
+}
+
+</script>
 </body>
 </html>
