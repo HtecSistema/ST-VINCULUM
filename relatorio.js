@@ -385,8 +385,155 @@ var modalHtml = `<div id="modalBoletim" style="position:fixed;inset:0;background
 
 function listarPendentesNA(a){ var lista=[]; for(var ciclo=1;ciclo<=4;ciclo++){ var chave='c'+ciclo; var obj = a[chave] || {}; for(var i=1;i<=13;i++){ var v = obj[i]; var teste = (i<10?'0'+i:i); if(v===undefined || v==='' || v===null){ lista.push('C'+ciclo+'-Teste '+teste+' - Pendente'); }else{ var num=parseFloat(v); if(!isNaN(num) && num<70){ lista.push('C'+ciclo+'-Teste '+teste+' - Nota abaixo de 70 (Nota: '+num+')'); } } } } return lista; }
 
-function gerarCertificado(){ 
-  if(!SELECIONADO && !DETALHE){ 
+// ===== TRAVA DADOS INCOMPLETOS - CERTIFICADO - USA API_DUSUARIO =====
+function normalizaMat5Cert(v){ return String(v||'').replace(/\D/g,'').padStart(5,'0').slice(-5); }
+
+function listarFaltandoDoAlunoCert(a){
+  if(!a) return ['ALUNO NÃO ENCONTRADO'];
+
+  function pegar(letra, ...chaves){
+    if(Array.isArray(a)){
+      let idx = letra.toUpperCase().charCodeAt(0) - 65;
+      let v = a[idx];
+      return v!==undefined && v!==null ? String(v).trim() : '';
+    }
+    // objeto - procura sem diferenciar maiúscula/minúscula
+    let keys = Object.keys(a);
+    for(let k of chaves){
+      let achada = keys.find(x => x.toLowerCase() === k.toLowerCase());
+      if(achada && a[achada]!==undefined && a[achada]!==null && String(a[achada]).trim()!=='') return String(a[achada]).trim();
+    }
+    return '';
+  }
+
+  let d = {
+    B: pegar('B','Matricula','MATRICULA'),
+    C: pegar('C','congregacao','Congregacao','Congregação','CONGREGACAO'),
+    D: pegar('D','Nome','NOME'),
+    I: pegar('I','Sexo','SEXO'),
+    K: pegar('K','CPF','Cpf'),
+    L: pegar('L','WhatsApp','WHATSAPP','Whatsapp'),
+    U: pegar('U','BatizadoAgua','Batizado Agua','BATIZADOAGUA'),
+    V: pegar('V','BEspSanto','EspSanto','B Esp Santo'),
+    W: pegar('W','TFunEclesiastica','TFunEcle','FuncaoEclesiastica'),
+    X: pegar('X','QualFuncao','Qual Funcao','Qual Função'),
+    Y: pegar('Y','fcongregacao','Fcongregacao','Fcongregação','FCONGREGACAO')
+  };
+
+  let lista = [
+    ['B','MATRÍCULA'],
+    ['C','NOME DA CONGREGAÇÃO'],
+    ['D','NOME COMPLETO'],
+    ['I','SEXO'],
+    ['K','CPF'],
+    ['L','WHATSAPP'],
+    ['U','BATIZADO ÁGUA'],
+    ['V','BT ESPÍRITO SANTO'],
+    ['W','FUNÇÃO ECLESIÁSTICA'],
+    ['Y','FUNÇÃO NA CONGREGAÇÃO']
+  ];
+
+  let faltando = [];
+  for(let item of lista){ if(!d[item[0]]) faltando.push(item[1]); }
+
+  // W = SIM e X vazio -> trava
+  if(String(d.W||'').toUpperCase().trim() === 'SIM' && !d.X){
+    faltando.push('QUAL FUNÇÃO');
+  }
+
+  return faltando;
+}
+
+// ===== CACHE PRA TRAVA ABRIR RÁPIDO =====
+var CACHE_TODOS_CERT = null;
+var CACHE_TODOS_CERT_TEMPO = 0;
+
+// Pré-carrega em segundo plano assim que abrir a página
+document.addEventListener('DOMContentLoaded', function(){
+  setTimeout(function(){
+    fetch(API_DUSUARIO+"?action=todos&t="+Date.now(), {cache:'no-store'})
+    .then(r=>r.json()).then(d=>{
+      let lista = Array.isArray(d) ? d : (d.dados||d.data||[]);
+      CACHE_TODOS_CERT = lista;
+      CACHE_TODOS_CERT_TEMPO = Date.now();
+    }).catch(e=>{});
+  }, 500);
+});
+
+async function buscarAlunoParaTravaCert(mat){
+  let mat5 = normalizaMat5Cert(mat);
+  if(!mat5 || mat5==='00000') return null;
+
+  // Pega a matrícula do item seja array [A,B,C...] ou objeto
+  function matDoItem(x){
+    if(Array.isArray(x)) return normalizaMat5Cert(x[1]); // B = Matricula = índice 1
+    return normalizaMat5Cert(x.Matricula||x.MATRICULA||x.matricula||x.Matricula);
+  }
+
+  if(CACHE_TODOS_CERT && (Date.now() - CACHE_TODOS_CERT_TEMPO) < 5*60*1000){
+    return CACHE_TODOS_CERT.find(x => matDoItem(x) === mat5) || null;
+  }
+
+  let r = await fetch(API_DUSUARIO+"?action=todos&t="+Date.now(), {cache:'no-store'});
+  let t = await r.text();
+  let lista = [];
+  try{ lista = JSON.parse(t); }catch(e){ lista = []; }
+  if(lista.data) lista = lista.data;
+  if(lista.dados) lista = lista.dados;
+  if(!Array.isArray(lista)) lista = [];
+  CACHE_TODOS_CERT = lista;
+  CACHE_TODOS_CERT_TEMPO = Date.now();
+  return lista.find(x => matDoItem(x) === mat5) || null;
+}
+
+
+function mostrarAlertaSistema(msg){
+  if(document.getElementById('modalAlertaSistema')) document.getElementById('modalAlertaSistema').remove();
+  document.body.insertAdjacentHTML('beforeend', `
+  <div id="modalAlertaSistema" style="position:fixed;inset:0;background:rgba(15,23,42,.65);backdrop-filter:blur(3px);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:16px">
+    <div style="background:#fff;width:100%;max-width:420px;border-radius:16px;padding:26px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);border:1px solid #e2e8f0">
+      <div style="color:#0b5ed7;font-weight:900;font-size:15px;margin-bottom:12px">⚠️ Campos Obrigatórios</div>
+      <div style="font-size:13px;color:#222;white-space:pre-line;text-align:left;line-height:1.8">${msg}</div>
+      <button onclick="document.getElementById('modalAlertaSistema').remove()" style="margin-top:20px;background:#0b5ed7;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:900;width:100%">OK</button>
+    </div>
+  </div>`);
+}
+
+async function gerarCertificado(){
+
+
+
+
+// ===== ANTES DE QUALQUER COISA - LÊ DADOS NA API E TRAVA SE INCOMPLETO =====
+  let matTrava = '';
+  try{
+    if(typeof DETALHE!=='undefined' && DETALHE && DETALHE.mat) matTrava = DETALHE.mat;
+    else if(document.getElementById("inputMatricula") && document.getElementById("inputMatricula").value.trim()) matTrava = document.getElementById("inputMatricula").value.trim();
+    else if(typeof SELECIONADO!=='undefined' && SELECIONADO && SELECIONADO.mat) matTrava = SELECIONADO.mat;
+  }catch(e){}
+
+  if(matTrava){
+    try{
+      let alunoAPI = await buscarAlunoParaTravaCert(matTrava);
+      let faltando = listarFaltandoDoAlunoCert(alunoAPI);
+      if(faltando.length){
+        let msgTopo = '';
+        if(faltando.length === 1){
+          msgTopo = 'Há 1 dado pendente e para gerar o certificado é preciso completá-lo.\n\nPor gentileza, preencha o campo pendente:\n\n• ' + faltando.join('\n• ');
+        } else {
+          msgTopo = 'Há ' + faltando.length + ' dados pendentes e para gerar o certificado é preciso completá-los.\n\nPor gentileza, preencha os campos pendentes:\n\n• ' + faltando.join('\n• ');
+        }
+        mostrarAlertaSistema(msgTopo);
+        return;
+      }
+    }catch(e){
+      mostrarAlertaSistema('Erro ao verificar dados do aluno. Tente novamente.');
+      return;
+    }
+  }
+  // ===== FIM DA TRAVA - DAQUI PRA BAIXO SEGUE IGUAL =====
+
+  if(!SELECIONADO && !DETALHE){  
     var mat = document.getElementById("inputMatricula").value.trim(); 
     if(mat){ pesquisar(); return; } 
     alert("Selecione aluno"); return; 
@@ -676,9 +823,24 @@ function exportarRelatorio(){
   var statusFiltro = document.getElementById('fStatus') ? document.getElementById('fStatus').value : 'APRO';
   var titulo = "Relatorio de Alunos - "+ totalFiltrado +" Localizados";
   var subTitulo = "Filtros: Cidade=["+ (cidade||"TODAS") +"]  Status=["+statusFiltro+"]  Nome=["+(nome||"-")+"]  Data: "+ new Date().toLocaleString();
-  var corpo = ATUAL.slice(1).map(function(r, idx){
+
+  var dadosOrdenados = ATUAL.slice(1).sort(function(a, b){
+    var congA = semAcentoJS(a[1] || '').toLowerCase();
+    var congB = semAcentoJS(b[1] || '').toLowerCase();
+    if (congA < congB) return -1;
+    if (congA > congB) return 1;
+
+    var nomeA = semAcentoJS(a[2] || '').toLowerCase();
+    var nomeB = semAcentoJS(b[2] || '').toLowerCase();
+    if (nomeA < nomeB) return -1;
+    if (nomeA > nomeB) return 1;
+    return 0;
+  });
+
+  var corpo = dadosOrdenados.map(function(r, idx){
     return [ String(idx+1).padStart(4,'0'), semAcentoJS(r[1]||''), semAcentoJS(r[2]||''), r[3]||'', r[4]||'', r[5]||'', r[6]||'', r[8]||'', r[10]||'', r[12]||'', semAcentoJS(r[15]||'') ];
   });
+
   doc.autoTable({
     head: [['ITEM','CONGREGACAO','NOME','WHATSAPP','MATRICULA','QTD','C1','C2','C3','C4','STATUS']],
     body: corpo,
@@ -706,7 +868,6 @@ function exportarRelatorio(){
   }
   doc.save('relatorio_'+ totalFiltrado +'_alunos_'+ new Date().toISOString().slice(0,10) +'.pdf');
 }
-
 function VBoletimZap(){
   if(!window.TOTAL_ORIGINAL || TOTAL_ORIGINAL.length < 2){ alert("Clique em PESQUISAR primeiro"); return; }
   var listaTotal = window.TOTAL_ORIGINAL;
