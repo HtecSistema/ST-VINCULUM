@@ -805,7 +805,7 @@ setInterval(()=>{
   try{
     var src = document.getElementById('tela-Cadastro.html').src || "";
     var m = src.match(/v=([\d\.]+)/);
-    var versao = m ? m[1] : "20261024.1.06";
+    var versao = m ? m[1] : "20261115.2.02";
     var el = document.getElementById('versao-display');
     if(el) el.textContent = "v" + versao;
   }catch(e){}
@@ -1095,3 +1095,4 @@ function abrirTestesDoCadastro(botao){
 function abrirRecuperarDoCadastro(botao){
   esperarAcessoELiberar(botao, 'recuperar', 'Recuperar');
 }
+
