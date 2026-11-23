@@ -1,4 +1,4 @@
-  const API_LIB = 'https://script.google.com/macros/s/AKfycbz2phEY97FZOsloQriNH9i0cWQ0Qex0PAr02jbL18qZHjHwnTtOB4tRcwJRIQbHjMYC/exec';
+const API_LIB = 'https://script.google.com/macros/s/AKfycbz2phEY97FZOsloQriNH9i0cWQ0Qex0PAr02jbL18qZHjHwnTtOB4tRcwJRIQbHjMYC/exec';
 const API_URL = 'https://script.google.com/macros/s/AKfycbxLXw-nu5oXXtjE8HKik_W_bbT9CGjTNJWw-dUm4wWYv-hjcz1dOhMHLxoUTRHGJA3D0A/exec';
 // ===== NOVO - API LOG - PARA MANUTENCAO - 09/10/2026 - NAO APAGA NADA ACIMA =====
 const API_URL_LOG = 'https://script.google.com/macros/s/AKfycbz94-3iCkeVDD7Za2XAYzYL7BtCM3rWWMxGc_9kL-xtpnRoog91IR4KmqgWzLXYHIsb/exec';
@@ -1084,73 +1084,10 @@ if(window.abrirTeste &&!window.abrirTeste._travadoStatus){
 }
 
 
-// ===== BOTAO AP SOZINHO - INDEPENDENTE, ACIONADO NO CLIQUE DO TESTE =====
-(function(){
-  if(window.__TRAVA_TESTE_AP) return;
-  window.__TRAVA_TESTE_AP = true;
-
-  var _abrirTeste52Original = window.abrirTeste52;
-  var _apiPostOriginal = window.apiPost; // so usa como correio, nao mexe nele
-
-  function getMat5(){
-    try{ var v = (document.getElementById('Matricula')?.value || localStorage.getItem('mat_logada') || '').toString().replace(/\D/g,'').padStart(5,'0').slice(-5); return v; }catch(e){ return ''; }
-  }
-
-  function jaEstaOK(mat){
-    try{ if(localStorage.getItem('IEADMI_AP_'+mat) === 'OK') return true; }catch(e){}
-    try{
-      var lista = window.cacheTodos || [];
-      var achado = lista.find(function(x){ var m = String(x.Matricula || x.MATRICULA || '').replace(/\D/g,'').padStart(5,'0').slice(-5); return m && m === mat; });
-      if(achado){ var ap = achado.AP || achado.ap || achado.Ap || ''; if(String(ap).trim().toUpperCase() === 'OK') return true; }
-    }catch(e){}
-    return false;
-  }
-
-  // *** ESSA E A FUNCAO DO BOTAO - SO DELA, NAO PEGA NADA EMPRESTADO ***
-  async function botaoAP(){
-    var d = coletarDados();
-    if(d.Matricula) d.Matricula = String(d.Matricula).replace(/\D/g,'').padStart(5,'0').slice(-5);
-    var mat = getMat5();
-    var payload = {
-      acao: 'atualizar',
-      dados: Object.assign({}, d, {
-        AP: 'OK',
-        MatriculaOriginal: String(matriculaOriginal || d.Matricula || mat || '').replace(/\D/g,'').padStart(5,'0').slice(-5),
-        CodigoOriginal: codigoOriginal || d.Codigo || ''
-      })
-    };
-    var res = await _apiPostOriginal(payload);
-    if(res && res.result === 'ok'){
-      try{ localStorage.setItem('IEADMI_AP_'+mat, 'OK'); }catch(e){}
-    }
-    return res;
-  }
-
-  // *** CLIQUE DO TESTE SO CHAMA ELA, IGUAL CLICARIA NO BOTAO ***
-  window.abrirTeste52 = async function(){
-    var ok = false;
-    try{ ok = verificarDadosCompletos(); }catch(e){ ok = false; }
-    try{ atualizarStatusDados(); }catch(e){}
-    if(!ok){ try{ mostrarAlerta('Os dados estão incompletos','⚠️ Dados incompletos'); }catch(e){} return false; }
-
-    var mat = getMat5();
-    var precisaAutoAlterar = mat && mat !== '00000' && !jaEstaOK(mat);
-
-    if(precisaAutoAlterar){
-      try{ await botaoAP(); }catch(e){}
-    }
-
-    return _abrirTeste52Original.apply(this, arguments);
-  };
-})();
-
-
 // ===== AVISO PROVISORIO - ANTES DO BEM VINDO - COLAR NO FINAL =====
 (function(){
   if(window.__AVISO_PROVISORIO) return;
   window.__AVISO_PROVISORIO = true;
-
-
 function ehProvisorio(){
   var res = (document.getElementById('Resultado')?.value || '').toUpperCase();
   if(res.indexOf('PROVISORIO') >= 0) return true;
