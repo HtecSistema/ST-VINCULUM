@@ -508,13 +508,15 @@ async function salvarNovoAluno(){
   if(!cpf ||!validarCPF(cpf)){ resDiv.innerHTML="<div style='color:#ef4444'>CPF inválido. Digite um CPF válido</div>"; return; }
   try{
     if(cachePendentes.length===0){ resDiv.innerHTML="⏳ Verificando divergencia de Matricula..."; let rPend = await apiGet('todosPendentes'); cachePendentes = rPend.data||[]; }
-    let cpfSoNum = cpf.replace(/\D/g,'');
-    let matSemZero = mat.replace(/^0+/,'');
-    let achadoPend = cachePendentes.find(x=>{ let m = String(x.Matricula||x.B||'').replace(/\D/g,'').padStart(5,'0'); let mSemZero = String(x.Matricula||x.B||'').replace(/\D/g,'').replace(/^0+/,''); let n = String(x.Nome||x.C||'').toUpperCase().trim(); let c = String(x.CPF||'').replace(/\D/g,''); return (m==mat || mSemZero==matSemZero) || (c && c==cpfSoNum) || (n && (n==nome || n.includes(nome) || nome.includes(n))); });
-    if(achadoPend){ resDiv.innerHTML=`<div style='padding:12px;background:#0F172A;border:1px solid #f59e0b;border-radius:8px;text-align:center;color:#fbbf24'><b>⚠️  VOCÊ JÁ ESTÁ COM MATRICULA DIVERGENTE!</b><br><br>Encontrado: <b>${String(achadoPend.Matricula||'').padStart(5,'0')} - ${achadoPend.Nome||''}</b><br>Não pode cadastrar como Aluno Novo.<br><br>ATENÇÃO:<br><b>"Matriculas Divergentes. Contate o Administrador no contato 91 98603-2155"</b></div>`; return; }
+    let achadoPend = cachePendentes.find(x=> String(x.Matricula||x.B||'').replace(/\D/g,'').padStart(5,'0') === mat);
+    let liberado = String(achadoPend?.Liberar || achadoPend?.F || '').toUpperCase().trim().includes('LIBERADO PARA ACESSO');
+
+
+if(achadoPend && !liberado){ resDiv.innerHTML=`<style>@keyframes piscaDivergente{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(239,68,68,0.7)}50%{opacity:0.85;box-shadow:0 0 18px 4px rgba(239,68,68,0.9)}}@keyframes piscaTexto{0%,100%{opacity:1}50%{opacity:0.4}}</style><div style='padding:14px;background:#0F172A;border:3px solid #FDE047;border-radius:10px;text-align:center;line-height:1.6;animation:piscaDivergente 1s infinite'><b style='color:#FDE047;font-size:16px;font-weight:900;animation:piscaTexto 1s infinite'>⚠️ VOCÊ JÁ ESTÁ COM MATRICULA DIVERGENTE!</b><br><br><span style='color:#FFFFFF;font-size:14px;font-weight:700'>Encontrado: <b style='color:#FDE047;font-size:16px;background:#000;padding:2px 6px;border-radius:4px'>${String(achadoPend.Matricula||'').padStart(5,'0')} - ${achadoPend.Nome||''}</b></span><br><span style='color:#FCA5A5;font-size:13px;font-weight:700'>Não pode cadastrar como Aluno Novo.</span><br><br><span style='color:#FFFFFF;font-size:13px;font-weight:800'>ATENÇÃO:</span><br><b style='color:#FDE047;font-size:14px;line-height:1.5'>"Contate o Administrador no contato 91 98603-2155"</b></div>`; return; }
   }catch(e){}
   resDiv.innerHTML="⏳ Gerando senha...";
   try{
+
     let r = await apiGet('novoAluno',{matricula:mat, nome:nome, cpf:cpf, zap:zap, zapNumeros:zapNumeros});
     if(r.result=="ok"){
       localStorage.setItem('tipo_acesso','verde');
@@ -530,17 +532,11 @@ async function salvarNovoAluno(){
       resDiv.innerHTML=`<div style='padding:12px;background:#0F172A;border:1px solid #22c55e;border-radius:8px;text-align:center'><b style='color:#22c55e;font-size:14px'>✅ CADASTRADO!</b><br><br>Matrícula: <b>${mat}</b><br>CPF: <b>${cpf}</b><br>Zap: <b>${zap}</b><br>Código: <b>${r.codigo}</b><br>Senha: <b style='font-size:18px;background:#0F172A;padding:4px 8px;border-radius:6px;border:1px solid #22c55e'>${r.senha}</b><br><br>Fecha a janela e vai em login para acessar o sistema</div>`;
     }else{
       resDiv.innerHTML=`<div style='padding:10px;background:rgba(239,68,68,0.1);border:1px solid #334155;border-radius:8px;color:#f87171;text-align:center'>❌ ${r.msg||'Erro ao salvar'}<br><br></div>`;
-
-      // === NOVO - SE CPF JA CADASTRADO, BOTAO VIRA GERAR ACESSO ===
-
-      // === NOVO - SE JA EXISTE, BOTAO VIRA GERAR ACESSO ===
       let msgUpper = String(r.msg||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
       if(msgUpper.includes('JA EXISTE') || msgUpper.includes('JA CADASTRADO')){
-        // acha o botao SALVAR DADOS - tenta por onclick, se nao achar tenta por texto
         let btnSalvar = document.querySelector('#box-novo-aluno button[onclick*="salvarNovoAluno"]');
         if(!btnSalvar) btnSalvar = document.querySelector('button[onclick*="salvarNovoAluno"]');
         if(!btnSalvar){
-          // fallback: procura pelo texto SALVAR DADOS
           document.querySelectorAll('#box-novo-aluno button').forEach(b=>{
             if(b.innerText.toUpperCase().includes('SALVAR')) btnSalvar = b;
           });
@@ -552,10 +548,8 @@ async function salvarNovoAluno(){
           btnSalvar.style.fontWeight = '800';
           btnSalvar.setAttribute('onclick', `gerarAcesso('${mat}')`);
         }
-
-resDiv.innerHTML += `<div style='margin-top:8px;color:#fbbf24;font-size:13px'>Voce ja esta cadastrado.<br>Clique em <b>Ver Codigo</b>para receber o codigo temporario no seu WhatsApp.<b> Em seguida, volte no login e digite a sua matricula + codigo temporario em senha.<b>Vai em cadastro e click no olho da senha no formulario.</div>`;
+        resDiv.innerHTML += `<div style='margin-top:8px;color:#fbbf24;font-size:13px'>Voce ja esta cadastrado.<br>Clique em <b>Ver Codigo</b>para receber o codigo temporario no seu WhatsApp.<b> Em seguida, volte no login e digite a sua matricula + codigo temporario em senha.<b>Vai em cadastro e click no olho da senha no formulario.</div>`;
       }
-      // === FIM NOVO ===
     }
   }catch(e){ resDiv.innerHTML=`<div style='color:#ef4444'>❌ ${e.message}</div>`; }
 }
@@ -634,7 +628,8 @@ async function salvarAlunoProvisorio(){
     if(cachePendentes.length===0){ resDiv.innerHTML="⏳ Verificando divergencia de Matricula..."; let rPend = await apiGet('todosPendentes'); cachePendentes = rPend.data||[]; }
     let cpfSoNum = cpf.replace(/\D/g,'');
     let achadoPend = cachePendentes.find(x=>{ let n = String(x.Nome||x.C||'').toUpperCase().trim(); let c = String(x.CPF||'').replace(/\D/g,''); return (c && c==cpfSoNum) || (n && (n==nome || n.includes(nome) || nome.includes(n))); });
-    if(achadoPend){ resDiv.innerHTML=`<div style='padding:12px;background:#0F172A;border:1px solid #f59e0b;border-radius:8px;text-align:center;color:#fbbf24'><b>⚠️ VOCÊ JÁ ESTÁ COM MATRICULA DIVERGENTE!</b><br><br>Encontrado: <b>${String(achadoPend.Matricula||'').padStart(5,'0')} - ${achadoPend.Nome||''}<br><br>Não pode cadastrar como Aluno Novo.<br><br>ATENÇÃO:<br><b>"Matriculas Divergentes. Contate o Administrador no contato 91 98603-2155"</b></div>`; return; }
+let liberadoProv = String(achadoPend.Liberar || achadoPend.F || achadoPend.liberar || '').toUpperCase().trim().includes('LIBERADO PARA ACESSO');
+if(achadoPend && !liberadoProv){ resDiv.innerHTML=`<div ...>⚠️ VOCÊ JÁ ESTÁ COM MATRICULA DIVERGENTE!</b><br><br>Encontrado: <b>${String(achadoPend.Matricula||'').padStart(5,'0')} - ${achadoPend.Nome||''}<br><br>Não pode cadastrar como Aluno Novo.<br><br>ATENÇÃO:<br><b>"Contate o Administrador no contato 91 98603-2155"</b></div>`; return; }
   }catch(e){}
 
   // === REAPROVEITADO - Gerando senha... ===
@@ -1095,4 +1090,3 @@ function abrirTestesDoCadastro(botao){
 function abrirRecuperarDoCadastro(botao){
   esperarAcessoELiberar(botao, 'recuperar', 'Recuperar');
 }
-
