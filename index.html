@@ -226,7 +226,7 @@
     </button>
     <div class="submenu-teste" id="submenu-teste" style="display:none">
       <button class="menu-btn sub-item" onclick="abrir('Liberacao.html', this, 'Liberação')"><span class="icon">🔓</span> Liberação</button>
-      <button class="menu-btn" onclick="abrir('Baixar.html', this, 'Lições')"><span class="icon">📖</span> Lições</button>
+      <button class="menu-btn sub-item" onclick="abrir('Baixar.html', this, 'Lições')"><span class="icon">📖</span> Lições</button>
       <button class="menu-btn sub-item" onclick="abrir('Recuperacao.html', this, 'Recuperação')"><span class="icon">🔄</span> Recuperação</button>
       <button class="menu-btn sub-item" onclick="abrir('TesteDiscipulado.html', this, 'Teste')"><span class="icon">📝</span> Teste</button>
     </div>
@@ -234,11 +234,11 @@
 
   <!-- PAI - ADMINISTRAÇÃO -->
   <div class="menu-grupo-adm" id="grupo-admin" style="border-top:1px solid #475569; margin-top:10px; padding-top:10px;">
-    <button class="menu-btn menu-pai" id="btn-admin-pai" onclick="toggleSubmenuAdm(event)">
+    <button type="button" class="menu-btn menu-pai" id="btn-admin-pai" onclick="toggleSubmenuAdm(event); return false;">
       <span class="icon">📁</span> Administração
       <span class="seta-adm" id="seta-adm">▼</span>
     </button>
-    <div class="submenu-adm" id="submenu-adm">
+    <div class="submenu-adm" id="submenu-adm" style="display:none">
       <button class="menu-btn sub-item" onclick="abrir('CadastroAdm.html', this, 'Administradores')"><span class="icon">👑</span> Administrador</button>
       <button id="btn-manutencao" class="menu-btn sub-item" onclick="fecharMenuLateral(); abrir('Manutencao.html', this, 'Manutenção')"><span class="icon">🛠️</span> Manutenção</button>
       <button id="btn-movimento-adm" class="menu-btn sub-item" style="display:none" onclick="abrir('MovimentoAdm.html', this, 'Movimento Adm')"><span class="icon">📊</span> Relatório Administrador</button>
@@ -256,7 +256,6 @@
 <div id="conteudo-direita">
   <div class="barra-topo-conteudo"><div style="display:flex; align-items:center; gap:10px;"><button id="btn-menu-mobile" onclick="abrirMenuLateral()">☰</button><span>📍 <b id="pagina-atual">Início</b></span></div><span id="hora-atual">-</span></div>
   <div id="frame-inicio.html" class="tela-frame ativa"><iframe id="tela-inicio.html" src="inicio.html?v=20261123.2.03"></iframe></div>
-
 
 <div id="frame-acompanhamento.html" class="tela-frame"><iframe id="tela-acompanhamento.html" src="acompanhamento.html?v=20261123.2.03"></iframe></div>
 <div id="frame-consulta.html" class="tela-frame"><iframe id="tela-consulta.html" src="consulta.html?v=20261123.2.03"></iframe></div>
