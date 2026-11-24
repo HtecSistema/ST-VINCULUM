@@ -386,18 +386,17 @@ var modalHtml = `<div id="modalBoletim" style="position:fixed;inset:0;background
 function listarPendentesNA(a){ var lista=[]; for(var ciclo=1;ciclo<=4;ciclo++){ var chave='c'+ciclo; var obj = a[chave] || {}; for(var i=1;i<=13;i++){ var v = obj[i]; var teste = (i<10?'0'+i:i); if(v===undefined || v==='' || v===null){ lista.push('C'+ciclo+'-Teste '+teste+' - Pendente'); }else{ var num=parseFloat(v); if(!isNaN(num) && num<70){ lista.push('C'+ciclo+'-Teste '+teste+' - Nota abaixo de 70 (Nota: '+num+')'); } } } } return lista; }
 
 // ===== TRAVA DADOS INCOMPLETOS - CERTIFICADO - USA API_DUSUARIO =====
+// ===== TRAVA CERTIFICADO - SEM CACHE - BUSCA DIRETO =====
 function normalizaMat5Cert(v){ return String(v||'').replace(/\D/g,'').padStart(5,'0').slice(-5); }
 
 function listarFaltandoDoAlunoCert(a){
   if(!a) return ['ALUNO NÃO ENCONTRADO'];
-
   function pegar(letra, ...chaves){
     if(Array.isArray(a)){
       let idx = letra.toUpperCase().charCodeAt(0) - 65;
       let v = a[idx];
       return v!==undefined && v!==null ? String(v).trim() : '';
     }
-    // objeto - procura sem diferenciar maiúscula/minúscula
     let keys = Object.keys(a);
     for(let k of chaves){
       let achada = keys.find(x => x.toLowerCase() === k.toLowerCase());
@@ -405,7 +404,6 @@ function listarFaltandoDoAlunoCert(a){
     }
     return '';
   }
-
   let d = {
     B: pegar('B','Matricula','MATRICULA'),
     C: pegar('C','congregacao','Congregacao','Congregação','CONGREGACAO'),
@@ -419,7 +417,6 @@ function listarFaltandoDoAlunoCert(a){
     X: pegar('X','QualFuncao','Qual Funcao','Qual Função'),
     Y: pegar('Y','fcongregacao','Fcongregacao','Fcongregação','FCONGREGACAO')
   };
-
   let lista = [
     ['B','MATRÍCULA'],
     ['C','NOME DA CONGREGAÇÃO'],
@@ -432,102 +429,39 @@ function listarFaltandoDoAlunoCert(a){
     ['W','FUNÇÃO ECLESIÁSTICA'],
     ['Y','FUNÇÃO NA CONGREGAÇÃO']
   ];
-
   let faltando = [];
   for(let item of lista){ if(!d[item[0]]) faltando.push(item[1]); }
-
-  // W = SIM e X vazio -> trava
   if(String(d.W||'').toUpperCase().trim() === 'SIM' && !d.X){
     faltando.push('QUAL FUNÇÃO');
   }
-
   return faltando;
 }
-
 
 function isProvisorioCert(a){
   if(!a) return false;
   let v = '';
-  if(Array.isArray(a)){
-    v = a[42]; // AQ = resultado
-  } else {
-    // se a API vier como objeto
-    for(let k of Object.keys(a)){
-      if(k.toLowerCase().trim() === 'resultado'){ v = a[k]; break; }
-    }
-  }
+  if(Array.isArray(a)){ v = a[42]; }
+  else { for(let k of Object.keys(a)){ if(k.toLowerCase().trim() === 'resultado'){ v = a[k]; break; } } }
   let norm = String(v||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
   return norm === 'PROVISORIO';
 }
 
-
-// ===== CACHE PRA TRAVA ABRIR RÁPIDO =====
-var CACHE_TODOS_CERT = null;
-var CACHE_TODOS_CERT_TEMPO = 0;
-
-// Pré-carrega em segundo plano assim que abrir a página
-document.addEventListener('DOMContentLoaded', function(){
-  setTimeout(function(){
-    fetch(API_DUSUARIO+"?action=todos&t="+Date.now(), {cache:'no-store'})
-    .then(r=>r.json()).then(d=>{
-      let lista = Array.isArray(d) ? d : (d.dados||d.data||[]);
-      CACHE_TODOS_CERT = lista;
-      CACHE_TODOS_CERT_TEMPO = Date.now();
-    }).catch(e=>{});
-  }, 500);
-});
-
-
-async function buscarAlunoParaTravaCert(mat){
-  let res = await fetch(API_DUSUARIO + '?action=todos');
-  let json = await res.json();
-  let lista = json.dados || json.data || json.alunos || json;
-  if(!Array.isArray(lista)) return null;
-
-  for(let a of lista){
-    let m = '';
-    let linha = a;
-    if(Array.isArray(a)){
-      m = a[1]; // B = Matricula
-    } else {
-      // objeto: procura a chave Matricula
-      for(let k of Object.keys(a)){
-        if(k.toLowerCase().trim() === 'matricula'){ m = a[k]; break; }
-      }
-    }
-    if(String(m||'').trim() === String(mat||'').trim()){
-      return linha;
-    }
-  }
-  return null;
-}
-
 async function buscarAlunoParaTravaCert(mat){
   let mat5 = normalizaMat5Cert(mat);
-  if(!mat5 || mat5==='00000') return null;
-
-  // Pega a matrícula do item seja array [A,B,C...] ou objeto
-  function matDoItem(x){
-    if(Array.isArray(x)) return normalizaMat5Cert(x[1]); // B = Matricula = índice 1
-    return normalizaMat5Cert(x.Matricula||x.MATRICULA||x.matricula||x.Matricula);
-  }
-
-  if(CACHE_TODOS_CERT && (Date.now() - CACHE_TODOS_CERT_TEMPO) < 5*60*1000){
-    return CACHE_TODOS_CERT.find(x => matDoItem(x) === mat5) || null;
-  }
-
-  let r = await fetch(API_DUSUARIO+"?action=todos&t="+Date.now(), {cache:'no-store'});
+  if(!mat5 || mat5 === '00000') return null;
+  let r = await fetch(API_DUSUARIO + "?action=todos&t=" + Date.now(), {cache:'no-store'});
   let t = await r.text();
   let lista = [];
-  try{ lista = JSON.parse(t); }catch(e){ lista = []; }
+  try{ lista = JSON.parse(t); }catch(e){ return null; }
   if(lista.data) lista = lista.data;
   if(lista.dados) lista = lista.dados;
-  if(!Array.isArray(lista)) lista = [];
-  CACHE_TODOS_CERT = lista;
-  CACHE_TODOS_CERT_TEMPO = Date.now();
+  if(!Array.isArray(lista)) return null;
+  function matDoItem(x){
+    if(Array.isArray(x)) return normalizaMat5Cert(x[1]);
+    return normalizaMat5Cert(x.Matricula || x.MATRICULA || x.matricula);
+  }
   return lista.find(x => matDoItem(x) === mat5) || null;
 }
-
 
 function mostrarAlertaSistema(msg){
   if(document.getElementById('modalAlertaSistema')) document.getElementById('modalAlertaSistema').remove();
@@ -541,6 +475,24 @@ function mostrarAlertaSistema(msg){
   </div>`);
 }
 
+function mostrarCarregandoCert(){
+  if(document.getElementById('loadingCert')) return;
+  document.body.insertAdjacentHTML('beforeend', `
+  <div id="loadingCert" style="position:fixed;inset:0;background:rgba(15,23,42,.65);backdrop-filter:blur(3px);z-index:99999999;display:flex;align-items:center;justify-content:center;padding:16px">
+    <div style="background:#fff;border-radius:16px;padding:28px 24px;text-align:center;max-width:320px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35)">
+      <div style="width:42px;height:42px;border:4px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;margin:0 auto 14px;animation:giroCert 0.8s linear infinite"></div>
+      <div style="font-weight:900;font-size:15px;color:#111">AGUARDE...</div>
+      <div style="font-size:13px;color:#555;margin-top:6px">LOCALIZANDO DADOS...</div>
+    </div>
+  </div>
+  <style>@keyframes giroCert{to{transform:rotate(360deg)}}</style>`);
+}
+function esconderCarregandoCert(){
+  let el = document.getElementById('loadingCert');
+  if(el) el.remove();
+}
+
+
 async function gerarCertificado(){
   let matTrava = '';
   try{
@@ -550,16 +502,14 @@ async function gerarCertificado(){
   }catch(e){}
 
   if(matTrava){
+    mostrarCarregandoCert();
     try{
       let alunoAPI = await buscarAlunoParaTravaCert(matTrava);
-
-      // 1º - PROVISÓRIO = SECRETARIA
+      esconderCarregandoCert();
       if(isProvisorioCert(alunoAPI)){
         mostrarAlertaSistema('Certificado suspenso devido à matrícula provisória.\n\nPor gentileza, procure a secretaria para regularizar a sua matrícula.');
         return;
       }
-
-      // 2º - FALTA CAMPO = CAMPOS
       let faltando = listarFaltandoDoAlunoCert(alunoAPI);
       if(faltando.length){
         let msgTopo = faltando.length === 1
@@ -569,11 +519,12 @@ async function gerarCertificado(){
         return;
       }
     }catch(e){
+      esconderCarregandoCert();
       mostrarAlertaSistema('Erro ao verificar dados do aluno. Tente novamente.');
       return;
     }
   }
-  // ===== DAQUI PRA BAIXO SEGUE IGUAL, NÃO MEXER =====
+  // ===== DAQUI PRA BAIXO SEGUE IGUAL =====
 
   if(!SELECIONADO && !DETALHE){
     var mat = document.getElementById("inputMatricula").value.trim(); 
