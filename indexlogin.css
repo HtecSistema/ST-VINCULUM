@@ -117,3 +117,46 @@ button.menu-btn.ativo{background:#3B82F6; color:white; border-color:#3B82F6; box
 #listaPesquisa .item-consulta b{
   color:#22c55e;
 }
+
+.menu-grupo-adm{margin-top:4px}
+.menu-pai{justify-content:space-between;width:100%}
+.seta-adm{font-size:10px;transition:transform .2s;margin-left:auto}
+.menu-grupo-adm.aberto .seta-adm{transform:rotate(180deg)}
+.submenu-adm{display:none;flex-direction:column;padding-left:18px;border-left:2px solid #334155;margin-left:18px;margin-top:2px}
+.menu-grupo-adm.aberto .submenu-adm{display:flex}
+.sub-item{font-size:13px;padding:10px 12px;opacity:.95}
+
+/* ===== CSS QUE ESTAVA DENTRO DO INDEX.HTML - MOVIDO PRA CÁ ===== */
+@keyframes piscarAviso{
+  0%, 100% { opacity: 2; }
+  50% { opacity: 0.15; }
+}
+.piscar-aviso{
+  animation: piscarAviso 1s infinite;
+}
+.ht-modal{position:fixed;inset:0;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);display:none;justify-content:center;align-items:flex-start;padding:20px 12px;overflow-y:auto;z-index:99999}
+.ht-modal.ativo{display:flex}
+.ht-modal-box{width:100%;max-width:420px;margin-top:10px;animation:subir .22s ease}
+@keyframes subir{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+.ht-modal.ativo #box-primeiro-acesso,
+.ht-modal.ativo #box-cadastro-novo,
+.ht-modal.ativo #box-novo-aluno,
+.ht-modal.ativo #box-master,
+.ht-modal.ativo #box-masterlista{display:block !important;margin-top:0 !important;max-height:90vh;overflow-y:auto}
+#box-primeiro-acesso, #box-cadastro-novo, #box-novo-aluno, #box-master, #box-masterlista{background:#1E293B;border:1px solid #334155;border-radius:12px;padding:14px;color:#F1F5F9;}
+#aviso-entrada-pendente{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);align-items:center;justify-content:center;z-index:10005;padding:16px;}
+
+/* TESTE DISCIPULADO - IGUAL ADMINISTRAÇÃO */
+.menu-grupo-teste{margin-top:4px;width:100%}
+#btn-teste-pai{width:100% !important;padding:12px 14px !important;font-size:14px !important;font-weight:500 !important;color:#94A3B8 !important;background:transparent !important;border:1px solid transparent !important;border-radius:10px !important;justify-content:space-between !important}
+#btn-teste-pai:hover{background:#334155 !important;color:#F1F5F9 !important;border-color:#334155 !important}
+.submenu-teste{display:none;flex-direction:column;padding-left:18px;border-left:2px solid #334155;margin-left:18px;margin-top:2px}
+.seta-teste{font-size:10px;margin-left:auto}
+
+
+/* ACOMPANHAMENTO - IGUAL TESTE DISCIPULADO - MESMO PADRÃO AFASTADO */
+.menu-grupo-acompanhamento{margin-top:4px;width:100%}
+#btn-acompanhamento-pai{width:100% !important;padding:12px 14px !important;font-size:14px !important;font-weight:500 !important;color:#94A3B8 !important;background:transparent !important;border:1px solid transparent !important;border-radius:10px !important;justify-content:space-between !important}
+#btn-acompanhamento-pai:hover{background:#334155 !important;color:#F1F5F9 !important;border-color:#334155 !important}
+.submenu-acompanhamento{display:none;flex-direction:column;padding-left:18px;border-left:2px solid #334155;margin-left:18px;margin-top:2px}
+.seta-acompanhamento{font-size:10px;margin-left:auto}
