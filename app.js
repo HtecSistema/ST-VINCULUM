@@ -1214,7 +1214,7 @@ function abrirPDF(){
 <div style="margin:0 10px 10px;background:#0a1f1c;border:1px solid #143a35;border-left:5px solid #10b981;border-radius:10px;padding:11px 12px;font-size:14px;line-height:1.45;color:#eee">
   Ao FINALIZAR o Discipulado <b style="color:#fff">NÃO SAIA do grupo</b> e nem abandone o <b style="color:#fff">VINCULUM</b>.<br>
   Há mais testes em andamento e muito proveitoso para nossa jornada de fé.<br>
-  Especialmente para Líderes e Obreiros é de <b style="color:#fff">suma importância</b> fazê-los.<br>
+  Especialmente para Líderes e Obreiros e de <b style="color:#fff">suma importância</b> fazê-los.<br>
   Estão condicionados no menu em <b style="color:#fff">Testes Avançados.</b>
       </div>
       <div style="text-align:center;padding:0 10px 10px;font-size:11px;color:#888">Gerado pelo ST-VINCULUM • Mantenha seus dados atualizados 🙏</div>
