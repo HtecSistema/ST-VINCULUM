@@ -1145,3 +1145,89 @@ function ehProvisorio(){
     window.abrirTeste52 = novo;
   }, 2500);
 })();
+
+
+function abrirInformativo(){
+  let m = document.getElementById('modalInformativo');
+  if(m){ m.remove(); return; }
+
+  // SE FOR PROVISÓRIO, MOSTRA O AVISO ANTES DO CARTAZ
+  if(typeof ehProvisorio === 'function' && ehProvisorio()){
+    avisoProvisorio().then(function(){
+      mostrarCartaz();
+    });
+    return;
+  }
+
+  mostrarCartaz();
+
+  function mostrarCartaz(){
+    let div = document.createElement('div');
+    div.id = 'modalInformativo';
+    div.style = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100000;display:flex;align-items:center;justify-content:center;padding:16px';
+    div.innerHTML = `<div style="background:#fff;border-radius:14px;max-width:420px;width:100%;overflow:hidden;max-height:92vh;overflow-y:auto">
+      <img src="informativo.jpeg" style="width:100%;display:block">
+
+      <div style="margin:14px;text-align:left;background:#fef2f2;border:1px solid #fecaca;border-left:5px solid #dc2626;border-radius:10px;padding:12px;font-size:13px;line-height:1.5;color:#222;font-family:sans-serif">
+        <b style="color:#dc2626">🙏 Pessoal, vou fazer um pedido <i>DELICADO</i></b><br><br>
+        Se de repente alguém <b><i>mudar de aparelho</i></b>, use a mesma conta do Google. Isto é, use o <b><i>mesmo Email</i></b>.<br><br>
+        Se outra pessoa for usar o mesmo aparelho para fazer teste do discipulado, precisa trocar a conta do Google. Isto é, use o próprio Email de quem está logado no VINCULUM.<br><br>
+        Se for <b><i>fazer</i></b> teste no computador, tablet, celular, iPhone ou semelhantes... <b><i>use a mesma conta de Email</i></b>, principalmente nos testes do discipulado que estão configurados no Forms do Google e o controle disso é da plataforma Google.<br><br>
+        Se cada aparelho diferente que a pessoa for usar e usar qualquer outro Email, vai dar <b>duplicidade de teste</b> e sendo rastreado aqui, como sempre é, será considerado as <b>primeiras notas</b>.<br>
+        Sem mencionar que pode o teste vir no nome do usuário do qual ele não fez.<br>
+        É por isso a importância do uso do próprio Email.<br><br>
+        Já estou com 4º caso aqui e isso traz <b><i>TRANSTORNOS DESAGRADÁVEIS</i></b>, embora seja identificado o BO a tempo. É O <b>USO INCORRETO DO USUÁRIO</b>.<br>
+        O problema é que tem que se mexer na base de dados, o que não é bom fazer, pois qualquer erro pode botar a perder todo um projeto.
+      </div>
+
+      <button onclick="document.getElementById('modalInformativo').remove()" style="width:100%;background:#0f766e;color:#fff;border:0;padding:14px;font-weight:900;cursor:pointer">FECHAR</button>
+    </div>`;
+    document.body.appendChild(div);
+    div.onclick = (e)=>{ if(e.target.id==='modalInformativo') div.remove(); };
+  }
+}
+
+
+function abrirPDF(){
+  let antigo = document.getElementById('modalPDF');
+  if(antigo){ antigo.remove(); return; }
+
+  let modal = document.createElement('div');
+  modal.id = 'modalPDF';
+  // IGUAL O INFORMATIVO: no meio, form aparecendo atrás
+  modal.style = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100000;display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden';
+  modal.innerHTML = `
+  <div style="background:#0a0a0a;border:1px solid #2a2a2a;border-radius:18px;width:100%;max-width:440px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+    <div style="background:#111;border-bottom:1px solid #222;padding:6px;text-align:center">
+      <b style="color:#f5d67b;font-size:12px;letter-spacing:2px">📢 ATENÇAO ALUNO</b>
+    </div>
+    <div id="conteudoPDF" style="background:#111;padding:0;overflow:hidden">
+      <div style="background:linear-gradient(135deg,#000,#1a1a1a 50%,#0f766e);color:#fff;padding:18px 14px;text-align:center;border-bottom:2px solid #d4af37">
+        <span style="display:inline-block;background:rgba(212,175,55,.15);border:1px solid #d4af37;color:#f5d67b;padding:5px 12px;border-radius:100px;font-size:11px;letter-spacing:2px;font-weight:800">★ ST-VINCULUM ★</span>
+        <h1 style="margin:8px 0 3px;font-size:30px;letter-spacing:2px;line-height:1;color:#fff">VIN<span style="color:#d4af37">CULUM</span></h1>
+        <small style="font-size:11px;letter-spacing:1px;color:#bbb">Sistema de Treinamento • Formação de Obreiros e Liderança</small>
+      </div>
+      <div style="margin:10px;background:#1a1505;border:1px solid #3a2f00;border-left:5px solid #d4af37;border-radius:10px;padding:11px 12px;font-size:14px;line-height:1.45;color:#eee">
+        <b style="color:#f5d67b">⚠ É muito importante que SEUS DADOS estarem atualizados e completos</b><br>
+        Pois a cada finalização de curso, pode terminar <b>não gerando o seu certificado, entre outros pormenores.</b>
+      </div>
+<div style="margin:0 10px 10px;background:#0a1f1c;border:1px solid #143a35;border-left:5px solid #10b981;border-radius:10px;padding:11px 12px;font-size:14px;line-height:1.45;color:#eee">
+  Ao FINALIZAR o Discipulado <b style="color:#fff">NÃO SAIA do grupo</b> e nem abandone o <b style="color:#fff">VINCULUM</b>.<br>
+  Há mais testes em andamento e muito proveitoso para nossa jornada de fé.<br>
+  Especialmente para Líderes e Obreiros é de <b style="color:#fff">suma importância</b> fazê-los.<br>
+  Estão condicionados no menu em <b style="color:#fff">Testes Avançados.</b>
+      </div>
+      <div style="text-align:center;padding:0 10px 10px;font-size:11px;color:#888">Gerado pelo ST-VINCULUM • Mantenha seus dados atualizados 🙏</div>
+    </div>
+    <div style="padding:10px;background:#111;border-top:1px solid #222;display:flex;flex-direction:column;gap:8px">
+      
+<div style="padding:10px;background:#111;border-top:1px solid #222;display:flex;gap:8px">
+      <button onclick="gerarImagemZap()" style="flex:1;background:#25D366;color:#fff;border:0;padding:14px 8px;border-radius:12px;font-size:14px;font-weight:900;cursor:pointer">📲 Gerar Imagem</button>
+      <button onclick="document.getElementById('modalPDF').remove()" style="flex:1;background:#0f766e;color:#fff;border:0;padding:14px 8px;border-radius:12px;font-size:14px;font-weight:900;cursor:pointer">FECHAR</button>
+    </div>
+
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+  modal.onclick = (e)=>{ if(e.target.id==='modalPDF') modal.remove(); };
+}
