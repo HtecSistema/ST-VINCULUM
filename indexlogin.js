@@ -346,7 +346,7 @@ function fecharPrimeiroAcesso(){ document.getElementById("box-primeiro-acesso").
 function abrirCadastroNovo(){ fecharPrimeiroAcesso(); fecharNovoAluno(); fecharMaster(); fecharMasterLista(); abrirAvisoEntradaPendente(); }
 function fecharCadastroNovo(){ document.getElementById('box-cadastro-novo').style.display='none'; document.getElementById('link-cadastro-novo').style.display='flex'; document.getElementById('link-primeiro').style.display='flex'; document.getElementById('link-novo-aluno').style.display='flex'; document.getElementById('nome').readOnly = true; document.getElementById('nome').style.background = "#0F172A"; document.getElementById('nome').style.color = "#F1F5F9"; document.getElementById('nome').style.border = "1px solid #334155"; document.getElementById('nome').placeholder = "NOME COMPLETO"; document.getElementById('lista-nomes-pendentes').style.display='none'; document.getElementById('resultado-cadastro-novo').innerHTML=''; modoPreCadastro = false; let v=document.getElementById('matricula').value.replace(/\D/g,'').padStart(5,'0'); if(["00425","00001","05722"].includes(v)){ document.getElementById("link-master").style.display="flex"; document.getElementById("sep-master").style.display="block"; } if(["00425","00001","05722","05891"].includes(v)){ document.getElementById("link-masterlista").style.display="flex"; document.getElementById("sep-masterlista").style.display="block"; } }
 
-function abrirNovoAluno(){ fecharPrimeiroAcesso(); fecharCadastroNovo(); fecharMaster(); fecharMasterLista(); modoNovoAluno = true; modoPreCadastro = false; document.getElementById('box-novo-aluno').style.display='block'; document.getElementById('link-novo-aluno').style.display='none'; document.getElementById('link-primeiro').style.display='none'; document.getElementById('link-cadastro-novo').style.display='none'; document.getElementById('link-master').style.display='none'; document.getElementById('link-masterlista').style.display='none'; document.getElementById('sep-master').style.display='none'; document.getElementById('sep-masterlista').style.display='none'; document.getElementById('novaMatricula').value = document.getElementById('matricula').value; document.getElementById('novoNome').value = ""; let cpfEl = document.getElementById('novoCpf'); if(cpfEl) cpfEl.value = ""; document.getElementById('resultado-novo-aluno').innerHTML = ""; document.getElementById('erro-login').style.display='none'; }
+function abrirNovoAluno(){ fecharPrimeiroAcesso(); fecharCadastroNovo(); fecharMaster(); fecharMasterLista(); modoNovoAluno = true; modoPreCadastro = false; document.getElementById('box-novo-aluno').style.display='block'; document.getElementById('link-novo-aluno').style.display='none'; document.getElementById('link-primeiro').style.display='none'; document.getElementById('link-cadastro-novo').style.display='none'; document.getElementById('link-master').style.display='none'; document.getElementById('link-masterlista').style.display='none'; document.getElementById('sep-master').style.display='none'; document.getElementById('sep-masterlista').style.display='none'; document.getElementById('novaMatricula').value = document.getElementById('matricula').value; document.getElementById('novoNome').value = ""; let cpfEl = document.getElementById('novoCpf'); if(cpfEl) cpfEl.value = ""; document.getElementById('resultado-novo-aluno').innerHTML = ""; document.getElementById('erro-login').style.display='none'; let lista = document.getElementById('novoCodpoint') || document.getElementById('listaCodpoint') || document.getElementById('codpoint') || document.querySelector('input[placeholder*="TRAVADA"]'); if(lista){ lista.disabled = false; lista.readOnly = false; lista.removeAttribute('disabled'); lista.placeholder = 'LISTA CODPOINT - LOCALIZE O SEU NOME'; } }
 
 
 
@@ -874,6 +874,32 @@ function escolherConsulta(mat, nome){
 
 let _abrir = abrirNovoAluno;
 abrirNovoAluno = function(){
+  modoEsqueciSenha = false;
+
+  // SEMPRE VEM ASSIM DA FOTO 1 - Pré-Cadastro
+  let btn = document.getElementById('btnSalvarVerde');
+  if(btn){
+    btn.style.display = 'block';
+    btn.innerText = '✅ Salvar';
+    btn.style.background = '#16a34a';
+    btn.style.color = 'white';
+    btn.style.fontWeight = '800';
+    btn.setAttribute('onclick', "salvarNovoAluno()");
+  }
+  let btnP = document.getElementById('btnSalvarProvisorio');
+  if(btnP) btnP.style.display = 'none';
+
+  let matEl = document.getElementById('novaMatricula');
+  if(matEl){ matEl.disabled = false; matEl.style.opacity = "1"; matEl.placeholder = "EX: 00123"; }
+  let nomEl = document.getElementById('novoNome');
+  if(nomEl){ nomEl.disabled = false; nomEl.style.opacity = "1"; nomEl.placeholder = "ALUNO"; }
+  let pesqEl = document.getElementById('pesquisaNome');
+  if(pesqEl){ pesqEl.disabled = false; pesqEl.style.opacity = "1"; pesqEl.placeholder = "DIGITE PARA PESQUISAR..."; }
+
+  let chk = document.getElementById('chkNaoLocalizei');
+  if(chk){ chk.checked = false; chk.style.display = ''; if(chk.parentElement) chk.parentElement.style.display = ''; }
+  if(document.getElementById('btnAtualizarLista')) document.getElementById('btnAtualizarLista').disabled = false;
+
   _abrir();
   let inp = document.getElementById('pesquisaNome');
   let box = document.getElementById('listaPesquisa');
@@ -892,6 +918,7 @@ abrirNovoAluno = function(){
     box.innerHTML = `<div style='max-height:220px;overflow:auto;background:#0F172A;border:1px solid #334155;border-radius:8px;margin-top:4px;margin-bottom:12px'>${ach.map(o=>`<div class="item-consulta" onclick="escolherConsulta('${o.mat}','${o.nome.replace(/'/g,' ')}')"><b>${o.mat5}</b> - ${o.nome}</div>`).join('')}</div>`;
   };
 };
+
 
 
 function formatarZap(el){
@@ -1089,4 +1116,118 @@ function abrirTestesDoCadastro(botao){
 
 function abrirRecuperarDoCadastro(botao){
   esperarAcessoELiberar(botao, 'recuperar', 'Recuperar');
+}
+
+
+// ===== ESQUECI SENHA - FINAL =====
+let modoEsqueciSenha = false;
+
+async function abrirEsqueciSenhaNovo(){
+  let mat = (document.getElementById('matricula').value||'').replace(/\D/g,'').padStart(5,'0');
+  let nomeTopo = (document.getElementById('nome').value||'').trim();
+  let erro = document.getElementById('erro-login');
+  if(!mat || mat==='00000' || !nomeTopo || nomeTopo.toUpperCase().includes('INEXISTE')){
+    erro.style.display='block';
+    erro.innerHTML='⚠️ USUARIO NÃO ESTÁ CADASTRADO<br>Informe sua MATRÍCULA';
+    return;
+  }
+  erro.style.display='none';
+  await abrirEsqueciSenhaNovoContinuar(mat, nomeTopo);
+}
+
+async function abrirEsqueciSenhaNovoContinuar(mat, nomeTopo){
+  let erro = document.getElementById('erro-login');
+
+  // API JÁ TÁ NO JS - usa o cacheDados que já foi carregado no login
+  let achado = cacheDados.find(x=> String(x.Matricula||'').padStart(5,'0')===mat);
+  if(!achado){
+    erro.style.display='block';
+    erro.innerHTML='⚠️ PESSOA NÃO ESTÁ CADASTRADA';
+    return;
+  }
+  erro.style.display='none';
+  modoEsqueciSenha = true;
+
+  document.getElementById('modal-novo').classList.add('ativo');
+  document.getElementById('box-novo-aluno').style.display='block';
+
+  let nomeReal = String(achado.Nome||achado.NOME||nomeTopo).toUpperCase();
+
+  document.getElementById('novaMatricula').value = mat;
+  document.getElementById('novaMatricula').disabled = true;
+  document.getElementById('novaMatricula').style.opacity = "1";
+  document.getElementById('novaMatricula').style.color = "#F1F5F9";
+  document.getElementById('novaMatricula').style.background = "#0F172A";
+
+  document.getElementById('novoNome').value = nomeReal;
+  document.getElementById('novoNome').disabled = true;
+  document.getElementById('novoNome').style.opacity = "1";
+  document.getElementById('novoNome').style.color = "#F1F5F9";
+  document.getElementById('novoNome').style.background = "#0F172A";
+
+  // CAMPO DO X - SEM OPACO, COM NOME APARECENDO
+  document.getElementById('pesquisaNome').value = nomeReal;
+  document.getElementById('pesquisaNome').disabled = true;
+  document.getElementById('pesquisaNome').style.opacity = "1";
+  document.getElementById('pesquisaNome').style.color = "#F1F5F9";
+  document.getElementById('pesquisaNome').style.background = "#0F172A";
+  document.getElementById('pesquisaNome').placeholder = "LISTA CODPOINT - TRAVADA";
+
+  if(document.getElementById('listaPesquisa')) document.getElementById('listaPesquisa').innerHTML='';
+  if(document.getElementById('btnAtualizarLista')) document.getElementById('btnAtualizarLista').disabled = true;
+
+  let chk = document.getElementById('chkNaoLocalizei');
+  if(chk){ chk.checked=false; chk.style.display='none'; if(chk.parentElement) chk.parentElement.style.display='none'; }
+
+  document.getElementById('novoZap').value='';
+  document.getElementById('novoCpf').value='';
+
+  let btnVerde = document.getElementById('btnSalvarVerde');
+  if(btnVerde){ btnVerde.style.display='block'; btnVerde.innerText='✅ GERAR CÓDIGO'; btnVerde.setAttribute('onclick',"salvarEsqueciSenhaNovo()"); }
+  let btnProv = document.getElementById('btnSalvarProvisorio');
+  if(btnProv) btnProv.style.display='none';
+
+  document.getElementById('resultado-novo-aluno').innerHTML="<div style='color:#fbbf24;padding:8px;background:#0F172A;border:1px solid #f59e0b;border-radius:6px;text-align:center;font-size:12px'>ESQUECI A SENHA - Digite seu WhatsApp e CPF cadastrados<br>para gerar o código provisório</div>";
+  document.getElementById('novoZap').focus();
+}
+
+async function salvarEsqueciSenhaNovo(){
+  let mat = (document.getElementById('novaMatricula').value||'').replace(/\D/g,'').padStart(5,'0');
+  let zap = (document.getElementById('novoZap').value||'').replace(/\D/g,'');
+  let cpf = (document.getElementById('novoCpf').value||'').replace(/\D/g,'');
+  let resDiv = document.getElementById('resultado-novo-aluno');
+  if(zap.length<10){ resDiv.innerHTML="<div style='color:#fca5a5'>⚠️ Digite seu WhatsApp completo</div>"; return; }
+  if(cpf.length!==11){ resDiv.innerHTML="<div style='color:#fca5a5'>⚠️ Digite seu CPF com 11 dígitos</div>"; return; }
+  let achado = cacheDados.find(x=> String(x.Matricula||'').padStart(5,'0')===mat);
+  if(!achado){ resDiv.innerHTML="<div style='color:#fca5a5'>⚠️ Pessoa não encontrada</div>"; return; }
+  let zapBanco = String(achado.WhatsApp||achado.Zap||achado.Telefone||achado.WHATSAPP||'').replace(/\D/g,'');
+  let cpfBanco = String(achado.CPF||achado.Cpf||'').replace(/\D/g,'');
+  if(zap!==zapBanco || cpf!==cpfBanco){
+    resDiv.innerHTML="<div style='color:#fca5a5;padding:10px;background:#0F172A;border:1px solid #f87171;border-radius:6px;text-align:center'>❌ WhatsApp ou CPF não confere com o cadastro.<br>Confira e tente de novo.</div>";
+    return;
+  }
+
+  resDiv.innerHTML="<div style='color:#fbbf24'>⏳ Gerando código...</div>";
+
+  // 1º TENTA PEGAR DA COLUNA AO - TEMPORARIO QUE JÁ VEIO NO cacheDados
+  let codigo = achado.Temporario || achado.TEMPORARIO || achado['Acesso Temporario'] || achado['ACESSO TEMPORARIO'] || achado.AO || achado.Temporário || '';
+
+  // 2º SE NÃO TIVER NA COLUNA AO, AÍ SIM CHAMA A API
+  if(!codigo){
+    try{
+      let r = await apiGet('gerarAcessoTemporario?matricula='+mat);
+      codigo = r.codigo || r.senha || r.data?.codigo || r.data?.senha || '';
+    }catch(e){}
+  }
+
+  if(!codigo){
+    resDiv.innerHTML="<div style='color:#fca5a5'>❌ Sem código na coluna AO - Temporário.<br>Gera o código na planilha e tenta de novo.</div>";
+    return;
+  }
+
+  resDiv.innerHTML="<div style='color:#fbbf24'>⏳ aguarde, gerando codigo...</div>";
+  await new Promise(r => setTimeout(r, 2000));
+
+  resDiv.innerHTML="<div style='background:#0F172A;border:2px solid #22c55e;border-radius:10px;padding:14px;text-align:center'><div style='color:#22c55e;font-weight:900'>✅ CÓDIGO GERADO</div><div style='font-size:28px;font-weight:900;letter-spacing:4px;color:#fff;margin:8px 0'>"+codigo+"</div><div style='color:#94A3B8;font-size:12px'>Copie e cole no campo SENHA</div></div>";
+  document.getElementById('senha').value = codigo;
 }
