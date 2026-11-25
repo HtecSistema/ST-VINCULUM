@@ -20,7 +20,7 @@ fetch('version.json?v='+Date.now(), {cache:'no-store'})
 </script>
 <script src="auth.js?v=20261027.1.07"></script>
 <title>TDCadastro</title>
-<link rel="stylesheet" href="style.css?v=20261115.2.02">
+<link rel="stylesheet" href="style.css?v=20261123.2.03">
 </head>
 <body>
 
@@ -308,14 +308,16 @@ document.getElementById('meuModal')?.addEventListener('click', function(e){
 <!-- BARRA FIXA EMBAIXO - TRAVADA -->
 <div id="barraFixa">
   <div id="statusDados" class="status-incompleto">⚠️ Dados incompletos</div>
-  <div class="actions">
-    <button class="btn btn-save" onclick="salvar()">💾 Salvar</button>
-    <button class="btn btn-clear" onclick="limpar()">🧹 Limpar</button>
-    <button class="btn btn-search" onclick="buscar()">🔍 Pesquisar</button>
-    <button class="btn btn-list" onclick="listar()" style="display:none">📋 Pré-Cadastro</button>
-    <button class="btn" onclick="abrirTeste52()">📝 Testes</button>
-    <button class="btn" onclick="recuperar()">♻️ Recuperar</button>
-  </div>
+<div class="actions">
+  <button class="btn btn-save" onclick="salvar()">💾 Salvar</button>
+  <button class="btn btn-clear" onclick="limpar()">🧹 Limpar</button>
+  <button class="btn btn-search" onclick="buscar()">🔍 Pesquisar</button>
+  <button class="btn btn-list" onclick="listar()" style="display:none">📋 Pré-Cadastro</button>
+  <button class="btn" onclick="abrirTeste52()" style="display:none">📝 Testes</button>
+  <button class="btn" onclick="recuperar()" style="display:none">♻️ Recuperar</button>
+  <button class="btn" onclick="abrirPDF()">📄 PDF</button>
+  <button class="btn" onclick="abrirInformativo()">ℹ️ Informativo</button>
+</div>
 </div>
 <script src="script.js?v=2"></script>
 </body>
