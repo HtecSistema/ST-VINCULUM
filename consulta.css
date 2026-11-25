@@ -1,0 +1,53 @@
+  *{box-sizing:border-box;font-family:sans-serif}
+  body{background:#E2E8F0;color:#0F172A;padding:10px 10px 20px 8px;margin:0}
+  .container{margin:0 !important;max-width:480px;width:100%}
+  .header-destaque{background:#F8FAFC;border:1px solid #CBD5E1;border-radius:14px;padding:16px;display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+  .header-icone{width:44px;height:44px;min-width:44px;border-radius:50%;background:#E2E8F0;color:#475569;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px}
+  .header-topo{font-size:10px;font-weight:800;letter-spacing:1px;color:#7c3aed}
+  .header-titulo{font-size:20px;font-weight:900;color:#0F172A;line-height:1.1;margin-top:2px}
+  .header-sub{font-size:12px;color:#64748B;line-height:1.4;margin-top:4px}
+  .check-solto{display:flex;align-items:center;gap:8px;padding:12px 4px 0 4px;background:none;border:none}
+  .check-solto input{width:18px;height:18px;margin:0;accent-color:#7c3aed}
+  .check-solto label{margin:0;font-size:13px;font-weight:800;color:#0F172A;cursor:pointer}
+  .check-solto small{color:#64748B;font-weight:400}
+  .checks-linha{display:flex;gap:6px}
+  .card{max-width:480px;margin:0;margin-left:0;background:#F8FAFC;border:1px solid #CBD5E1;border-radius:14px;padding:20px}
+  label{font-size:11px;font-weight:700;color:#475569;display:block;margin-top:12px}
+  input{width:100%;background:#FFFFFF;color:#0F172A;border:1px solid #CBD5E1;border-radius:10px;padding:12px;margin-top:6px;text-transform:uppercase}
+  input::placeholder{color:#94A3B8}
+  input[readonly]{background:#F1F5F9}
+  button{width:100%;background:#7c3aed;color:#fff;border:0;border-radius:10px;padding:13px;font-weight:800;cursor:pointer;margin-top:12px}
+  #erro{margin-top:12px;background:#FEF2F2;border:1px solid #f87171;border-radius:10px;padding:12px;color:#DC2626;font-weight:700;font-size:13px;display:none}
+  .titulo-coluna{margin-top:28px;display:block;font-weight:800;color:#0F172A}
+  .botoes{display:flex;gap:8px}
+  .botoes button{flex:1;padding:13px 6px;font-size:13px}
+  .btn-limpar{background:#FFFFFF !important;border:1px solid #CBD5E1;color:#0F172A}
+  .btn-excluir{background:#DC2626 !important;color:#fff !important;border:1px solid #DC2626}
+  .btn-liberar{background:#16A34A !important;color:#fff !important;border:1px solid #16A34A}
+.btn-liberar:disabled{opacity:.4;filter:grayscale(1) blur(.4px)}
+  .busca-linha{display:flex;gap:8px;align-items:stretch}
+  .busca-linha input{flex:1;margin-top:6px}
+  .btn-atualizar{width:52px !important;min-width:52px;flex:none;margin-top:6px;background:#E2E8F0 !important;color:#0F172A !important;border:1px solid #CBD5E1;font-size:20px;padding:0;display:flex;align-items:center;justify-content:center}
+  #lista{margin-top:8px;background:#FFFFFF;border:1px solid #CBD5E1;border-radius:12px;overflow:hidden;display:none}
+  .item-lista{padding:9px 12px;border-bottom:1px solid #E2E8F0;cursor:pointer;font-size:12px;font-weight:700;line-height:1.3;color:#0F172A}
+  .item-lista:last-child{border-bottom:0}
+  .item-lista:active{background:#F1F5F9}
+  .item-lista b{color:#16A34A}
+  #debug{font-size:11px;color:#64748B;margin-top:6px}
+    #msg-ok{margin-top:12px;background:#F0FDF4;border:1px solid #22C55E;border-radius:10px;padding:12px;color:#15803D;font-weight:700;font-size:13px;display:none}
+  #modalAluno{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
+  #modalAlunoBox{background:#1E293B;color:#fff;border-radius:16px;padding:24px 20px;max-width:360px;width:100%;text-align:center}
+  #modalAlunoBox h3{color:#22C55E;font-size:15px;margin:8px 0 12px}
+  #modalAlunoBox p{font-size:14px;line-height:1.5;color:#E2E8F0;margin:0}
+  #modalAlunoBox small{display:block;margin-top:14px;font-size:12px;color:#CBD5E1}
+  #modalAlunoBox button{width:100%;background:#16A34A;color:#fff;border:0;border-radius:10px;padding:13px;font-weight:900;margin-top:16px;cursor:pointer}
+  #modalConfirmar{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
+  #modalConfirmarBox{background:#1E293B;color:#fff;border-radius:16px;padding:24px 20px;max-width:360px;width:100%;text-align:center}
+  #modalConfirmarBox h3{color:#22C55E;font-size:15px;margin:8px 0 6px}
+  #modalConfirmarBox .matConf{font-size:13px;color:#CBD5E1;font-weight:700}
+  #modalConfirmarBox .nomeConf{font-size:16px;font-weight:900;margin:6px 0 12px;color:#fff}
+  #modalConfirmarBox p{font-size:14px;line-height:1.5;color:#E2E8F0;margin:0}
+  #modalConfirmarBox small{display:block;margin-top:14px;font-size:12px;color:#CBD5E1}
+  #modalConfirmarBox .linhaBtn{display:flex;gap:8px;margin-top:16px}
+  #modalConfirmarBox .btnSim{flex:1;background:#16A34A;color:#fff;border:0;border-radius:10px;padding:13px;font-weight:900;cursor:pointer}
+  #modalConfirmarBox .btnNao{flex:1;background:#334155;color:#fff;border:0;border-radius:10px;padding:13px;font-weight:800;cursor:pointer}
