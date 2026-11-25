@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,6 +54,9 @@
   </div>
 </div>
 <div style="height:1px; background:#334155; margin-left:50px;"></div>
+
+
+
       <div id="sep-master" style="height:1px; background:#334155; margin-left:50px; display:none;"></div>
       <div id="link-master" onclick="abrirMaster()" style="display:none; align-items:center; gap:10px; padding:12px 8px; cursor:pointer;"><span style="width:32px; height:32px; background:transparent; border:none; border-radius:0; display:grid; place-items:center; color:#fcd34d; font-size:18px;">🔐</span><div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:13px; font-weight:600; color:#cbd5e1;">2 - Senhas</span><span style="font-size:13px; font-weight:800; color:#fcd34d; text-decoration:underline; text-underline-offset:3px;">Verificar Senhas</span></div></div>
       <div id="sep-masterlista" style="height:1px; background:#334155; margin-left:50px; display:none;"></div>
@@ -95,12 +99,14 @@
 
  <div id="modal-novo" class="ht-modal" onclick="if(event.target===this) fecharNovoAluno()"><div class="ht-modal-box">
   <div id="box-novo-aluno">
-<h4 style="margin:0 0 10px 0;font-size:14px;font-weight:700;color:#22c55e">Orientação:<br>1. No primeiro campo gera a lista do CODPOINT. Pesquise o seu nome<br>2. Encontrado, click sobre ele e informe os demais dados<br>3. Se o seu nome, <span style="color:#facc15;font-weight:900">NÃO FOI ADO</span>, marque a opção <span style="color:#facc15;font-weight:900">"Cadastro Provisório"</span> e faça o seu Pre-Cadastro<br><span style="color:#f87171;font-weight:900">4. FIQUE ATENTO A SUA SENHA</span></h4>
+
+<h4 style="margin:0 0 10px 0;font-size:14px;font-weight:700;color:#22c55e">Orientação:<br>1. No primeiro campo gera a lista do CODPOINT. Pesquise o seu nome<br>2. Encontrado, click sobre ele e informe os demais dados<br>3. Se o seu nome, <span style="color:#facc15;font-weight:900">NÃO FOI LOCALIZADO</span>, marque a opção <span style="color:#facc15;font-weight:900">"Cadastro Provisório"</span> e faça o seu Pre-Cadastro<br><span style="color:#f87171;font-weight:900">4. FIQUE ATENTO A SUA SENHA</span></h4>
+
     <!-- 1 - PESQUISE O SEU NOME PRIMEIRO -->
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-  <span style="font-size:11px;font-weight:700;color:#F1F5F9">LISTA CODPOINT - E O SEU NOME</span>
+  <span style="font-size:11px;font-weight:700;color:#F1F5F9">LISTA CODPOINT - LOCALIZE O SEU NOME</span>
   <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:#fbbf24;cursor:pointer;font-weight:700">
-    <input type="checkbox" id="chkNaoei" onchange="toggleNaoei()" style="width:16px;height:16px;accent-color:#f59e0b">Cadastro Provisório</label>
+    <input type="checkbox" id="chkNaoLocalizei" onchange="toggleNaoLocalizei()" style="width:16px;height:16px;accent-color:#f59e0b">Cadastro Provisório</label>
 </div>
 
 <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px;">
@@ -225,7 +231,6 @@
     </div>
   </div>
 
-  <button class="menu-btn" onclick="abrir('Informativo.html', this, 'Informativo')" style="border-top:1px solid #475569; margin-top:10px; padding-top:10px;"><span class="icon">ℹ️</span> Informativo</button>
   <button class="menu-btn" onclick="abrir('sugerir.html', this, 'Sugestoes')" style="border-top:1px solid #475569; margin-top:10px; padding-top:10px;"><span class="icon">💡</span> Sugestões</button>
   <button class="menu-btn" onclick="abrirTestesAvancados(this)" style="border-top:1px solid #475569; margin-top:10px; padding-top:10px;"><span class="icon">📝</span> Testes Avançados</button>
 
@@ -281,7 +286,6 @@
   <div id="frame-Manutencao.html" class="tela-frame"><iframe id="tela-Manutencao.html" src="Manutencao.html?v=20261123.2.03"></iframe></div>
   <div id="frame-MovimentoAdm.html" class="tela-frame"><iframe id="tela-MovimentoAdm.html" src="MovimentoAdm.html?v=20261123.2.03"></iframe></div>
   <div id="frame-Relatorio.html" class="tela-frame"><iframe id="tela-Relatorio.html" src="Relatorio.html?v=20261123.2.03"></iframe></div>
-<div id="frame-Informativo.html" class="tela-frame"><iframe id="tela-Informativo.html" src="Informativo.html?v=20261123.2.03"></iframe></div>
   <div id="frame-sugerir.html" class="tela-frame"><iframe id="tela-sugerir.html" src="sugerir.html?v=20261123.2.03"></iframe></div>
   <div id="frame-TesteDiscipulado.html" class="tela-frame"><iframe id="tela-TesteDiscipulado.html" src="TesteDiscipulado.html?v=20261123.2.03"></iframe></div>
   <div id="frame-Recuperacao.html" class="tela-frame"><iframe id="tela-Recuperacao.html" src="Recuperacao.html?v=20261123.2.03"></iframe></div>
@@ -290,11 +294,14 @@
 <div id="frame-teste_1.html" class="tela-frame"><iframe id="tela-teste_1.html" src="teste_1.html?v=20261123.2.03"></iframe></div>
 <div id="frame-teste_2.html" class="tela-frame"><iframe id="tela-teste_2.html" src="teste_2.html?v=20261123.2.03"></iframe></div>
 <div id="frame-teste_3.html" class="tela-frame"><iframe id="tela-teste_3.html" src="teste_3.html?v=20261123.2.03"></iframe></div>
+
 </div>
 </div>
+
 <div id="aviso-entrada-roxo"><div style="background:#1E293B;max-width:380px;width:100%;border-radius:20px;padding:28px 24px;text-align:center;font-family:sans-serif;box-shadow:0 20px 60px rgba(0,0,0,0.4);border:1px solid #334155"><div style="font-size:36px; margin-bottom:8px;">🔑</div><h3 style="margin:0 0 12px 0;font-weight:900;font-size:16px;color:#a78bfa">ATENÇÃO ALUNO</h3><p style="font-size:14px;line-height:1.5;margin:0 0 22px 0;text-align:left;color:#F1F5F9">Por gentileza, clique na opção <b>PESQUISE</b> e altere os seus dados imediatamente, salvando em ALTERAR, validando assim o seu acesso aos testes.<br><br><small>Havendo duvidas, contate HtecSistemas 91 98603-2155</small></p><button onclick="fecharAvisoEntradaRoxo()" style="background:#7c3aed;color:white;border:0;padding:14px;width:100%;border-radius:12px;font-weight:900;cursor:pointer">OK - ENTENDI</button></div></div>
 <div id="aviso-entrada-laranja"><div style="background:#1E293B;max-width:380px;width:100%;border-radius:20px;padding:28px 24px;text-align:center;font-family:sans-serif;box-shadow:0 20px 60px rgba(0,0,0,0.4);border:1px solid #334155"><div style="font-size:36px; margin-bottom:8px;">📄</div><h3 style="margin:0 0 12px 0;font-weight:900;font-size:16px;color:#fb923c">ATENÇÃO ALUNO</h3><p style="font-size:14px;line-height:1.5;margin:0 0 22px 0;text-align:left;color:#F1F5F9">Por gentileza, clique na opção <b>PESQUISE</b> e altere os seus dados imediatamente, salvando em ALTERAR, validando assim o seu acesso aos testes.<br><br><small>Havendo duvidas, contate HtecSistemas 91 98603-2155</small></p><button onclick="fecharAvisoEntradaLaranja()" style="background:#ea580c;color:white;border:0;padding:14px;width:100%;border-radius:12px;font-weight:900;cursor:pointer">OK - ENTENDI</button></div></div>
 <div id="aviso-entrada-verde"><div style="background:#1E293B;max-width:380px;width:100%;border-radius:20px;padding:28px 24px;text-align:center;font-family:sans-serif;box-shadow:0 20px 60px rgba(0,0,0,0.4);border:1px solid #334155"><div style="font-size:36px; margin-bottom:8px;">✅</div><h3 style="margin:0 0 12px 0;font-weight:900;font-size:16px;color:#22c55e">ATENÇÃO - ALUNO NOVO</h3><p style="font-size:14px;line-height:1.5;margin:0 0 22px 0;text-align:left;color:#F1F5F9">Por gentileza, clique na opção <b>PESQUISE</b> e altere os seus dados imediatamente, salvando em ALTERAR, validando assim o seu acesso aos testes.<br><br><small>Havendo duvidas, contate HtecSistemas 91 98603-2155</small></p><button onclick="fecharAvisoEntradaVerde()" style="background:#16a34a;color:white;border:0;padding:14px;width:100%;border-radius:12px;font-weight:900;cursor:pointer">OK - ENTENDI</button></div></div>
+
 <div id="aviso-entrada-pendente">
 <div style="background:#1E293B;max-width:380px;width:100%;border-radius:20px;padding:28px 24px;text-align:center;font-family:sans-serif;box-shadow:0 20px 60px rgba(0,0,0,0.4);border:1px solid #334155"><div style="font-size:36px; margin-bottom:8px;">📄</div><h3 style="margin:0 0 12px 0;font-weight:900;font-size:16px;color:#fb923c">ATENÇÃO PARA ESTE COMUNICADO</h3><p style="font-size:14px;line-height:1.5;margin:0 0 22px 0;text-align:justify;color:#F1F5F9">MATRICULAS DIVERGENTES, são alunos com testes no discipulado com diversas MATRÍCULAS e ou NOMES incompletos, assim trazendo divergência.<br><br>Por gentileza, digite seu nome ou matricula no campo "Digite seu nome aqui" e em seguida, selecione na lista o seu nome ou matricula corretos. Seguidamente informe o seu CPF e salve.<br><br>O sistema vai GERAR UMA SENHA no login. DEPOIS é so clicar em "Entrar no Sistema".<br><br>Se o seu NOME não estiver na relação, então você não faz parte desse sobreaviso.</p><button onclick="fecharAvisoEntradaPendente()" style="background:#ea580c;color:white;border:0;padding:14px;width:100%;border-radius:12px;font-weight:900;cursor:pointer">OK - ENTENDI</button></div>
 </div>
@@ -304,15 +311,18 @@
 // FECHOU, ABRE O 2
 function _htShow(id){document.getElementById(id).classList.add('ativo')}
 function _htHide(id){document.getElementById(id).classList.remove('ativo')}
+
 const _o1=abrirPrimeiroAcesso, _f1=fecharPrimeiroAcesso;
 const _f2=fecharCadastroNovo;
 const _o3=abrirNovoAluno, _f3=fecharNovoAluno;
 const _oM=abrirMaster, _fM=fecharMaster;
 const _oML=abrirMasterLista, _fML=fecharMasterLista;
+
 abrirPrimeiroAcesso=function(){
   const mat = (document.getElementById('matricula').value||'').trim();
   const nome = (document.getElementById('nome').value||'').toUpperCase();
   const erro = document.getElementById('erro-login');
+
   // COMANDO 1 - MATRICULA VAZIA
   if(!mat){
     erro.style.display='block';
@@ -324,6 +334,7 @@ abrirPrimeiroAcesso=function(){
     setTimeout(()=> erro.classList.remove('piscando'), 4000);
     return;
   }
+
   // COMANDO 2 - MATRICULA INEXISTE
   if(nome.includes('INEXISTE')){
     erro.style.display='block';
@@ -335,6 +346,7 @@ abrirPrimeiroAcesso=function(){
     setTimeout(()=> erro.classList.remove('piscando'), 4000);
     return;
   }
+
   erro.style.display='none';
   erro.classList.remove('piscando');
   _htShow('modal-primeiro'); 
@@ -431,6 +443,7 @@ function fecharAvisoEntradaVerde(){document.getElementById('aviso-entrada-verde'
 <script src="script.js?v=2"></script>
 <script>
 
+
 // CORREÇÃO FINAL - TEM QUE FICAR DEPOIS DO script.js, SENÃO ELE APAGA
 // Cada um usa só o seu id, nunca querySelector genérico
 function toggleSubmenuTeste(e){
@@ -501,6 +514,7 @@ function abrirTestesAvancados(btn){
   // SE FOR 425, abre normal
   abrir('testes.html', btn, 'Testes');
 }
+
 </script>
 </body>
 </html>
