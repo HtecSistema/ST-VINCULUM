@@ -800,7 +800,7 @@ setInterval(()=>{
   try{
     var src = document.getElementById('tela-Cadastro.html').src || "";
     var m = src.match(/v=([\d\.]+)/);
-    var versao = m ? m[1] : "20261123.2.03";
+    var versao = m ? m[1] : "20261125.2.04";
     var el = document.getElementById('versao-display');
     if(el) el.textContent = "v" + versao;
   }catch(e){}
