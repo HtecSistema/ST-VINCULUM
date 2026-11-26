@@ -5,26 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teste Discipulado</title>
 <style>
-*{box-sizing:border-box;font-family:sans-serif}
-body{background:#0F172A;color:#F1F5F9;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+body{background:#0F172A;color:#F1F5F9;margin:0;padding:0;height:100dvh;min-height:100dvh}
+.container{margin:0 !important;max-width:800px;width:100%;height:100%;height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden;margin:0 auto !important}
+.topo-fixo{flex-shrink:0;background:#0F172A;padding:0 0 12px 0;z-index:10}
 .topo{background:#111;color:#fff;padding:12px;display:flex;align-items:center;gap:12px}
 .topo button{background:#fff;color:#111;border:0;padding:8px 14px;border-radius:8px;font-weight:900;cursor:pointer}
 .topo h3{margin:0;font-size:14px;font-weight:900;flex:1}
-.wrap{padding:12px;max-width:720px;margin:0 auto}
-#listaTestes{overflow-y:auto;padding:10px;background:#f8f9fa;border-radius:12px;min-height:200px;color:#111}
+#infoAluno{margin:12px 12px 0 12px !important}
+.wrap{flex:1;min-height:0;overflow-y:auto;padding:12px;max-width:720px;width:100%;margin:0 auto;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+#listaTestes{overflow-y:visible;padding:10px;background:#f8f9fa;border-radius:12px;min-height:200px;color:#111}
 </style>
 </head>
 <body>
 <div class="container" style="margin:0 !important;max-width:800px;width:100%">
-<div class="topo">
-  <h3 id="tituloTeste">📝 BEM VINDO AOS TESTES</h3>
-  <button onclick="reiniciarTestes()">🔄 Atualizar</button>
+
+<div class="topo-fixo">
+  <div class="topo">
+    <h3 id="tituloTeste">📝 BEM VINDO AOS TESTES</h3>
+  </div>
+  <div id="infoAluno" style="background:#1E293B;border:1px solid #334155;border-radius:10px;padding:12px;font-size:13px;display:none;align-items:center;justify-content:space-between;gap:10px"></div>
 </div>
-<div class="wrap">
-<div id="infoAluno" style="background:#1E293B;border:1px solid #334155;border-radius:10px;padding:12px;margin-bottom:12px;font-size:13px;display:none"></div>
-<div id="listaTestes">Carregando testes... Por gentileza, Aguarde!</div>
+
+  <div class="wrap">
+    <div id="listaTestes">Carregando testes... Por gentileza, Aguarde!</div>
+  </div>
 </div>
-</div>
+
 <script>
 const API_LIB='https://script.google.com/macros/s/AKfycbz2phEY97FZOsloQriNH9i0cWQ0Qex0PAr02jbL18qZHjHwnTtOB4tRcwJRIQbHjMYC/exec';
 const API_URL='https://script.google.com/macros/s/AKfycbxLXw-nu5oXXtjE8HKik_W_bbT9CGjTNJWw-dUm4wWYv-hjcz1dOhMHLxoUTRHGJA3D0A/exec';
@@ -195,7 +202,6 @@ async function abrirTeste(linkOriginal,codUnico){
 }
 function jaEstaOK(mat){ try{if(localStorage.getItem('IEADMI_AP_'+mat)==='OK') return true;}catch(e){} try{var achado=(cacheTodos||[]).find(function(x){var m=String(x.Matricula||'').replace(/\D/g,'').padStart(5,'0').slice(-5);return m&&m===mat;}); if(achado&&String(achado.AP||'').trim().toUpperCase()==='OK') return true;}catch(e){} return false; }
 
-
 function ehProvisorio(){ try{var v=alunoAtual.Resultado||alunoAtual.AQ||''; return String(v).toUpperCase().indexOf('PROVISORIO')>=0;}catch(e){return false;} }
 function avisoProvisorio(){ return new Promise(function(resolve){ var div=document.createElement('div'); div.id='modalAlertaTD'; div.style='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100002;display:flex;align-items:center;justify-content:center;padding:20px'; div.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center"><div style="font-size:14px;font-weight:900;color:#dc2626">⚠️ MATRÍCULA PROVISÓRIA</div><div style="font-size:13px;color:#222;margin-top:12px">Sua matrícula está PROVISÓRIA.<br>Procure a secretaria para regularização, pois NÃO VAI EMITIR CERTIFICADO.</div><button id="btnOkProv" style="margin-top:20px;background:#dc2626;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-weight:900;width:100%">OK</button></div>'; document.body.appendChild(div); document.getElementById('btnOkProv').onclick=function(){div.remove();resolve();}; }); }
 async function abrirTeste52(){
@@ -208,7 +214,10 @@ async function abrirTeste52(){
     alunoAtual=achado; matriculaOriginal=mat; codigoOriginal=achado.Codigo||'';
     document.getElementById('infoAluno').style.display='block';
 var dInfo = coletarDados();
-document.getElementById('infoAluno').innerHTML='<b>'+dInfo.Nome+'</b> | Matrícula: <b>'+dInfo.Matricula+'</b><br>Congregação: <b>'+dInfo.Congregacao+'</b>';
+
+document.getElementById('infoAluno').style.display='flex';
+document.getElementById('infoAluno').innerHTML='<div><b>'+dInfo.Nome+'</b> | Matrícula: <b>'+dInfo.Matricula+'</b><br>Congregação: <b>'+dInfo.Congregacao+'</b></div><button onclick="reiniciarTestes()" style="background:#fff;color:#111;border:0;padding:8px 14px;border-radius:8px;font-weight:900;cursor:pointer;white-space:nowrap;flex-shrink:0">🔄 Atualizar</button>';
+
       }catch(e){ document.getElementById('listaTestes').innerHTML='ERRO: '+e.message; return; }
   if(!verificarDadosCompletos()){
     var faltando=listarDadosFaltando();
