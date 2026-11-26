@@ -326,7 +326,7 @@ document.getElementById('btnRelatorio')?.addEventListener('click', ()=>{
   const cong = (document.getElementById('fCong')?.value || '').trim();
   const prefixo = (cong ? cong + ' - ' : '') + 'Relatorio acompanhamento ' + ts;
 
-  let linhaInfo = `${prefixo} | Data: ${dataHora} | Total: ${dados.length} | Ativos: ${qAtivos} | Desistentes: ${qDesist} | So em Dados: ${qSoDados}`;
+  let linhaInfo = `${prefixo} | Data: ${dataHora} | Total: ${dados.length} | Ativos: ${qAtivos} | Desistentes: ${qDesist} | So Inscrito: ${qSoDados}`;
   if(matFiltroPad) linhaInfo = `${prefixo} | Matricula: ${matFiltroPad} | Data: ${dataHora} | Total: ${dados.length}`;
 
 
@@ -344,7 +344,7 @@ document.getElementById('btnRelatorio')?.addEventListener('click', ()=>{
       String(r.congregacao||''),
       String(r.whatsapp||''),
       String(r.sexo||'').toUpperCase(),
-      r.soDados ? 'SO EM DADOS' : (r.statusAprovacao==='APROVADO' ? 'APROVADO' : r.statusAprovacao==='RECUPERACAO' ? 'RECUPERACAO' : r.statusAprovacao==='PENDENTE' ? 'PENDENTE' : (!r.emDados && Number(r.qtdTestes ?? r.qtd ?? r.totalTestes ?? 0) < 52 ? 'DESISTENTE' : 'ATIVO')),
+      r.soDados ? 'SO INSCRITO' : (r.statusAprovacao==='APROVADO' ? 'APROVADO' : r.statusAprovacao==='RECUPERACAO' ? 'RECUPERACAO' : r.statusAprovacao==='PENDENTE' ? 'PENDENTE' : (!r.emDados && Number(r.qtdTestes ?? r.qtd ?? r.totalTestes ?? 0) < 52 ? 'DESISTENTE' : 'ATIVO')),
       String(r.qtdTestes ?? (r.soDados ? '0' : '—')),
       String(r.ultimoLabel || '—')
     ]);
