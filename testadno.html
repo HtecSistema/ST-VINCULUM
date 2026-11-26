@@ -292,7 +292,7 @@ document.getElementById('btnRelatorio')?.addEventListener('click', ()=>{
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('l','mm','a4');
   doc.setFont('helvetica','bold'); doc.setFontSize(12);
-  doc.text('RELATORIO VINCULUM - DADOS x RELTODOS', 14, 10);
+  doc.text('RELATORIO VINCULUM', 14, 10);
   doc.setFontSize(9); doc.setFont('helvetica','normal');
   const dataHora = new Date().toLocaleString('pt-BR');
   let dados = Array.from(SELECIONADOS.values()).filter(Boolean);
@@ -314,8 +314,23 @@ document.getElementById('btnRelatorio')?.addEventListener('click', ()=>{
   const qAtivos = dados.filter(x=>!x.soDados && x.emDados).length;
   const qDesist = dados.filter(x=>!x.emDados && Number(x.qtdTestes ?? x.qtd ?? x.totalTestes ?? 0) < 52).length;
   const qSoDados = dados.filter(x=>x.soDados).length;
-  let linhaInfo = `Relatorio | Data: ${dataHora} | Total: ${dados.length} | Ativos: ${qAtivos} | Desistentes: ${qDesist} | So em Dados: ${qSoDados}`;
-  if(matFiltroPad) linhaInfo = `Matricula: ${matFiltroPad} | Data: ${dataHora} | Total: ${dados.length}`;
+
+  const agora = new Date();
+  const ts = String(agora.getFullYear())
+      + String(agora.getMonth()+1).padStart(2,'0')
+      + String(agora.getDate()).padStart(2,'0')
+      + String(agora.getHours()).padStart(2,'0')
+      + String(agora.getMinutes()).padStart(2,'0')
+      + String(agora.getSeconds()).padStart(2,'0');
+
+  const cong = (document.getElementById('fCong')?.value || '').trim();
+  const prefixo = (cong ? cong + ' - ' : '') + 'Relatorio acompanhamento ' + ts;
+
+  let linhaInfo = `${prefixo} | Data: ${dataHora} | Total: ${dados.length} | Ativos: ${qAtivos} | Desistentes: ${qDesist} | So em Dados: ${qSoDados}`;
+  if(matFiltroPad) linhaInfo = `${prefixo} | Matricula: ${matFiltroPad} | Data: ${dataHora} | Total: ${dados.length}`;
+
+
+
   doc.text(linhaInfo, 14, 16);
   const head = [['ITEM','MAT','NOME','CONGREGACAO','WHATSAPP','SEXO','STATUS','QTD TESTES','ULTIMO TESTE']];
   const body = [];
@@ -377,7 +392,10 @@ document.getElementById('btnRelatorio')?.addEventListener('click', ()=>{
   doc.line(100, finalY, 190, finalY);
   doc.setFont('helvetica','bold'); doc.setFontSize(9);
   doc.text('Assinatura', 145, finalY+6, {align:'center'});
-  doc.save(`relatorio_dados_x_reltodos_${matFiltroPad || ''}_${new Date().toISOString().slice(0,10)}.pdf`);
+
+
+  const nomeArquivo = (cong ? cong + ' ' : '') + 'Relatorio acompanhamento ' + ts + '.pdf';
+  doc.save(nomeArquivo);
 });
 carregar(false);
 </script>
