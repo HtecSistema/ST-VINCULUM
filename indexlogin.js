@@ -349,7 +349,7 @@ function fecharPrimeiroAcesso(){ document.getElementById("box-primeiro-acesso").
 function abrirCadastroNovo(){ fecharPrimeiroAcesso(); fecharNovoAluno(); fecharMaster(); fecharMasterLista(); abrirAvisoEntradaPendente(); }
 function fecharCadastroNovo(){ document.getElementById('box-cadastro-novo').style.display='none'; document.getElementById('link-cadastro-novo').style.display='flex'; document.getElementById('link-primeiro').style.display='flex'; document.getElementById('link-novo-aluno').style.display='flex'; document.getElementById('nome').readOnly = true; document.getElementById('nome').style.background = "#0F172A"; document.getElementById('nome').style.color = "#F1F5F9"; document.getElementById('nome').style.border = "1px solid #334155"; document.getElementById('nome').placeholder = "NOME COMPLETO"; document.getElementById('lista-nomes-pendentes').style.display='none'; document.getElementById('resultado-cadastro-novo').innerHTML=''; modoPreCadastro = false; let v=document.getElementById('matricula').value.replace(/\D/g,'').padStart(5,'0'); if(["00425","00001","05722"].includes(v)){ document.getElementById("link-master").style.display="flex"; document.getElementById("sep-master").style.display="block"; } if(["00425","00001","05722","05891"].includes(v)){ document.getElementById("link-masterlista").style.display="flex"; document.getElementById("sep-masterlista").style.display="block"; } }
 
-function abrirNovoAluno(){ fecharPrimeiroAcesso(); fecharCadastroNovo(); fecharMaster(); fecharMasterLista(); modoNovoAluno = true; modoPreCadastro = false; document.getElementById('box-novo-aluno').style.display='block'; document.getElementById('link-novo-aluno').style.display='none'; document.getElementById('link-primeiro').style.display='none'; document.getElementById('link-cadastro-novo').style.display='none'; document.getElementById('link-master').style.display='none'; document.getElementById('link-masterlista').style.display='none'; document.getElementById('sep-master').style.display='none'; document.getElementById('sep-masterlista').style.display='none'; document.getElementById('novaMatricula').value = document.getElementById('matricula').value; document.getElementById('novoNome').value = ""; let cpfEl = document.getElementById('novoCpf'); if(cpfEl) cpfEl.value = ""; document.getElementById('resultado-novo-aluno').innerHTML = ""; document.getElementById('erro-login').style.display='none'; let lista = document.getElementById('novoCodpoint') || document.getElementById('listaCodpoint') || document.getElementById('codpoint') || document.querySelector('input[placeholder*="TRAVADA"]'); if(lista){ lista.disabled = false; lista.readOnly = false; lista.removeAttribute('disabled'); lista.placeholder = 'LISTA CODPOINT - LOCALIZE O SEU NOME'; } }
+function abrirNovoAluno(){ fecharPrimeiroAcesso(); fecharCadastroNovo(); fecharMaster(); fecharMasterLista(); modoNovoAluno = true; modoPreCadastro = false; document.getElementById('box-novo-aluno').style.display='block'; document.getElementById('link-novo-aluno').style.display='none'; document.getElementById('link-primeiro').style.display='none'; document.getElementById('link-cadastro-novo').style.display='none'; document.getElementById('link-master').style.display='none'; document.getElementById('link-masterlista').style.display='none'; document.getElementById('sep-master').style.display='none'; document.getElementById('sep-masterlista').style.display='none'; document.getElementById('novaMatricula').value = document.getElementById('matricula').value; document.getElementById('novoNome').value = ""; let cpfEl = document.getElementById('novoCpf'); if(cpfEl) cpfEl.value = ""; let congEl = document.getElementById('novoCongregacao'); if(congEl) congEl.value = ""; carregarCongregacoes(); document.getElementById('resultado-novo-aluno').innerHTML = ""; document.getElementById('erro-login').style.display='none'; let lista = document.getElementById('novoCodpoint') || document.getElementById('listaCodpoint') || document.getElementById('codpoint') || document.querySelector('input[placeholder*="TRAVADA"]'); if(lista){ lista.disabled = false; lista.readOnly = false; lista.removeAttribute('disabled'); lista.placeholder = 'LISTA CODPOINT - LOCALIZE O SEU NOME'; } }
 
 
 
@@ -490,6 +490,16 @@ async function salvarPreCadastro(){ let mat=(document.getElementById('matricula'
 
 
 async function salvarNovoAluno(){
+
+  // CONGREGAÇÃO OBRIGATÓRIA
+  let congInput = document.getElementById('novoCongregacao');
+  let congVal = congInput ? congInput.value.toUpperCase().trim() : '';
+  let erroCong = document.getElementById('erroCongregacao');
+  if(!congVal){
+    if(congInput){ congInput.style.borderColor = '#f87171'; congInput.focus(); }
+    if(erroCong){ erroCong.style.display = 'block'; erroCong.innerHTML = '⚠️ Congregação é obrigatória. Selecione uma da lista.'; }
+    return;
+  }
   let mat = (document.getElementById('novaMatricula').value||'').trim().padStart(5,'0');
   let resDivInicio = document.getElementById('resultado-novo-aluno');
   if(resDivInicio && resDivInicio.innerHTML.includes('CADASTRADO!')){
@@ -524,7 +534,7 @@ if(achadoPend && !liberado){ resDiv.innerHTML=`<style>@keyframes piscaDivergente
   resDiv.innerHTML="⏳ Gerando senha...";
   try{
 
-    let r = await apiGet('novoAluno',{matricula:mat, nome:nome, cpf:cpf, zap:zap, zapNumeros:zapNumeros});
+    let r = await apiGet('novoAluno',{matricula:mat, nome:nome, cpf:cpf, zap:zap, zapNumeros:zapNumeros, congregacao:congVal});
     if(r.result=="ok"){
       localStorage.setItem('tipo_acesso','verde');
       document.getElementById('senha').type="text";
@@ -601,6 +611,18 @@ async function gerarAcesso(mat){
 
 async function salvarAlunoProvisorio(){
   // === INICIO ADAPTADO - só os 3 campos ===
+
+  // CONGREGAÇÃO OBRIGATÓRIA
+  let congInput = document.getElementById('novoCongregacao');
+  let congVal = congInput ? congInput.value.toUpperCase().trim() : '';
+  let erroCong = document.getElementById('erroCongregacao');
+  if(!congVal){
+    if(congInput){ congInput.style.borderColor = '#f87171'; congInput.focus(); }
+    if(erroCong){ erroCong.style.display = 'block'; erroCong.innerHTML = '⚠️ Congregação é obrigatória. Selecione uma da lista.'; }
+    return;
+  }
+
+
   let nome = (document.getElementById('pesquisaNome').value||'').toUpperCase().replace(/\s+/g,' ').trim();
   let zap = (document.getElementById('novoZap').value||'').trim();
   let cpf = (document.getElementById('novoCpf').value||'').trim();
@@ -643,7 +665,7 @@ if(achadoPend && !liberadoProv){ resDiv.innerHTML=`<div ...>⚠️ VOCÊ JÁ EST
   resDiv.innerHTML="⏳ Gerando senha...";
   try{
     // === ADAPTADO - chama provisório, sem matrícula, back gera B a partir de 15000 ===
-    let r = await apiGet('novoAlunoProvisorio',{nome:nome, cpf:cpf, zap:zap, zapNumeros:zapNumeros, pesquisaNome:nome, novoZap:zap, novoCpf:cpf});
+    let r = await apiGet('novoAlunoProvisorio',{nome:nome, cpf:cpf, zap:zap, zapNumeros:zapNumeros, pesquisaNome:nome, novoZap:zap, novoCpf:cpf, congregacao:congVal});
     let mat = String(r.matricula||'').padStart(5,'0');
 
     if(r.result=="ok"){
@@ -1238,3 +1260,74 @@ async function salvarEsqueciSenhaNovo(){
   resDiv.innerHTML="<div style='background:#0F172A;border:2px solid #22c55e;border-radius:10px;padding:14px;text-align:center'><div style='color:#22c55e;font-weight:900'>✅ CÓDIGO GERADO</div><div style='font-size:28px;font-weight:900;letter-spacing:4px;color:#fff;margin:8px 0'>"+codigo+"</div><div style='color:#94A3B8;font-size:12px'>Copie e cole no campo SENHA</div></div>";
   document.getElementById('senha').value = codigo;
 }
+
+let cacheCongregacoes = [];
+let congregacaoValida = '';
+
+function carregarCongregacoes(){
+  let inp = document.getElementById('novoCongregacao');
+  let box = document.getElementById('listaCongregacoes');
+  let erro = document.getElementById('erroCongregacao');
+  if(!inp || !box) return;
+  congregacaoValida = '';
+  inp.value = '';
+  box.innerHTML = '';
+  if(erro) erro.style.display='none';
+  if(cacheCongregacoes.length) return;
+
+  apiGet('congregacoes').then(r=>{
+    let d = r.data || r || [];
+    cacheCongregacoes = d.map(x=> String(x||'').trim()).filter((v,i,a)=> v && a.indexOf(v)===i).sort();
+  }).catch(e=>{});
+
+  inp.oninput = function(){
+    let q = this.value.toUpperCase().trim();
+    congregacaoValida = '';
+    if(erro) erro.style.display='none';
+    inp.style.borderColor = '#334155';
+    if(q.length < 1){ box.innerHTML=''; return; }
+    let ach = [];
+    for(let i=0;i<cacheCongregacoes.length && ach.length<20;i++){
+      if(cacheCongregacoes[i].toUpperCase().indexOf(q) !== -1) ach.push(cacheCongregacoes[i]);
+    }
+    if(!ach.length){ box.innerHTML=''; return; }
+    // IGUAL A PRINT - lista bonitinha
+    box.innerHTML = `<div style='max-height:220px;overflow:auto;background:#0F172A;border:1px solid #334155;border-radius:8px;margin-top:4px'>${ach.map(o=>`<div class="item-cong" onclick="escolherCongregacao('${o.replace(/'/g,' ')}')">${o}</div>`).join('')}</div>`;
+  };
+
+  // AO SAIR DO CAMPO - SE NÃO EXISTE, LIMPA E AVISA
+  inp.onblur = function(){
+    setTimeout(()=>{
+      let v = inp.value.toUpperCase().trim();
+      if(!v) return;
+      let existe = cacheCongregacoes.map(c=>c.toUpperCase()).includes(v);
+      if(!existe || v !== congregacaoValida){
+        inp.value = '';
+        congregacaoValida = '';
+        box.innerHTML = '';
+        inp.style.borderColor = '#f87171';
+        if(erro){
+          erro.style.display='block';
+          erro.innerHTML = '⚠️ Essa congregação não existe. Selecione uma da lista.';
+        }
+        inp.focus();
+      }
+    }, 200);
+  };
+}
+
+function escolherCongregacao(nome){
+  document.getElementById('novoCongregacao').value = nome.toUpperCase();
+  congregacaoValida = nome.toUpperCase();
+  document.getElementById('listaCongregacoes').innerHTML = '';
+  document.getElementById('erroCongregacao').style.display='none';
+  document.getElementById('novoCongregacao').style.borderColor = '#334155';
+}
+
+function escolherCongregacao(nome){
+  document.getElementById('novoCongregacao').value = nome.toUpperCase();
+  congregacaoValida = nome.toUpperCase();
+  document.getElementById('listaCongregacoes').innerHTML = '';
+  document.getElementById('erroCongregacao').style.display='none';
+  document.getElementById('novoCongregacao').style.borderColor = '#334155';
+}s
