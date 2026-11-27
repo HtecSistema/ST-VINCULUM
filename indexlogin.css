@@ -153,7 +153,6 @@ button.menu-btn.ativo{background:#3B82F6; color:white; border-color:#3B82F6; box
 .submenu-teste{display:none;flex-direction:column;padding-left:18px;border-left:2px solid #334155;margin-left:18px;margin-top:2px}
 .seta-teste{font-size:10px;margin-left:auto}
 
-
 /* ACOMPANHAMENTO - IGUAL TESTE DISCIPULADO - MESMO PADRÃO AFASTADO */
 .menu-grupo-acompanhamento{margin-top:4px;width:100%}
 #btn-acompanhamento-pai{width:100% !important;padding:12px 14px !important;font-size:14px !important;font-weight:500 !important;color:#94A3B8 !important;background:transparent !important;border:1px solid transparent !important;border-radius:10px !important;justify-content:space-between !important}
@@ -163,3 +162,16 @@ button.menu-btn.ativo{background:#3B82F6; color:white; border-color:#3B82F6; box
 
 #modal-orientacoes{display:none}
 #modal-orientacoes.ativo{display:flex}
+
+.item-cong{
+  padding:10px 12px;
+  font-size:14px;
+  color:#E2E8F0;
+  border-bottom:1px solid #1E293B;
+  cursor:pointer;
+}
+.item-cong:last-child{ border-bottom:none; }
+.item-cong:hover, .item-cong.ativo{
+  background:#1E293B;
+  color:#fff;
+}
