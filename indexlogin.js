@@ -36,6 +36,7 @@ async function apiManut(a,p={}){p.t=Date.now();const u=API_MANUT+'?action='+a+'&
 let cacheDados = []; let cachePendentes = []; let usuarioLogado = null; let jaEnviou = false; let modoPreCadastro = false; let modoNovoAluno = false;
 let cacheListaUsuarios = [];
 if(sessionStorage.getItem("logado") === "true"){ mostrarSistema(); }
+
 function formatarMatricula(el){ let v = (el.value||'').trim().replace(/\D/g,''); if(v) el.value = v.padStart(5,'0').toUpperCase(); }
 function formatarMatriculaAoDigitar(el){ let v = (el.value||'').replace(/\D/g,''); if(v.length>5) v = v.slice(-5); el.value = v? v.padStart(5,'0') : ''; }
 function formatarCPF(el){ let v = el.value.replace(/\D/g,'').slice(0,11); if(v.length>9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4"); else if(v.length>6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3"); else if(v.length>3) v = v.replace(/(\d{3})(\d{1,3})/, "$1.$2"); el.value = v; }
@@ -150,6 +151,8 @@ async function logar(){
       sessionStorage.setItem("logado", "true");
       localStorage.setItem("logado", "true");
       localStorage.setItem('mat_logada', mat);
+
+
       let nome = achado.Nome||achado.NOME||achado.D||'';
       localStorage.setItem('nome_logado', String(nome).toUpperCase());
       let cod = achado.Codigo||achado.CODIGO||achado.A||'';
@@ -354,7 +357,11 @@ function fecharNovoAluno(){ document.getElementById('box-novo-aluno').style.disp
 function abrirMaster(){ fecharPrimeiroAcesso(); fecharCadastroNovo(); fecharNovoAluno(); fecharMasterLista(); document.getElementById('box-master').style.display='block'; document.getElementById('link-primeiro').style.display='none'; document.getElementById('link-cadastro-novo').style.display='none'; document.getElementById('link-novo-aluno').style.display='none'; document.getElementById('link-master').style.display='none'; document.getElementById('link-masterlista').style.display='none'; document.getElementById('sep-master').style.display='none'; document.getElementById('sep-masterlista').style.display='none'; }
 function fecharMaster(){ document.getElementById('box-master').style.display='none'; document.getElementById('link-primeiro').style.display='flex'; document.getElementById('link-cadastro-novo').style.display='flex'; document.getElementById('link-novo-aluno').style.display='flex'; let v=document.getElementById('matricula').value.replace(/\D/g,'').padStart(5,'0'); if(["00425","00001","05722"].includes(v)){ document.getElementById("link-master").style.display="flex"; document.getElementById("sep-master").style.display="block"; } if(["00425","00001","05722","05891"].includes(v)){ document.getElementById("link-masterlista").style.display="flex"; document.getElementById("sep-masterlista").style.display="block"; } }
 function abrirMasterLista(){ fecharPrimeiroAcesso(); fecharCadastroNovo(); fecharNovoAluno(); fecharMaster(); document.getElementById('box-masterlista').style.display='block'; document.getElementById('link-primeiro').style.display='none'; document.getElementById('link-cadastro-novo').style.display='none'; document.getElementById('link-novo-aluno').style.display='none'; document.getElementById('link-master').style.display='none'; document.getElementById('link-masterlista').style.display='none'; document.getElementById('sep-master').style.display='none'; document.getElementById('sep-masterlista').style.display='none'; document.getElementById('senhaMasterLista').value=''; document.getElementById('areaFiltroLista').style.display='none'; document.getElementById('statusMasterLista').innerHTML='Digite sua senha master para liberar'; document.getElementById('senhaMasterLista').focus(); }
+
 function fecharMasterLista(){ document.getElementById('box-masterlista').style.display='none'; document.getElementById('link-primeiro').style.display='flex'; document.getElementById('link-cadastro-novo').style.display='flex'; document.getElementById('link-novo-aluno').style.display='flex'; let v=document.getElementById('matricula').value.replace(/\D/g,'').padStart(5,'0'); if(["00425","00001","05722"].includes(v)){ document.getElementById("link-master").style.display="flex"; document.getElementById("sep-master").style.display="block"; } if(["00425","00001","05722","05891"].includes(v)){ document.getElementById("link-masterlista").style.display="flex"; document.getElementById("sep-masterlista").style.display="block"; } }
+function abrirOrientacoes(){ document.getElementById('modal-orientacoes').classList.add('ativo'); }
+function fecharOrientacoes(){ document.getElementById('modal-orientacoes').classList.remove('ativo'); }
+
 async function validarSenhaMasterLista(){
   let senha=document.getElementById('senhaMasterLista').value.trim(); let quem=document.getElementById('matricula').value.replace(/\D/g,'').padStart(5,'0'); let status=document.getElementById('statusMasterLista');
   if(!quem||quem==='00000'){ status.innerHTML='<span style="color:#ff8a8a">⚠️ Digite sua matricula lá em cima</span>'; return false; }
