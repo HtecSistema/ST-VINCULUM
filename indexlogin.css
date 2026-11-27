@@ -160,3 +160,6 @@ button.menu-btn.ativo{background:#3B82F6; color:white; border-color:#3B82F6; box
 #btn-acompanhamento-pai:hover{background:#334155 !important;color:#F1F5F9 !important;border-color:#334155 !important}
 .submenu-acompanhamento{display:none;flex-direction:column;padding-left:18px;border-left:2px solid #334155;margin-left:18px;margin-top:2px}
 .seta-acompanhamento{font-size:10px;margin-left:auto}
+
+#modal-orientacoes{display:none}
+#modal-orientacoes.ativo{display:flex}
